@@ -104,6 +104,7 @@
         <nav class="portal-nav">
             <a href="{{ route('todo.index') }}" class="portal-nav-btn {{ Request::is('todos*') ? 'active' : '' }}">Todo</a>
             <a href="{{ route('freefire.index') }}" class="portal-nav-btn {{ Request::is('freefires*') ? 'active' : '' }}">Free Fire</a>
+            <a href="{{ route('kuliah.matakuliah') }}" class="portal-nav-btn {{ Request::is('kuliah*') ? 'active' : '' }}">Kuliah</a>
         </nav>
     </header>
 

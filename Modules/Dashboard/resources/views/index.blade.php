@@ -70,6 +70,14 @@
             </div>
         </a>
 
+        <a href="/kuliah/matakuliah" class="portal-card">
+            <div class="portal-card-content">
+                <span class="portal-icon" style="font-size: 2.5rem; display: inline-flex; align-items: center; justify-content: center;">🎓</span>
+                <p class="portal-title">Kuliah</p>
+                <p class="portal-desc">Mata kuliah</p>
+            </div>
+        </a>
+
         <a href="/freefires" class="portal-card">
             <div class="portal-card-content">
                 <span class="portal-icon">
@@ -79,8 +87,6 @@
                 <p class="portal-desc">Game tracker</p>
             </div>
         </a>
-
-
 
     </div>
 </div>

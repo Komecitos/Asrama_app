@@ -1,0 +1,16 @@
+{
+    "name": "Kuliah",
+    "alias": "kuliah",
+    "description": "Modul untuk manajemen perkuliahan dan tugas akademik.",
+    "keywords": [
+        "kuliah",
+        "academic",
+        "course",
+        "assignment"
+    ],
+    "priority": 0,
+    "providers": [
+        "Modules\\Kuliah\\Providers\\KuliahServiceProvider"
+    ],
+    "files": []
+}
