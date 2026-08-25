@@ -1,9 +1,7 @@
 {
     "Dashboard": true,
     "Todo": true,
-    "Notes": true,
     "Aquarium": true,
-    "Calendar": true,
     "FreeFire": true,
     "Kuliah": true
 }
