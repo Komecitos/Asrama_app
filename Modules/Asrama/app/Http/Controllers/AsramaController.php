@@ -159,6 +159,9 @@ class AsramaController extends Controller
     public function matriksKeuangan(Request $request)
     {
         $tahun = (int) ($request->get('tahun', date('Y')));
+        $tarifDefault = (int) ($request->get('tarif_default', session('asrama_tarif_default', 100000)));
+        session(['asrama_tarif_default' => $tarifDefault]);
+
         $availableYears = range(date('Y') - 2, date('Y') + 2);
 
         $penghunis = AsramaPenghuni::orderBy('status_penghuni', 'asc')->orderBy('nama', 'asc')->get();
@@ -184,15 +187,25 @@ class AsramaController extends Controller
             'total_terbayar' => $totalTerbayarTahunIni,
             'lunas_bulan_ini' => $lunasBulanIniCount,
             'total_aktif' => $penghuniAktif->count(),
+            'tarif_default' => $tarifDefault,
         ];
 
         $bulanNames = [
-            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
-            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
-            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+            1 => 'Januari',
+            2 => 'Februari',
+            3 => 'Maret',
+            4 => 'April',
+            5 => 'Mei',
+            6 => 'Juni',
+            7 => 'Juli',
+            8 => 'Agustus',
+            9 => 'September',
+            10 => 'Oktober',
+            11 => 'November',
+            12 => 'Desember'
         ];
 
-        return view('asrama::matriks', compact('tahun', 'availableYears', 'penghuniAktif', 'penghuniKeluar', 'iuranMap', 'bulanNames', 'statsMatriks'));
+        return view('asrama::matriks', compact('tahun', 'tarifDefault', 'availableYears', 'penghuniAktif', 'penghuniKeluar', 'iuranMap', 'bulanNames', 'statsMatriks'));
     }
 
     public function updateMatriksIuran(Request $request)

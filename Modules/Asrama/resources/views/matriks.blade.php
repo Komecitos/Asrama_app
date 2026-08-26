@@ -5,7 +5,7 @@
 <style>
     .matriks-stats-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         gap: 1rem;
         margin-bottom: 1.5rem;
     }
@@ -102,7 +102,7 @@
         border: 1px solid rgba(255,255,255,0.15);
         color: #f8fafc;
         border-radius: 6px;
-        padding: 0.3rem 0.6rem;
+        padding: 0.35rem 0.65rem;
         font-size: 0.8rem;
         cursor: pointer;
         transition: all 0.2s ease;
@@ -139,21 +139,28 @@
     <div class="matriks-stats-grid">
         <div class="matriks-stat-card">
             <p class="task-meta" style="margin: 0;">Total Terbayar Tahun {{ $tahun }}</p>
-            <h3 style="color: #6ee7b7; margin: 0.35rem 0 0 0; font-size: 1.5rem; font-weight: 700;">
+            <h3 style="color: #6ee7b7; margin: 0.35rem 0 0 0; font-size: 1.4rem; font-weight: 700;">
                 Rp {{ number_format($statsMatriks['total_terbayar'], 0, ',', '.') }}
             </h3>
             <p class="task-meta" style="font-size: 0.75rem; margin-top: 0.2rem;">Total iuran terkumpul</p>
         </div>
         <div class="matriks-stat-card">
             <p class="task-meta" style="margin: 0;">Lunas Bulan Ini ({{ \Carbon\Carbon::now()->format('F') }})</p>
-            <h3 style="color: #fde047; margin: 0.35rem 0 0 0; font-size: 1.5rem; font-weight: 700;">
+            <h3 style="color: #fde047; margin: 0.35rem 0 0 0; font-size: 1.4rem; font-weight: 700;">
                 {{ $statsMatriks['lunas_bulan_ini'] }} / {{ $statsMatriks['total_aktif'] }} Penghuni
             </h3>
-            <p class="task-meta" style="font-size: 0.75rem; margin-top: 0.2rem;">Penghuni yang sudah membayarkan iuran</p>
+            <p class="task-meta" style="font-size: 0.75rem; margin-top: 0.2rem;">Penghuni yang telah bayar</p>
         </div>
         <div class="matriks-stat-card">
-            <p class="task-meta" style="margin: 0;">Total Penghuni Aktif</p>
-            <h3 style="color: #93c5fd; margin: 0.35rem 0 0 0; font-size: 1.5rem; font-weight: 700;">
+            <p class="task-meta" style="margin: 0;">Tarif Standar / Bulan</p>
+            <h3 style="color: #6ee7b7; margin: 0.35rem 0 0 0; font-size: 1.4rem; font-weight: 700;">
+                Rp {{ number_format($tarifDefault, 0, ',', '.') }}
+            </h3>
+            <p class="task-meta" style="font-size: 0.75rem; margin-top: 0.2rem;">Konfigurasi iuran bulanan</p>
+        </div>
+        <div class="matriks-stat-card">
+            <p class="task-meta" style="margin: 0;">Penghuni Aktif</p>
+            <h3 style="color: #93c5fd; margin: 0.35rem 0 0 0; font-size: 1.4rem; font-weight: 700;">
                 {{ $statsMatriks['total_aktif'] }} Orang
             </h3>
             <p class="task-meta" style="font-size: 0.75rem; margin-top: 0.2rem;">Penghuni aktif saat ini</p>
@@ -171,12 +178,20 @@
             <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
                 {{-- QUICK SEARCH INPUT --}}
                 <div style="position: relative;">
-                    <input type="text" id="search-matriks" class="form-control" placeholder="🔍 Cari nama..." onkeyup="filterMatriksTable()" style="padding: 0.35rem 0.75rem 0.35rem 2rem; font-size: 0.85rem; width: 160px;">
+                    <input type="text" id="search-matriks" class="form-control" placeholder="🔍 Cari nama..." onkeyup="filterMatriksTable()" style="padding: 0.35rem 0.75rem 0.35rem 2rem; font-size: 0.85rem; width: 150px;">
                 </div>
 
-                {{-- YEAR SELECTOR --}}
-                <form action="{{ route('asrama.keuangan.matriks') }}" method="GET" style="display: flex; align-items: center; gap: 0.4rem;">
-                    <select name="tahun" class="form-control" style="width: auto; padding: 0.35rem 0.75rem; font-size: 0.85rem;" onchange="this.form.submit()">
+                {{-- FORM FILTER & TARIF DEFAULT --}}
+                <form id="form-filter-matriks" action="{{ route('asrama.keuangan.matriks') }}" method="GET" style="display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;">
+                    <div style="display: flex; align-items: center; gap: 0.35rem;" title="Atur nominal iuran bulanan default">
+                        <label class="form-label" style="margin: 0; white-space: nowrap; font-size: 0.8rem; color: #94a3b8;">Tarif Default:</label>
+                        <div style="display: flex; align-items: center; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; padding: 0 0.4rem;">
+                            <span style="font-size: 0.8rem; color: #6ee7b7; font-weight: 700;">Rp</span>
+                            <input type="number" name="tarif_default" value="{{ $tarifDefault }}" class="form-control" style="width: 90px; padding: 0.3rem 0.3rem; font-size: 0.85rem; border: none; background: transparent; font-weight: 700; color: #6ee7b7;" onchange="document.getElementById('form-filter-matriks').submit()" placeholder="100000" step="5000">
+                        </div>
+                    </div>
+
+                    <select name="tahun" class="form-control" style="width: auto; padding: 0.35rem 0.75rem; font-size: 0.85rem;" onchange="document.getElementById('form-filter-matriks').submit()">
                         @foreach($availableYears as $y)
                             <option value="{{ $y }}" {{ $tahun == $y ? 'selected' : '' }}>Tahun {{ $y }}</option>
                         @endforeach
@@ -328,11 +343,15 @@
                 <label class="form-label">Nominal Pembayaran (Rp)</label>
                 <input type="number" id="cell-nominal" name="nominal" class="form-control" placeholder="100000" min="0">
                 
-                {{-- PRESET SHORTCUT BUTTONS --}}
+                {{-- DYNAMIC PRESET SHORTCUT BUTTONS --}}
                 <div style="display: flex; gap: 0.4rem; margin-top: 0.6rem; flex-wrap: wrap;">
+                    <button type="button" onclick="setNominal({{ $tarifDefault }})" class="preset-btn" style="background: rgba(16, 185, 129, 0.2); border-color: #10b981; color: #6ee7b7; font-weight: 700;">
+                        ✓ Standar (Rp {{ number_format($tarifDefault, 0, ',', '.') }})
+                    </button>
+                    @if($tarifDefault != 100000)
                     <button type="button" onclick="setNominal(100000)" class="preset-btn">Rp 100.000</button>
-                    <button type="button" onclick="setNominal(75000)" class="preset-btn">Rp 75.000</button>
-                    <button type="button" onclick="setNominal(50000)" class="preset-btn">Rp 50.000</button>
+                    @endif
+                    <button type="button" onclick="setNominal({{ (int)($tarifDefault / 2) }})" class="preset-btn">1/2 (Rp {{ number_format((int)($tarifDefault / 2), 0, ',', '.') }})</button>
                     <button type="button" onclick="setNominal(0)" class="preset-btn" style="color: #f87171;">Reset 0</button>
                 </div>
             </div>
