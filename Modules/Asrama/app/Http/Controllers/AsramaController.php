@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Modules\Asrama\Models\AsramaKamar;
 use Modules\Asrama\Models\AsramaPenghuni;
 use Modules\Asrama\Models\AsramaKeuangan;
+use Modules\Asrama\Models\AsramaIuran;
 
 class AsramaController extends Controller
 {
@@ -153,6 +154,64 @@ class AsramaController extends Controller
         ];
 
         return view('asrama::keuangan', compact('keuangans', 'penghunis', 'summary'));
+    }
+
+    public function matriksKeuangan(Request $request)
+    {
+        $tahun = (int) ($request->get('tahun', date('Y')));
+        $availableYears = range(date('Y') - 2, date('Y') + 2);
+
+        $penghunis = AsramaPenghuni::orderBy('status_penghuni', 'asc')->orderBy('nama', 'asc')->get();
+        $penghuniAktif = $penghunis->where('status_penghuni', 'Aktif');
+        $penghuniKeluar = $penghunis->where('status_penghuni', 'Keluar');
+
+        $iurans = AsramaIuran::where('tahun', $tahun)->get();
+
+        $iuranMap = [];
+        foreach ($iurans as $iuran) {
+            if ($iuran->penghuni_id) {
+                $iuranMap['penghuni_' . $iuran->penghuni_id . '_' . $iuran->bulan] = $iuran;
+            } elseif ($iuran->fasilitas_key) {
+                $iuranMap['fasilitas_' . $iuran->fasilitas_key . '_' . $iuran->bulan] = $iuran;
+            }
+        }
+
+        $bulanNames = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+        ];
+
+        return view('asrama::matriks', compact('tahun', 'availableYears', 'penghuniAktif', 'penghuniKeluar', 'iuranMap', 'bulanNames'));
+    }
+
+    public function updateMatriksIuran(Request $request)
+    {
+        $validated = $request->validate([
+            'tahun' => 'required|integer',
+            'bulan' => 'required|integer|min:1|max:12',
+            'penghuni_id' => 'nullable|exists:asrama_penghunis,id',
+            'fasilitas_key' => 'nullable|string|in:wifi,sampah',
+            'nominal' => 'required|integer|min:0',
+            'status_lunas' => 'nullable',
+        ]);
+
+        $statusLunas = $request->has('status_lunas') ? (bool) $request->input('status_lunas') : ($validated['nominal'] > 0);
+
+        AsramaIuran::updateOrCreate(
+            [
+                'tahun' => $validated['tahun'],
+                'bulan' => $validated['bulan'],
+                'penghuni_id' => $validated['penghuni_id'] ?: null,
+                'fasilitas_key' => $validated['fasilitas_key'] ?: null,
+            ],
+            [
+                'nominal' => $validated['nominal'],
+                'status_lunas' => $statusLunas,
+            ]
+        );
+
+        return redirect()->back()->with('success', 'Data matriks iuran berhasil diperbarui!');
     }
 
     public function storeKamar(Request $request)

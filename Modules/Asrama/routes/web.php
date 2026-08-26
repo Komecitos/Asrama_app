@@ -20,6 +20,8 @@ Route::prefix('asrama')->name('asrama.')->group(function () {
     Route::delete('/penghuni/{id}', [AsramaController::class, 'destroyPenghuni'])->name('penghuni.destroy');
 
     // Keuangan Actions
+    Route::get('/keuangan/matriks', [AsramaController::class, 'matriksKeuangan'])->name('keuangan.matriks');
+    Route::post('/keuangan/matriks/update', [AsramaController::class, 'updateMatriksIuran'])->name('keuangan.matriks.update');
     Route::post('/keuangan', [AsramaController::class, 'storeKeuangan'])->name('keuangan.store');
     Route::delete('/keuangan/{id}', [AsramaController::class, 'destroyKeuangan'])->name('keuangan.destroy');
 });
