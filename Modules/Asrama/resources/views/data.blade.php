@@ -98,7 +98,10 @@
 
                                 {{-- KELUAR BUTTON (FOR ACTIVE RESIDENTS) --}}
                                 @if($penghuni->status_penghuni === 'Aktif')
-                                <button type="button" onclick="openKeluarPenghuniModal({{ $penghuni->id }}, '{{ addslashes($penghuni->nama) }}')" class="btn btn-warning btn-sm" style="background: #eab308; color: #000; border: none; font-weight: 600;" title="Tandai penghuni keluar asrama">🚪 Keluar</button>
+                                <button type="button" onclick="openKeluarPenghuniModal({{ $penghuni->id }}, '{{ addslashes($penghuni->nama) }}')" class="btn btn-warning btn-sm" style="background: #eab308; color: #000; border: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.35rem;" title="Tandai penghuni keluar asrama">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                                    <span>Keluar</span>
+                                </button>
                                 @endif
 
                                 {{-- DELETE BUTTON --}}
@@ -301,24 +304,31 @@
 {{-- MODAL PROSES KELUAR PENGHUNI --}}
 <div id="modal-keluar-penghuni" class="modal modal-create" aria-hidden="true">
     <div class="modal-header">
-        <h3>🚪 Tandai Penghuni Keluar</h3>
+        <h3 style="display: flex; align-items: center; gap: 0.5rem;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color: #f59e0b;"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+            <span>Konfirmasi Penghuni Keluar</span>
+        </h3>
         <button onclick="closeKeluarPenghuniModal()" class="modal-close">&times;</button>
     </div>
     <form id="form-keluar-penghuni" action="" method="POST" autocomplete="off">
         @csrf
         @method('PATCH')
-        <div style="padding: 0.5rem 0;">
-            <p class="task-meta" style="margin-bottom: 1rem; color: var(--text-primary);">
-                Tandai penghuni <strong id="keluar-penghuni-nama" style="color: #fde047;">-</strong> sebagai penghuni keluar/non-aktif. Tempat tidur/slot kamar akan otomatis dibebaskan.
+        <div style="padding: 0.75rem 0;">
+            <p class="task-meta" style="margin-bottom: 1.25rem; color: var(--text-primary); font-size: 0.95rem; line-height: 1.5;">
+                Tandai penghuni <strong id="keluar-penghuni-nama" style="color: #fde047; font-size: 1.05rem;">-</strong> sebagai <strong>Keluar / Non-Aktif</strong>.<br>
+                <span style="font-size: 0.85rem; color: #94a3b8; margin-top: 0.35rem; display: block;">Tempat tidur/slot kamar yang ditempati akan otomatis dibebaskan.</span>
             </p>
             <div class="form-group">
                 <label class="form-label">Tanggal Keluar <span class="required">*</span></label>
                 <input type="date" name="tanggal_keluar" class="form-control" value="{{ date('Y-m-d') }}" required>
             </div>
         </div>
-        <div class="form-actions">
+        <div class="form-actions" style="margin-top: 1.25rem;">
             <button type="button" onclick="closeKeluarPenghuniModal()" class="btn btn-secondary">Batal</button>
-            <button type="submit" class="btn btn-warning" style="background: #eab308; color: #000; font-weight: 700;">Tandai Keluar</button>
+            <button type="submit" class="btn btn-warning" style="background: #eab308; color: #000; font-weight: 700; display: inline-flex; align-items: center; gap: 0.4rem;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                <span>Konfirmasi Keluar</span>
+            </button>
         </div>
     </form>
 </div>

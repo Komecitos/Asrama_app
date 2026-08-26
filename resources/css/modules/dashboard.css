@@ -106,29 +106,29 @@
     max-width: 48px;
     max-height: 48px;
     object-fit: contain;
-    filter: grayscale(100%) opacity(0.9);
+    filter: grayscale(100%) brightness(1.5) opacity(0.85);
     transition: filter 0.3s ease, transform 0.3s ease;
 }
 
 .portal-icon svg {
     width: 40px;
     height: 40px;
-    color: #f8fafc;
+    color: #cbd5e1;
     transition: color 0.3s ease, transform 0.3s ease;
 }
 
 .portal-card:hover .portal-icon img {
-    filter: grayscale(0%) opacity(1);
+    filter: grayscale(100%) brightness(2) opacity(1);
 }
 
 .portal-card:hover .portal-icon svg {
-    color: #818cf8;
+    color: #ffffff;
 }
 
 .portal-card:hover .portal-icon {
     transform: scale(1.08);
-    border-color: rgba(99, 102, 241, 0.5);
-    background: rgba(99, 102, 241, 0.1);
+    border-color: rgba(255, 255, 255, 0.4);
+    background: rgba(255, 255, 255, 0.08);
 }
 
 /* Portal Title & Description */
