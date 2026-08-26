@@ -165,7 +165,18 @@
             </button>
             <a href="{{ route('asrama.index') }}" class="portal-card">
                 <div class="portal-card-content">
-                    <span class="portal-icon" style="font-size: 2.2rem;">🏢</span>
+                    <span class="portal-icon">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color: #f8fafc;">
+                            <path d="M3 21h18"></path>
+                            <path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16"></path>
+                            <path d="M9 8h1"></path>
+                            <path d="M9 12h1"></path>
+                            <path d="M9 16h1"></path>
+                            <path d="M14 8h1"></path>
+                            <path d="M14 12h1"></path>
+                            <path d="M14 16h1"></path>
+                        </svg>
+                    </span>
                     <h3 class="portal-title">Asrama</h3>
                     <p class="portal-desc">Manajemen penghuni, kamar & fasilitas</p>
                 </div>
