@@ -40,83 +40,8 @@
         </div>
     </div>
 
-    {{-- KAMAR SECTION --}}
-    <div class="widget-card" style="margin-bottom: 2rem;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
-            <div>
-                <h3 class="widget-title" style="margin: 0;">🚪 Daftar Kamar Asrama</h3>
-                <p class="task-meta" style="margin: 0.2rem 0 0 0;">Manajemen data kamar, lantai, kapasitas & ketersediaan slot</p>
-            </div>
-            <button type="button" onclick="openKamarModal()" class="btn btn-primary btn-sm">+ Tambah Kamar</button>
-        </div>
-
-        @if($kamars->isEmpty())
-        <p class="empty-state">Belum ada data kamar. Klik <strong>+ Tambah Kamar</strong> untuk membuat kamar baru.</p>
-        @else
-        <div class="table-wrapper">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Nomor Kamar</th>
-                        <th>Lantai</th>
-                        <th>Kapasitas & Penghuni</th>
-                        <th>Slot Kosong</th>
-                        <th>Status</th>
-                        <th>Fasilitas</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($kamars as $kamar)
-                    @php
-                    $activeCount = $kamar->penghunis->where('status_penghuni', 'Aktif')->count();
-                    $slotKosong = max(0, $kamar->kapasitas - $activeCount);
-                    @endphp
-                    <tr>
-                        <td class="task-title" style="font-weight: 700;">{{ $kamar->nomor_kamar }}</td>
-                        <td>Lantai {{ $kamar->lantai }}</td>
-                        <td>
-                            <strong>{{ $activeCount }}</strong> / {{ $kamar->kapasitas }} Orang
-                        </td>
-                        <td>
-                            @if($slotKosong > 0)
-                            <span class="badge badge-success" style="font-weight: 700;">{{ $slotKosong }} Slot Tersedia</span>
-                            @else
-                            <span class="badge badge-secondary">Penuh</span>
-                            @endif
-                        </td>
-                        <td>
-                            @if($kamar->status === 'Tersedia')
-                            <span class="badge badge-success">Tersedia</span>
-                            @elseif($kamar->status === 'Penuh')
-                            <span class="badge badge-warning">Penuh</span>
-                            @elseif($kamar->status === 'Gudang')
-                            <span class="badge badge-secondary" style="background: #64748b; color: #fff;">Gudang</span>
-                            @else
-                            <span class="badge badge-danger">Perbaikan</span>
-                            @endif
-                        </td>
-                        <td class="task-meta">{{ $kamar->fasilitas ?: '-' }}</td>
-                        <td>
-                            <div style="display: flex; gap: 0.4rem;">
-                                <button type="button" onclick="openEditKamarModal({{ $kamar->id }}, '{{ addslashes($kamar->nomor_kamar) }}', {{ $kamar->lantai }}, {{ $kamar->kapasitas }}, '{{ $kamar->status }}', '{{ addslashes($kamar->fasilitas ?: '') }}', '{{ addslashes($kamar->catatan ?: '') }}')" class="btn btn-secondary btn-sm">Edit</button>
-                                <form action="{{ route('asrama.kamar.destroy', $kamar->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Hapus kamar {{ $kamar->nomor_kamar }}?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-        @endif
-    </div>
-
     {{-- PENGHUNI SECTION --}}
-    <div class="widget-card">
+    <div class="widget-card" style="margin-bottom: 2rem;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
             <div>
                 <h3 class="widget-title" style="margin: 0;">👤 Data Penghuni Asrama</h3>
@@ -181,6 +106,81 @@
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-danger btn-sm" title="Hapus penghuni">Hapus</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+        @endif
+    </div>
+
+    {{-- KAMAR SECTION --}}
+    <div class="widget-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+            <div>
+                <h3 class="widget-title" style="margin: 0;">🚪 Daftar Kamar Asrama</h3>
+                <p class="task-meta" style="margin: 0.2rem 0 0 0;">Manajemen data kamar, lantai, kapasitas & ketersediaan slot</p>
+            </div>
+            <button type="button" onclick="openKamarModal()" class="btn btn-primary btn-sm">+ Tambah Kamar</button>
+        </div>
+
+        @if($kamars->isEmpty())
+        <p class="empty-state">Belum ada data kamar. Klik <strong>+ Tambah Kamar</strong> untuk membuat kamar baru.</p>
+        @else
+        <div class="table-wrapper">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nomor Kamar</th>
+                        <th>Lantai</th>
+                        <th>Kapasitas & Penghuni</th>
+                        <th>Slot Kosong</th>
+                        <th>Status</th>
+                        <th>Fasilitas</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($kamars as $kamar)
+                    @php
+                    $activeCount = $kamar->penghunis->where('status_penghuni', 'Aktif')->count();
+                    $slotKosong = max(0, $kamar->kapasitas - $activeCount);
+                    @endphp
+                    <tr>
+                        <td class="task-title" style="font-weight: 700;">{{ $kamar->nomor_kamar }}</td>
+                        <td>Lantai {{ $kamar->lantai }}</td>
+                        <td>
+                            <strong>{{ $activeCount }}</strong> / {{ $kamar->kapasitas }} Orang
+                        </td>
+                        <td>
+                            @if($slotKosong > 0)
+                            <span class="badge badge-success" style="font-weight: 700;">{{ $slotKosong }} Slot Tersedia</span>
+                            @else
+                            <span class="badge badge-secondary">Penuh</span>
+                            @endif
+                        </td>
+                        <td>
+                            @if($kamar->status === 'Tersedia')
+                            <span class="badge badge-success">Tersedia</span>
+                            @elseif($kamar->status === 'Penuh')
+                            <span class="badge badge-warning">Penuh</span>
+                            @elseif($kamar->status === 'Gudang')
+                            <span class="badge badge-secondary" style="background: #64748b; color: #fff;">Gudang</span>
+                            @else
+                            <span class="badge badge-danger">Perbaikan</span>
+                            @endif
+                        </td>
+                        <td class="task-meta">{{ $kamar->fasilitas ?: '-' }}</td>
+                        <td>
+                            <div style="display: flex; gap: 0.4rem;">
+                                <button type="button" onclick="openEditKamarModal({{ $kamar->id }}, '{{ addslashes($kamar->nomor_kamar) }}', {{ $kamar->lantai }}, {{ $kamar->kapasitas }}, '{{ $kamar->status }}', '{{ addslashes($kamar->fasilitas ?: '') }}', '{{ addslashes($kamar->catatan ?: '') }}')" class="btn btn-secondary btn-sm">Edit</button>
+                                <form action="{{ route('asrama.kamar.destroy', $kamar->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Hapus kamar {{ $kamar->nomor_kamar }}?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
                                 </form>
                             </div>
                         </td>
