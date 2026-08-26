@@ -20,23 +20,23 @@
     <div class="asrama-stats-grid">
         <div class="asrama-stat-card">
             <p class="task-meta">Total Kamar</p>
-            <h3 style="color: var(--text-primary); margin: 0.25rem 0; font-size: 1.8rem;">{{ $summary['total_kamar'] }}</h3>
+            <h3 style="color: var(--text-primary); margin: 0.25rem 0; font-size: 1.8rem;">{{ $summary['total_kamar'] }} Kamar</h3>
             <p class="task-meta" style="font-size: 0.75rem;">Seluruh unit kamar</p>
         </div>
         <div class="asrama-stat-card">
-            <p class="task-meta">Kamar Tersedia</p>
-            <h3 style="color: #6ee7b7; margin: 0.25rem 0; font-size: 1.8rem;">{{ $summary['kamar_tersedia'] }}</h3>
-            <p class="task-meta" style="font-size: 0.75rem;">Siap huni</p>
+            <p class="task-meta">Kamar Ada Slot / Kosong</p>
+            <h3 style="color: #38bdf8; margin: 0.25rem 0; font-size: 1.8rem;">{{ $summary['kamar_tersedia'] }} Unit</h3>
+            <p class="task-meta" style="font-size: 0.75rem;">Masih bisa diisi</p>
         </div>
         <div class="asrama-stat-card">
-            <p class="task-meta">Kamar Penuh</p>
-            <h3 style="color: #fde047; margin: 0.25rem 0; font-size: 1.8rem;">{{ $summary['kamar_penuh'] }}</h3>
-            <p class="task-meta" style="font-size: 0.75rem;">Kapasitas tercapai</p>
+            <p class="task-meta">Penghuni Aktif / Kapasitas</p>
+            <h3 style="color: #fde047; margin: 0.25rem 0; font-size: 1.8rem;">{{ $summary['total_penghuni'] }} / {{ $summary['total_kapasitas'] }} Orang</h3>
+            <p class="task-meta" style="font-size: 0.75rem;">Tinggal di asrama saat ini</p>
         </div>
-        <div class="asrama-stat-card">
-            <p class="task-meta">Penghuni Aktif</p>
-            <h3 style="color: #a5b4fc; margin: 0.25rem 0; font-size: 1.8rem;">{{ $summary['total_penghuni'] }} Orang</h3>
-            <p class="task-meta" style="font-size: 0.75rem;">Tinggal di asrama</p>
+        <div class="asrama-stat-card" style="border-color: rgba(110, 231, 183, 0.4); background: rgba(16, 185, 129, 0.1);">
+            <p class="task-meta" style="color: #6ee7b7; font-weight: 600;">🟢 Slot Tempat Tidur Tersedia</p>
+            <h3 style="color: #6ee7b7; margin: 0.25rem 0; font-size: 2rem; font-weight: 800;">{{ $summary['slot_tersedia'] }} Bed</h3>
+            <p class="task-meta" style="font-size: 0.75rem; color: #a7f3d0;">Jumlah slot siap huni</p>
         </div>
     </div>
 
@@ -45,7 +45,7 @@
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
             <div>
                 <h3 class="widget-title" style="margin: 0;">🚪 Daftar Kamar Asrama</h3>
-                <p class="task-meta" style="margin: 0.2rem 0 0 0;">Manajemen data kamar, lantai, harga & kapasitas</p>
+                <p class="task-meta" style="margin: 0.2rem 0 0 0;">Manajemen data kamar, lantai, kapasitas & ketersediaan slot</p>
             </div>
             <button type="button" onclick="openKamarModal()" class="btn btn-primary btn-sm">+ Tambah Kamar</button>
         </div>
@@ -59,7 +59,8 @@
                         <tr>
                             <th>Nomor Kamar</th>
                             <th>Lantai</th>
-                            <th>Kapasitas</th>
+                            <th>Kapasitas & Penghuni</th>
+                            <th>Slot Kosong</th>
                             <th>Harga / Bulan</th>
                             <th>Status</th>
                             <th>Fasilitas</th>
@@ -70,12 +71,20 @@
                         @foreach($kamars as $kamar)
                         @php
                             $activeCount = $kamar->penghunis->where('status_penghuni', 'Aktif')->count();
+                            $slotKosong = max(0, $kamar->kapasitas - $activeCount);
                         @endphp
                         <tr>
                             <td class="task-title" style="font-weight: 700;">{{ $kamar->nomor_kamar }}</td>
                             <td>Lantai {{ $kamar->lantai }}</td>
                             <td>
-                                {{ $activeCount }} / {{ $kamar->kapasitas }} Orang
+                                <strong>{{ $activeCount }}</strong> / {{ $kamar->kapasitas }} Orang
+                            </td>
+                            <td>
+                                @if($slotKosong > 0)
+                                    <span class="badge badge-success" style="font-weight: 700;">{{ $slotKosong }} Slot Tersedia</span>
+                                @else
+                                    <span class="badge badge-secondary">Penuh</span>
+                                @endif
                             </td>
                             <td style="color: #6ee7b7; font-weight: 600;">Rp {{ number_format($kamar->harga_per_bulan, 0, ',', '.') }}</td>
                             <td>
@@ -111,7 +120,7 @@
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
             <div>
                 <h3 class="widget-title" style="margin: 0;">👤 Data Penghuni Asrama</h3>
-                <p class="task-meta" style="margin: 0.2rem 0 0 0;">Daftar anggota & penghuni kamar yang terdaftar</p>
+                <p class="task-meta" style="margin: 0.2rem 0 0 0;">Daftar penghuni (dukungan Tambah, Edit, Keluar & Hapus)</p>
             </div>
             <button type="button" onclick="openPenghuniModal()" class="btn btn-primary btn-sm">+ Tambah Penghuni</button>
         </div>
@@ -127,7 +136,8 @@
                             <th>No. Telepon / HP</th>
                             <th>Kamar</th>
                             <th>Status</th>
-                            <th>Tanggal Masuk</th>
+                            <th>Tgl Masuk</th>
+                            <th>Tgl Keluar</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
@@ -151,13 +161,22 @@
                                 @endif
                             </td>
                             <td class="task-meta">{{ $penghuni->tanggal_masuk ? \Carbon\Carbon::parse($penghuni->tanggal_masuk)->format('d M Y') : '-' }}</td>
+                            <td class="task-meta">{{ $penghuni->tanggal_keluar ? \Carbon\Carbon::parse($penghuni->tanggal_keluar)->format('d M Y') : '-' }}</td>
                             <td>
-                                <div style="display: flex; gap: 0.4rem;">
-                                    <button type="button" onclick="openEditPenghuniModal({{ $penghuni->id }}, '{{ addslashes($penghuni->nama) }}', '{{ addslashes($penghuni->nomor_hp ?: '') }}', '{{ $penghuni->kamar_id ?: '' }}', '{{ $penghuni->status_penghuni }}', '{{ $penghuni->tanggal_masuk ?: '' }}', '{{ $penghuni->tanggal_keluar ?: '' }}', '{{ addslashes($penghuni->catatan ?: '') }}')" class="btn btn-secondary btn-sm">Edit</button>
+                                <div style="display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap;">
+                                    {{-- EDIT BUTTON --}}
+                                    <button type="button" onclick="openEditPenghuniModal({{ $penghuni->id }}, '{{ addslashes($penghuni->nama) }}', '{{ addslashes($penghuni->nomor_hp ?: '') }}', '{{ $penghuni->kamar_id ?: '' }}', '{{ $penghuni->status_penghuni }}', '{{ $penghuni->tanggal_masuk ?: '' }}', '{{ $penghuni->tanggal_keluar ?: '' }}', '{{ addslashes($penghuni->catatan ?: '') }}')" class="btn btn-secondary btn-sm" title="Edit data penghuni">Edit</button>
+
+                                    {{-- KELUAR BUTTON (FOR ACTIVE RESIDENTS) --}}
+                                    @if($penghuni->status_penghuni === 'Aktif')
+                                        <button type="button" onclick="openKeluarPenghuniModal({{ $penghuni->id }}, '{{ addslashes($penghuni->nama) }}')" class="btn btn-warning btn-sm" style="background: #eab308; color: #000; border: none; font-weight: 600;" title="Tandai penghuni keluar asrama">🚪 Keluar</button>
+                                    @endif
+
+                                    {{-- DELETE BUTTON --}}
                                     <form action="{{ route('asrama.penghuni.destroy', $penghuni->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Hapus data penghuni {{ $penghuni->nama }}?');">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                                        <button type="submit" class="btn btn-danger btn-sm" title="Hapus penghuni">Hapus</button>
                                     </form>
                                 </div>
                             </td>
@@ -276,6 +295,32 @@
 </div>
 <div id="modal-penghuni-overlay" class="modal-overlay" onclick="closePenghuniModal()"></div>
 
+{{-- MODAL PROSES KELUAR PENGHUNI --}}
+<div id="modal-keluar-penghuni" class="modal modal-create" aria-hidden="true">
+    <div class="modal-header">
+        <h3>🚪 Tandai Penghuni Keluar</h3>
+        <button onclick="closeKeluarPenghuniModal()" class="modal-close">&times;</button>
+    </div>
+    <form id="form-keluar-penghuni" action="" method="POST" autocomplete="off">
+        @csrf
+        @method('PATCH')
+        <div style="padding: 0.5rem 0;">
+            <p class="task-meta" style="margin-bottom: 1rem; color: var(--text-primary);">
+                Tandai penghuni <strong id="keluar-penghuni-nama" style="color: #fde047;">-</strong> sebagai penghuni keluar/non-aktif. Tempat tidur/slot kamar akan otomatis dibebaskan.
+            </p>
+            <div class="form-group">
+                <label class="form-label">Tanggal Keluar <span class="required">*</span></label>
+                <input type="date" name="tanggal_keluar" class="form-control" value="{{ date('Y-m-d') }}" required>
+            </div>
+        </div>
+        <div class="form-actions">
+            <button type="button" onclick="closeKeluarPenghuniModal()" class="btn btn-secondary">Batal</button>
+            <button type="submit" class="btn btn-warning" style="background: #eab308; color: #000; font-weight: 700;">Tandai Keluar</button>
+        </div>
+    </form>
+</div>
+<div id="modal-keluar-penghuni-overlay" class="modal-overlay" onclick="closeKeluarPenghuniModal()"></div>
+
 @endsection
 
 @push('scripts')
@@ -360,6 +405,23 @@
     function closePenghuniModal() {
         const m = document.getElementById('modal-penghuni');
         const o = document.getElementById('modal-penghuni-overlay');
+        if (m) { m.classList.remove('show'); m.style.display = 'none'; }
+        if (o) { o.classList.remove('show'); o.style.display = 'none'; }
+    }
+
+    function openKeluarPenghuniModal(id, nama) {
+        document.getElementById('keluar-penghuni-nama').textContent = nama;
+        document.getElementById('form-keluar-penghuni').action = "/asrama/penghuni/" + id + "/keluar";
+
+        const m = document.getElementById('modal-keluar-penghuni');
+        const o = document.getElementById('modal-keluar-penghuni-overlay');
+        if (m) { m.classList.add('show'); m.style.display = 'block'; }
+        if (o) { o.classList.add('show'); o.style.display = 'block'; }
+    }
+
+    function closeKeluarPenghuniModal() {
+        const m = document.getElementById('modal-keluar-penghuni');
+        const o = document.getElementById('modal-keluar-penghuni-overlay');
         if (m) { m.classList.remove('show'); m.style.display = 'none'; }
         if (o) { o.classList.remove('show'); o.style.display = 'none'; }
     }

@@ -10,24 +10,128 @@ use Modules\Asrama\Models\AsramaKeuangan;
 
 class AsramaController extends Controller
 {
+    private function syncKamarStatus($kamarId)
+    {
+        if (!$kamarId) return;
+        $kamar = AsramaKamar::find($kamarId);
+        if ($kamar && $kamar->status !== 'Perbaikan') {
+            $activeCount = $kamar->penghunis()->where('status_penghuni', 'Aktif')->count();
+            $status = ($activeCount >= $kamar->kapasitas) ? 'Penuh' : 'Tersedia';
+            $kamar->update(['status' => $status]);
+        }
+    }
+
     public function data()
     {
         $kamars = AsramaKamar::with('penghunis')->orderBy('nomor_kamar')->get();
         $penghunis = AsramaPenghuni::with('kamar')->orderBy('nama')->get();
 
+        // Auto-sync room statuses based on active occupant counts
+        foreach ($kamars as $k) {
+            if ($k->status !== 'Perbaikan') {
+                $activeCount = $k->penghunis->where('status_penghuni', 'Aktif')->count();
+                $expectedStatus = ($activeCount >= $k->kapasitas) ? 'Penuh' : 'Tersedia';
+                if ($k->status !== $expectedStatus) {
+                    $k->update(['status' => $expectedStatus]);
+                    $k->status = $expectedStatus;
+                }
+            }
+        }
+
         $totalKamar = $kamars->count();
-        $kamarTersedia = $kamars->where('status', 'Tersedia')->count();
+        $totalKapasitasBett = $kamars->sum('kapasitas');
+        $totalPenghuniAktif = $penghunis->where('status_penghuni', 'Aktif')->count();
+        $slotTersedia = max(0, $totalKapasitasBett - $totalPenghuniAktif);
+        $kamarTersedia = $kamars->filter(function ($k) {
+            $active = $k->penghunis->where('status_penghuni', 'Aktif')->count();
+            return $k->status !== 'Perbaikan' && $active < $k->kapasitas;
+        })->count();
         $kamarPenuh = $kamars->where('status', 'Penuh')->count();
-        $totalPenghuni = $penghunis->where('status_penghuni', 'Aktif')->count();
 
         $summary = [
             'total_kamar' => $totalKamar,
+            'total_kapasitas' => $totalKapasitasBett,
+            'total_penghuni' => $totalPenghuniAktif,
+            'slot_tersedia' => $slotTersedia,
             'kamar_tersedia' => $kamarTersedia,
             'kamar_penuh' => $kamarPenuh,
-            'total_penghuni' => $totalPenghuni,
         ];
 
         return view('asrama::data', compact('kamars', 'penghunis', 'summary'));
+    }
+
+    public function storePenghuni(Request $request)
+    {
+        $validated = $request->validate([
+            'kamar_id' => 'nullable|exists:asrama_kamars,id',
+            'nama' => 'required|string|max:255',
+            'nomor_hp' => 'nullable|string|max:50',
+            'status_penghuni' => 'required|in:Aktif,Keluar',
+            'tanggal_masuk' => 'nullable|date',
+            'tanggal_keluar' => 'nullable|date',
+            'catatan' => 'nullable|string',
+        ]);
+
+        $penghuni = AsramaPenghuni::create($validated);
+        if ($penghuni->kamar_id) {
+            $this->syncKamarStatus($penghuni->kamar_id);
+        }
+
+        return redirect()->route('asrama.data')->with('success', 'Data Penghuni berhasil ditambahkan!');
+    }
+
+    public function updatePenghuni(Request $request, $id)
+    {
+        $penghuni = AsramaPenghuni::findOrFail($id);
+        $oldKamarId = $penghuni->kamar_id;
+
+        $validated = $request->validate([
+            'kamar_id' => 'nullable|exists:asrama_kamars,id',
+            'nama' => 'required|string|max:255',
+            'nomor_hp' => 'nullable|string|max:50',
+            'status_penghuni' => 'required|in:Aktif,Keluar',
+            'tanggal_masuk' => 'nullable|date',
+            'tanggal_keluar' => 'nullable|date',
+            'catatan' => 'nullable|string',
+        ]);
+
+        $penghuni->update($validated);
+
+        if ($oldKamarId) $this->syncKamarStatus($oldKamarId);
+        if ($penghuni->kamar_id) $this->syncKamarStatus($penghuni->kamar_id);
+
+        return redirect()->route('asrama.data')->with('success', 'Data Penghuni berhasil diperbarui!');
+    }
+
+    public function keluarPenghuni(Request $request, $id)
+    {
+        $penghuni = AsramaPenghuni::findOrFail($id);
+        $tglKeluar = $request->input('tanggal_keluar') ?: date('Y-m-d');
+        $oldKamarId = $penghuni->kamar_id;
+
+        $penghuni->update([
+            'status_penghuni' => 'Keluar',
+            'tanggal_keluar' => $tglKeluar,
+        ]);
+
+        if ($oldKamarId) {
+            $this->syncKamarStatus($oldKamarId);
+        }
+
+        return redirect()->route('asrama.data')->with('success', 'Penghuni ' . $penghuni->nama . ' telah ditandai keluar asrama!');
+    }
+
+    public function destroyPenghuni($id)
+    {
+        $penghuni = AsramaPenghuni::findOrFail($id);
+        $oldKamarId = $penghuni->kamar_id;
+        $penghuni->delete();
+
+        if ($oldKamarId) {
+            $this->syncKamarStatus($oldKamarId);
+        }
+
+        return redirect()->route('asrama.data')->with('success', 'Data Penghuni berhasil dihapus!');
     }
 
     public function keuangan()
@@ -90,73 +194,5 @@ class AsramaController extends Controller
         $kamar->delete();
 
         return redirect()->route('asrama.data')->with('success', 'Data Kamar berhasil dihapus!');
-    }
-
-    public function storePenghuni(Request $request)
-    {
-        $validated = $request->validate([
-            'kamar_id' => 'nullable|exists:asrama_kamars,id',
-            'nama' => 'required|string|max:255',
-            'nomor_hp' => 'nullable|string|max:50',
-            'status_penghuni' => 'required|in:Aktif,Keluar',
-            'tanggal_masuk' => 'nullable|date',
-            'tanggal_keluar' => 'nullable|date',
-            'catatan' => 'nullable|string',
-        ]);
-
-        AsramaPenghuni::create($validated);
-
-        return redirect()->route('asrama.data')->with('success', 'Data Penghuni berhasil ditambahkan!');
-    }
-
-    public function updatePenghuni(Request $request, $id)
-    {
-        $penghuni = AsramaPenghuni::findOrFail($id);
-
-        $validated = $request->validate([
-            'kamar_id' => 'nullable|exists:asrama_kamars,id',
-            'nama' => 'required|string|max:255',
-            'nomor_hp' => 'nullable|string|max:50',
-            'status_penghuni' => 'required|in:Aktif,Keluar',
-            'tanggal_masuk' => 'nullable|date',
-            'tanggal_keluar' => 'nullable|date',
-            'catatan' => 'nullable|string',
-        ]);
-
-        $penghuni->update($validated);
-
-        return redirect()->route('asrama.data')->with('success', 'Data Penghuni berhasil diperbarui!');
-    }
-
-    public function destroyPenghuni($id)
-    {
-        $penghuni = AsramaPenghuni::findOrFail($id);
-        $penghuni->delete();
-
-        return redirect()->route('asrama.data')->with('success', 'Data Penghuni berhasil dihapus!');
-    }
-
-    public function storeKeuangan(Request $request)
-    {
-        $validated = $request->validate([
-            'tipe' => 'required|in:pemasukan,pengeluaran',
-            'kategori' => 'required|string|max:100',
-            'nominal' => 'required|numeric|min:1',
-            'tanggal' => 'required|date',
-            'penghuni_id' => 'nullable|exists:asrama_penghunis,id',
-            'keterangan' => 'nullable|string',
-        ]);
-
-        AsramaKeuangan::create($validated);
-
-        return redirect()->route('asrama.keuangan')->with('success', 'Catatan Keuangan berhasil disimpan!');
-    }
-
-    public function destroyKeuangan($id)
-    {
-        $keuangan = AsramaKeuangan::findOrFail($id);
-        $keuangan->delete();
-
-        return redirect()->route('asrama.keuangan')->with('success', 'Catatan Keuangan berhasil dihapus!');
     }
 }
