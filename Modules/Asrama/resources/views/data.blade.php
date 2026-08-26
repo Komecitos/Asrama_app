@@ -61,7 +61,6 @@
                             <th>Lantai</th>
                             <th>Kapasitas & Penghuni</th>
                             <th>Slot Kosong</th>
-                            <th>Harga / Bulan</th>
                             <th>Status</th>
                             <th>Fasilitas</th>
                             <th>Aksi</th>
@@ -86,7 +85,6 @@
                                     <span class="badge badge-secondary">Penuh</span>
                                 @endif
                             </td>
-                            <td style="color: #6ee7b7; font-weight: 600;">Rp {{ number_format($kamar->harga_per_bulan, 0, ',', '.') }}</td>
                             <td>
                                 @if($kamar->status === 'Tersedia')
                                     <span class="badge badge-success">Tersedia</span>
@@ -99,7 +97,7 @@
                             <td class="task-meta">{{ $kamar->fasilitas ?: '-' }}</td>
                             <td>
                                 <div style="display: flex; gap: 0.4rem;">
-                                    <button type="button" onclick="openEditKamarModal({{ $kamar->id }}, '{{ addslashes($kamar->nomor_kamar) }}', {{ $kamar->lantai }}, {{ $kamar->kapasitas }}, {{ $kamar->harga_per_bulan }}, '{{ $kamar->status }}', '{{ addslashes($kamar->fasilitas ?: '') }}', '{{ addslashes($kamar->catatan ?: '') }}')" class="btn btn-secondary btn-sm">Edit</button>
+                                    <button type="button" onclick="openEditKamarModal({{ $kamar->id }}, '{{ addslashes($kamar->nomor_kamar) }}', {{ $kamar->lantai }}, {{ $kamar->kapasitas }}, '{{ $kamar->status }}', '{{ addslashes($kamar->fasilitas ?: '') }}', '{{ addslashes($kamar->catatan ?: '') }}')" class="btn btn-secondary btn-sm">Edit</button>
                                     <form action="{{ route('asrama.kamar.destroy', $kamar->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Hapus kamar {{ $kamar->nomor_kamar }}?');">
                                         @csrf
                                         @method('DELETE')
@@ -204,27 +202,24 @@
         </div>
         <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
             <div class="form-group">
-                <label class="form-label">Lantai <span class="required">*</span></label>
-                <input type="number" id="kamar-lantai" name="lantai" class="form-control" value="1" min="1" required>
+                <label class="form-label">Pilih Lantai <span class="required">*</span></label>
+                <select id="kamar-lantai" name="lantai" class="form-control" required>
+                    <option value="1">Lantai 1</option>
+                    <option value="2">Lantai 2</option>
+                </select>
             </div>
             <div class="form-group">
                 <label class="form-label">Kapasitas Orang <span class="required">*</span></label>
-                <input type="number" id="kamar-kapasitas" name="kapasitas" class="form-control" value="2" min="1" required>
+                <input type="number" id="kamar-kapasitas" name="kapasitas" class="form-control" value="1" min="1" required>
             </div>
         </div>
-        <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-            <div class="form-group">
-                <label class="form-label">Harga per Bulan (Rp) <span class="required">*</span></label>
-                <input type="number" id="kamar-harga" name="harga_per_bulan" class="form-control" placeholder="500000" min="0" required>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Status Kamar <span class="required">*</span></label>
-                <select id="kamar-status" name="status" class="form-control" required>
-                    <option value="Tersedia">Tersedia</option>
-                    <option value="Penuh">Penuh</option>
-                    <option value="Perbaikan">Perbaikan</option>
-                </select>
-            </div>
+        <div class="form-group">
+            <label class="form-label">Status Kamar <span class="required">*</span></label>
+            <select id="kamar-status" name="status" class="form-control" required>
+                <option value="Tersedia">Tersedia</option>
+                <option value="Penuh">Penuh</option>
+                <option value="Perbaikan">Perbaikan</option>
+            </select>
         </div>
         <div class="form-group">
             <label class="form-label">Fasilitas Kamar</label>
@@ -331,8 +326,7 @@
         document.getElementById('method-kamar-field').innerHTML = '';
         document.getElementById('kamar-nomor').value = '';
         document.getElementById('kamar-lantai').value = '1';
-        document.getElementById('kamar-kapasitas').value = '2';
-        document.getElementById('kamar-harga').value = '';
+        document.getElementById('kamar-kapasitas').value = '1';
         document.getElementById('kamar-status').value = 'Tersedia';
         document.getElementById('kamar-fasilitas').value = '';
         document.getElementById('kamar-catatan').value = '';
@@ -343,14 +337,13 @@
         if (o) { o.classList.add('show'); o.style.display = 'block'; }
     }
 
-    function openEditKamarModal(id, nomor, lantai, kapasitas, harga, status, fasilitas, catatan) {
+    function openEditKamarModal(id, nomor, lantai, kapasitas, status, fasilitas, catatan) {
         document.getElementById('modal-kamar-title').textContent = 'Edit Kamar ' + nomor;
         document.getElementById('form-kamar').action = "/asrama/kamar/" + id;
         document.getElementById('method-kamar-field').innerHTML = '@method("PUT")';
         document.getElementById('kamar-nomor').value = nomor;
         document.getElementById('kamar-lantai').value = lantai;
         document.getElementById('kamar-kapasitas').value = kapasitas;
-        document.getElementById('kamar-harga').value = harga;
         document.getElementById('kamar-status').value = status;
         document.getElementById('kamar-fasilitas').value = fasilitas;
         document.getElementById('kamar-catatan').value = catatan;
