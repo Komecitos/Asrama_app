@@ -157,6 +157,20 @@
                 </div>
             </a>
         </div>
+
+        {{-- ASRAMA --}}
+        <div class="portal-card-wrapper" data-module-key="asrama">
+            <button type="button" onclick="hideModule('asrama')" class="portal-card-hide-btn" title="Sembunyikan modul Asrama">
+                👁️ Sembunyikan
+            </button>
+            <a href="{{ route('asrama.index') }}" class="portal-card">
+                <div class="portal-card-content">
+                    <span class="portal-icon" style="font-size: 2.2rem;">🏢</span>
+                    <h3 class="portal-title">Asrama</h3>
+                    <p class="portal-desc">Manajemen penghuni, kamar & fasilitas</p>
+                </div>
+            </a>
+        </div>
     </div>
 
     {{-- EMPTY STATE (IF ALL HIDDEN) --}}
@@ -205,6 +219,14 @@
             </div>
             <button type="button" id="btn-toggle-module-freefire" onclick="toggleModule('freefire')" class="btn btn-sm btn-secondary"></button>
         </div>
+
+        <div class="module-manage-item">
+            <div class="hidden-module-info">
+                <span class="task-title">🏢 Asrama</span>
+                <span class="task-meta">(Manajemen Penghuni & Kamar)</span>
+            </div>
+            <button type="button" id="btn-toggle-module-asrama" onclick="toggleModule('asrama')" class="btn btn-sm btn-secondary"></button>
+        </div>
     </div>
 
     <div class="form-actions" style="margin-top: 1rem; display: flex; justify-content: space-between; align-items: center;">
@@ -234,6 +256,11 @@
             name: 'Free Fire',
             icon: '🎮',
             desc: 'Tracker statistik & turnamen game'
+        },
+        asrama: {
+            name: 'Asrama',
+            icon: '🏢',
+            desc: 'Manajemen penghuni, kamar & fasilitas'
         }
     };
 

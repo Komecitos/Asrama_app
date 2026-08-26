@@ -76,6 +76,7 @@
                 if (href.includes('todos') || href.includes('todo')) key = 'todo';
                 else if (href.includes('freefires') || href.includes('freefire')) key = 'freefire';
                 else if (href.includes('kuliah')) key = 'kuliah';
+                else if (href.includes('asrama')) key = 'asrama';
 
                 if (key && hidden.includes(key)) {
                     btn.style.display = 'none';
@@ -134,6 +135,7 @@
             <a href="{{ route('todo.index') }}" class="portal-nav-btn {{ Request::is('todos*') ? 'active' : '' }}">Todo</a>
             <a href="{{ route('freefire.index') }}" class="portal-nav-btn {{ Request::is('freefires*') ? 'active' : '' }}">Free Fire</a>
             <a href="{{ route('kuliah.jadwal') }}" class="portal-nav-btn {{ Request::is('kuliah*') ? 'active' : '' }}">Kuliah</a>
+            <a href="{{ route('asrama.index') }}" class="portal-nav-btn {{ Request::is('asrama*') ? 'active' : '' }}">Asrama</a>
         </nav>
     </header>
 

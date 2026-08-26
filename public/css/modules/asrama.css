@@ -1,0 +1,25 @@
+/* ===== ASRAMA MODULE STYLES ===== */
+
+.asrama-wrapper {
+    flex: 1 1 auto;
+    padding: var(--space-xl) var(--container-pad, 1.5rem);
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.asrama-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.25rem;
+    margin-bottom: 1.75rem;
+}
+
+.asrama-stat-card {
+    background: var(--bg-card-2, rgba(30, 41, 59, 0.6));
+    border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
+    border-radius: var(--radius-xl, 16px);
+    padding: 1.25rem 1.5rem;
+    backdrop-filter: blur(12px);
+}
