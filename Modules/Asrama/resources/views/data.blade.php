@@ -90,6 +90,8 @@
                             <span class="badge badge-success">Tersedia</span>
                             @elseif($kamar->status === 'Penuh')
                             <span class="badge badge-warning">Penuh</span>
+                            @elseif($kamar->status === 'Gudang')
+                            <span class="badge badge-secondary" style="background: #64748b; color: #fff;">Gudang</span>
                             @else
                             <span class="badge badge-danger">Perbaikan</span>
                             @endif
@@ -223,6 +225,7 @@
                 <option value="Tersedia">Tersedia</option>
                 <option value="Penuh">Penuh</option>
                 <option value="Perbaikan">Perbaikan</option>
+                <option value="Gudang">Gudang</option>
             </select>
         </div>
         <div class="form-group">

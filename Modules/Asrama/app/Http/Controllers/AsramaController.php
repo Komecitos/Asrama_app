@@ -14,7 +14,7 @@ class AsramaController extends Controller
     {
         if (!$kamarId) return;
         $kamar = AsramaKamar::find($kamarId);
-        if ($kamar && $kamar->status !== 'Perbaikan') {
+        if ($kamar && !in_array($kamar->status, ['Perbaikan', 'Gudang'])) {
             $activeCount = $kamar->penghunis()->where('status_penghuni', 'Aktif')->count();
             $status = ($activeCount >= $kamar->kapasitas) ? 'Penuh' : 'Tersedia';
             $kamar->update(['status' => $status]);
@@ -28,7 +28,7 @@ class AsramaController extends Controller
 
         // Auto-sync room statuses based on active occupant counts
         foreach ($kamars as $k) {
-            if ($k->status !== 'Perbaikan') {
+            if (!in_array($k->status, ['Perbaikan', 'Gudang'])) {
                 $activeCount = $k->penghunis->where('status_penghuni', 'Aktif')->count();
                 $expectedStatus = ($activeCount >= $k->kapasitas) ? 'Penuh' : 'Tersedia';
                 if ($k->status !== $expectedStatus) {
@@ -44,7 +44,7 @@ class AsramaController extends Controller
         $slotTersedia = max(0, $totalKapasitasBett - $totalPenghuniAktif);
         $kamarTersedia = $kamars->filter(function ($k) {
             $active = $k->penghunis->where('status_penghuni', 'Aktif')->count();
-            return $k->status !== 'Perbaikan' && $active < $k->kapasitas;
+            return !in_array($k->status, ['Perbaikan', 'Gudang']) && $active < $k->kapasitas;
         })->count();
         $kamarPenuh = $kamars->where('status', 'Penuh')->count();
 
@@ -161,7 +161,7 @@ class AsramaController extends Controller
             'nomor_kamar' => 'required|string|max:50',
             'lantai' => 'required|integer|in:1,2',
             'kapasitas' => 'required|integer|min:1',
-            'status' => 'required|in:Tersedia,Penuh,Perbaikan',
+            'status' => 'required|in:Tersedia,Penuh,Perbaikan,Gudang',
             'fasilitas' => 'nullable|string',
             'catatan' => 'nullable|string',
         ]);
@@ -180,7 +180,7 @@ class AsramaController extends Controller
             'nomor_kamar' => 'required|string|max:50',
             'lantai' => 'required|integer|in:1,2',
             'kapasitas' => 'required|integer|min:1',
-            'status' => 'required|in:Tersedia,Penuh,Perbaikan',
+            'status' => 'required|in:Tersedia,Penuh,Perbaikan,Gudang',
             'fasilitas' => 'nullable|string',
             'catatan' => 'nullable|string',
         ]);
