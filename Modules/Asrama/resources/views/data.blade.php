@@ -99,17 +99,17 @@
                                 {{-- KELUAR BUTTON (FOR ACTIVE RESIDENTS) --}}
                                 @if($penghuni->status_penghuni === 'Aktif')
                                 <button type="button" onclick="openKeluarPenghuniModal({{ $penghuni->id }}, '{{ addslashes($penghuni->nama) }}')" class="btn btn-warning btn-sm" style="background: #eab308; color: #000; border: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.35rem;" title="Tandai penghuni keluar asrama">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                        <polyline points="16 17 21 12 16 7"></polyline>
+                                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                                    </svg>
                                     <span>Keluar</span>
                                 </button>
                                 @endif
 
                                 {{-- DELETE BUTTON --}}
-                                <form action="{{ route('asrama.penghuni.destroy', $penghuni->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Hapus data penghuni {{ $penghuni->nama }}?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm" title="Hapus penghuni">Hapus</button>
-                                </form>
+                                <button type="button" onclick="openHapusPenghuniModal({{ $penghuni->id }}, '{{ addslashes($penghuni->nama) }}')" class="btn btn-danger btn-sm" title="Hapus penghuni">Hapus</button>
                             </div>
                         </td>
                     </tr>
@@ -305,7 +305,11 @@
 <div id="modal-keluar-penghuni" class="modal modal-create" aria-hidden="true">
     <div class="modal-header">
         <h3 style="display: flex; align-items: center; gap: 0.5rem;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color: #f59e0b;"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color: #f59e0b;">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
             <span>Konfirmasi Penghuni Keluar</span>
         </h3>
         <button onclick="closeKeluarPenghuniModal()" class="modal-close">&times;</button>
@@ -326,13 +330,46 @@
         <div class="form-actions" style="margin-top: 1.25rem;">
             <button type="button" onclick="closeKeluarPenghuniModal()" class="btn btn-secondary">Batal</button>
             <button type="submit" class="btn btn-warning" style="background: #eab308; color: #000; font-weight: 700; display: inline-flex; align-items: center; gap: 0.4rem;">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                    <polyline points="16 17 21 12 16 7"></polyline>
+                    <line x1="21" y1="12" x2="9" y2="12"></line>
+                </svg>
                 <span>Konfirmasi Keluar</span>
             </button>
         </div>
     </form>
 </div>
 <div id="modal-keluar-penghuni-overlay" class="modal-overlay" onclick="closeKeluarPenghuniModal()"></div>
+
+{{-- MODAL HAPUS PENGHUNI --}}
+<div id="modal-hapus-penghuni" class="modal modal-create" aria-hidden="true">
+    <div class="modal-header">
+        <h3 style="display: flex; align-items: center; gap: 0.5rem; color: #ef4444;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color: #ef4444;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+            <span>Hapus Data Penghuni</span>
+        </h3>
+        <button onclick="closeHapusPenghuniModal()" class="modal-close">&times;</button>
+    </div>
+    <form id="form-hapus-penghuni" action="" method="POST">
+        @csrf
+        @method('DELETE')
+        <div style="padding: 0.75rem 0;">
+            <p class="task-meta" style="margin-bottom: 1rem; color: var(--text-primary); font-size: 0.95rem; line-height: 1.5;">
+                Apakah Anda yakin ingin menghapus data penghuni <strong id="hapus-penghuni-nama" style="color: #ef4444; font-size: 1.05rem;">-</strong>?<br>
+                <span style="font-size: 0.85rem; color: #94a3b8; margin-top: 0.35rem; display: block;">Tindakan ini permanen dan data penghuni yang dihapus tidak dapat dikembalikan.</span>
+            </p>
+        </div>
+        <div class="form-actions" style="margin-top: 1.25rem;">
+            <button type="button" onclick="closeHapusPenghuniModal()" class="btn btn-secondary">Batal</button>
+            <button type="submit" class="btn btn-danger" style="background: #ef4444; color: #fff; font-weight: 700; display: inline-flex; align-items: center; gap: 0.4rem;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                <span>Hapus Permanent</span>
+            </button>
+        </div>
+    </form>
+</div>
+<div id="modal-hapus-penghuni-overlay" class="modal-overlay" onclick="closeHapusPenghuniModal()"></div>
 
 @endsection
 
@@ -477,6 +514,35 @@
     function closeKeluarPenghuniModal() {
         const m = document.getElementById('modal-keluar-penghuni');
         const o = document.getElementById('modal-keluar-penghuni-overlay');
+        if (m) {
+            m.classList.remove('show');
+            m.style.display = 'none';
+        }
+        if (o) {
+            o.classList.remove('show');
+            o.style.display = 'none';
+        }
+    }
+
+    function openHapusPenghuniModal(id, nama) {
+        document.getElementById('hapus-penghuni-nama').textContent = nama;
+        document.getElementById('form-hapus-penghuni').action = "/asrama/penghuni/" + id;
+
+        const m = document.getElementById('modal-hapus-penghuni');
+        const o = document.getElementById('modal-hapus-penghuni-overlay');
+        if (m) {
+            m.classList.add('show');
+            m.style.display = 'block';
+        }
+        if (o) {
+            o.classList.add('show');
+            o.style.display = 'block';
+        }
+    }
+
+    function closeHapusPenghuniModal() {
+        const m = document.getElementById('modal-hapus-penghuni');
+        const o = document.getElementById('modal-hapus-penghuni-overlay');
         if (m) {
             m.classList.remove('show');
             m.style.display = 'none';
