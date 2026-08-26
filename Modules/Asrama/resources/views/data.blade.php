@@ -1,0 +1,367 @@
+@extends('layouts.app')
+
+@push('styles')
+<link rel="stylesheet" href="{{ asset('css/modules/asrama.css') }}">
+@endpush
+
+@section('topbar')
+<a href="{{ route('asrama.data') }}" class="btn btn-secondary active">Data Asrama</a>
+<a href="{{ route('asrama.keuangan') }}" class="btn btn-secondary">Keuangan</a>
+@endsection
+
+@section('content')
+
+<div class="page-header">
+    <h2 class="title">Data Asrama</h2>
+</div>
+
+<div class="asrama-wrapper">
+    {{-- STATS GRID --}}
+    <div class="asrama-stats-grid">
+        <div class="asrama-stat-card">
+            <p class="task-meta">Total Kamar</p>
+            <h3 style="color: var(--text-primary); margin: 0.25rem 0; font-size: 1.8rem;">{{ $summary['total_kamar'] }}</h3>
+            <p class="task-meta" style="font-size: 0.75rem;">Seluruh unit kamar</p>
+        </div>
+        <div class="asrama-stat-card">
+            <p class="task-meta">Kamar Tersedia</p>
+            <h3 style="color: #6ee7b7; margin: 0.25rem 0; font-size: 1.8rem;">{{ $summary['kamar_tersedia'] }}</h3>
+            <p class="task-meta" style="font-size: 0.75rem;">Siap huni</p>
+        </div>
+        <div class="asrama-stat-card">
+            <p class="task-meta">Kamar Penuh</p>
+            <h3 style="color: #fde047; margin: 0.25rem 0; font-size: 1.8rem;">{{ $summary['kamar_penuh'] }}</h3>
+            <p class="task-meta" style="font-size: 0.75rem;">Kapasitas tercapai</p>
+        </div>
+        <div class="asrama-stat-card">
+            <p class="task-meta">Penghuni Aktif</p>
+            <h3 style="color: #a5b4fc; margin: 0.25rem 0; font-size: 1.8rem;">{{ $summary['total_penghuni'] }} Orang</h3>
+            <p class="task-meta" style="font-size: 0.75rem;">Tinggal di asrama</p>
+        </div>
+    </div>
+
+    {{-- KAMAR SECTION --}}
+    <div class="widget-card" style="margin-bottom: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+            <div>
+                <h3 class="widget-title" style="margin: 0;">🚪 Daftar Kamar Asrama</h3>
+                <p class="task-meta" style="margin: 0.2rem 0 0 0;">Manajemen data kamar, lantai, harga & kapasitas</p>
+            </div>
+            <button type="button" onclick="openKamarModal()" class="btn btn-primary btn-sm">+ Tambah Kamar</button>
+        </div>
+
+        @if($kamars->isEmpty())
+            <p class="empty-state">Belum ada data kamar. Klik <strong>+ Tambah Kamar</strong> untuk membuat kamar baru.</p>
+        @else
+            <div class="table-wrapper">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Nomor Kamar</th>
+                            <th>Lantai</th>
+                            <th>Kapasitas</th>
+                            <th>Harga / Bulan</th>
+                            <th>Status</th>
+                            <th>Fasilitas</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($kamars as $kamar)
+                        @php
+                            $activeCount = $kamar->penghunis->where('status_penghuni', 'Aktif')->count();
+                        @endphp
+                        <tr>
+                            <td class="task-title" style="font-weight: 700;">{{ $kamar->nomor_kamar }}</td>
+                            <td>Lantai {{ $kamar->lantai }}</td>
+                            <td>
+                                {{ $activeCount }} / {{ $kamar->kapasitas }} Orang
+                            </td>
+                            <td style="color: #6ee7b7; font-weight: 600;">Rp {{ number_format($kamar->harga_per_bulan, 0, ',', '.') }}</td>
+                            <td>
+                                @if($kamar->status === 'Tersedia')
+                                    <span class="badge badge-success">Tersedia</span>
+                                @elseif($kamar->status === 'Penuh')
+                                    <span class="badge badge-warning">Penuh</span>
+                                @else
+                                    <span class="badge badge-danger">Perbaikan</span>
+                                @endif
+                            </td>
+                            <td class="task-meta">{{ $kamar->fasilitas ?: '-' }}</td>
+                            <td>
+                                <div style="display: flex; gap: 0.4rem;">
+                                    <button type="button" onclick="openEditKamarModal({{ $kamar->id }}, '{{ addslashes($kamar->nomor_kamar) }}', {{ $kamar->lantai }}, {{ $kamar->kapasitas }}, {{ $kamar->harga_per_bulan }}, '{{ $kamar->status }}', '{{ addslashes($kamar->fasilitas ?: '') }}', '{{ addslashes($kamar->catatan ?: '') }}')" class="btn btn-secondary btn-sm">Edit</button>
+                                    <form action="{{ route('asrama.kamar.destroy', $kamar->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Hapus kamar {{ $kamar->nomor_kamar }}?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @endif
+    </div>
+
+    {{-- PENGHUNI SECTION --}}
+    <div class="widget-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+            <div>
+                <h3 class="widget-title" style="margin: 0;">👤 Data Penghuni Asrama</h3>
+                <p class="task-meta" style="margin: 0.2rem 0 0 0;">Daftar anggota & penghuni kamar yang terdaftar</p>
+            </div>
+            <button type="button" onclick="openPenghuniModal()" class="btn btn-primary btn-sm">+ Tambah Penghuni</button>
+        </div>
+
+        @if($penghunis->isEmpty())
+            <p class="empty-state">Belum ada data penghuni. Klik <strong>+ Tambah Penghuni</strong> untuk mencatat penghuni baru.</p>
+        @else
+            <div class="table-wrapper">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Nama Penghuni</th>
+                            <th>No. Telepon / HP</th>
+                            <th>Kamar</th>
+                            <th>Status</th>
+                            <th>Tanggal Masuk</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($penghunis as $penghuni)
+                        <tr>
+                            <td class="task-title" style="font-weight: 600;">{{ $penghuni->nama }}</td>
+                            <td class="task-meta">{{ $penghuni->nomor_hp ?: '-' }}</td>
+                            <td>
+                                @if($penghuni->kamar)
+                                    <span class="badge badge-info">{{ $penghuni->kamar->nomor_kamar }}</span>
+                                @else
+                                    <span class="task-meta">Belum Ada Kamar</span>
+                                @endif
+                            </td>
+                            <td>
+                                @if($penghuni->status_penghuni === 'Aktif')
+                                    <span class="badge badge-success">Aktif</span>
+                                @else
+                                    <span class="badge badge-secondary">Keluar</span>
+                                @endif
+                            </td>
+                            <td class="task-meta">{{ $penghuni->tanggal_masuk ? \Carbon\Carbon::parse($penghuni->tanggal_masuk)->format('d M Y') : '-' }}</td>
+                            <td>
+                                <div style="display: flex; gap: 0.4rem;">
+                                    <button type="button" onclick="openEditPenghuniModal({{ $penghuni->id }}, '{{ addslashes($penghuni->nama) }}', '{{ addslashes($penghuni->nomor_hp ?: '') }}', '{{ $penghuni->kamar_id ?: '' }}', '{{ $penghuni->status_penghuni }}', '{{ $penghuni->tanggal_masuk ?: '' }}', '{{ $penghuni->tanggal_keluar ?: '' }}', '{{ addslashes($penghuni->catatan ?: '') }}')" class="btn btn-secondary btn-sm">Edit</button>
+                                    <form action="{{ route('asrama.penghuni.destroy', $penghuni->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Hapus data penghuni {{ $penghuni->nama }}?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @endif
+    </div>
+</div>
+
+{{-- MODAL TAMBAH/EDIT KAMAR --}}
+<div id="modal-kamar" class="modal modal-create" aria-hidden="true">
+    <div class="modal-header">
+        <h3 id="modal-kamar-title">Tambah Kamar Baru</h3>
+        <button onclick="closeKamarModal()" class="modal-close">&times;</button>
+    </div>
+    <form id="form-kamar" action="{{ route('asrama.kamar.store') }}" method="POST" autocomplete="off">
+        @csrf
+        <div id="method-kamar-field"></div>
+        <div class="form-group">
+            <label class="form-label">Nomor Kamar <span class="required">*</span></label>
+            <input type="text" id="kamar-nomor" name="nomor_kamar" class="form-control" placeholder="cth: Kamar 101, A-02" required>
+        </div>
+        <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+                <label class="form-label">Lantai <span class="required">*</span></label>
+                <input type="number" id="kamar-lantai" name="lantai" class="form-control" value="1" min="1" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Kapasitas Orang <span class="required">*</span></label>
+                <input type="number" id="kamar-kapasitas" name="kapasitas" class="form-control" value="2" min="1" required>
+            </div>
+        </div>
+        <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+                <label class="form-label">Harga per Bulan (Rp) <span class="required">*</span></label>
+                <input type="number" id="kamar-harga" name="harga_per_bulan" class="form-control" placeholder="500000" min="0" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Status Kamar <span class="required">*</span></label>
+                <select id="kamar-status" name="status" class="form-control" required>
+                    <option value="Tersedia">Tersedia</option>
+                    <option value="Penuh">Penuh</option>
+                    <option value="Perbaikan">Perbaikan</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Fasilitas Kamar</label>
+            <input type="text" id="kamar-fasilitas" name="fasilitas" class="form-control" placeholder="cth: AC, Kasur, Lemari, WiFi">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Catatan Tambahan</label>
+            <textarea id="kamar-catatan" name="catatan" class="form-control" rows="2"></textarea>
+        </div>
+        <div class="form-actions">
+            <button type="button" onclick="closeKamarModal()" class="btn btn-secondary">Batal</button>
+            <button type="submit" class="btn btn-primary">Simpan Kamar</button>
+        </div>
+    </form>
+</div>
+<div id="modal-kamar-overlay" class="modal-overlay" onclick="closeKamarModal()"></div>
+
+{{-- MODAL TAMBAH/EDIT PENGHUNI --}}
+<div id="modal-penghuni" class="modal modal-create" aria-hidden="true">
+    <div class="modal-header">
+        <h3 id="modal-penghuni-title">Tambah Penghuni Baru</h3>
+        <button onclick="closePenghuniModal()" class="modal-close">&times;</button>
+    </div>
+    <form id="form-penghuni" action="{{ route('asrama.penghuni.store') }}" method="POST" autocomplete="off">
+        @csrf
+        <div id="method-penghuni-field"></div>
+        <div class="form-group">
+            <label class="form-label">Nama Lengkap Penghuni <span class="required">*</span></label>
+            <input type="text" id="penghuni-nama" name="nama" class="form-control" placeholder="cth: Ahmad Subagyo" required>
+        </div>
+        <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+                <label class="form-label">Nomor Telepon / HP</label>
+                <input type="text" id="penghuni-hp" name="nomor_hp" class="form-control" placeholder="08123456789">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Pilih Kamar</label>
+                <select id="penghuni-kamar" name="kamar_id" class="form-control">
+                    <option value="">-- Tanpa Kamar --</option>
+                    @foreach($kamars as $k)
+                        <option value="{{ $k->id }}">{{ $k->nomor_kamar }} (Lantai {{ $k->lantai }})</option>
+                    @endforeach
+                </select>
+            </div>
+        </div>
+        <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+                <label class="form-label">Status Penghuni <span class="required">*</span></label>
+                <select id="penghuni-status" name="status_penghuni" class="form-control" required>
+                    <option value="Aktif">Aktif</option>
+                    <option value="Keluar">Keluar / Non-Aktif</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Tanggal Masuk</label>
+                <input type="date" id="penghuni-tgl-masuk" name="tanggal_masuk" class="form-control" value="{{ date('Y-m-d') }}">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Catatan</label>
+            <textarea id="penghuni-catatan" name="catatan" class="form-control" rows="2"></textarea>
+        </div>
+        <div class="form-actions">
+            <button type="button" onclick="closePenghuniModal()" class="btn btn-secondary">Batal</button>
+            <button type="submit" class="btn btn-primary">Simpan Penghuni</button>
+        </div>
+    </form>
+</div>
+<div id="modal-penghuni-overlay" class="modal-overlay" onclick="closePenghuniModal()"></div>
+
+@endsection
+
+@push('scripts')
+<script>
+    function openKamarModal() {
+        document.getElementById('modal-kamar-title').textContent = 'Tambah Kamar Baru';
+        document.getElementById('form-kamar').action = "{{ route('asrama.kamar.store') }}";
+        document.getElementById('method-kamar-field').innerHTML = '';
+        document.getElementById('kamar-nomor').value = '';
+        document.getElementById('kamar-lantai').value = '1';
+        document.getElementById('kamar-kapasitas').value = '2';
+        document.getElementById('kamar-harga').value = '';
+        document.getElementById('kamar-status').value = 'Tersedia';
+        document.getElementById('kamar-fasilitas').value = '';
+        document.getElementById('kamar-catatan').value = '';
+
+        const m = document.getElementById('modal-kamar');
+        const o = document.getElementById('modal-kamar-overlay');
+        if (m) { m.classList.add('show'); m.style.display = 'block'; }
+        if (o) { o.classList.add('show'); o.style.display = 'block'; }
+    }
+
+    function openEditKamarModal(id, nomor, lantai, kapasitas, harga, status, fasilitas, catatan) {
+        document.getElementById('modal-kamar-title').textContent = 'Edit Kamar ' + nomor;
+        document.getElementById('form-kamar').action = "/asrama/kamar/" + id;
+        document.getElementById('method-kamar-field').innerHTML = '@method("PUT")';
+        document.getElementById('kamar-nomor').value = nomor;
+        document.getElementById('kamar-lantai').value = lantai;
+        document.getElementById('kamar-kapasitas').value = kapasitas;
+        document.getElementById('kamar-harga').value = harga;
+        document.getElementById('kamar-status').value = status;
+        document.getElementById('kamar-fasilitas').value = fasilitas;
+        document.getElementById('kamar-catatan').value = catatan;
+
+        const m = document.getElementById('modal-kamar');
+        const o = document.getElementById('modal-kamar-overlay');
+        if (m) { m.classList.add('show'); m.style.display = 'block'; }
+        if (o) { o.classList.add('show'); o.style.display = 'block'; }
+    }
+
+    function closeKamarModal() {
+        const m = document.getElementById('modal-kamar');
+        const o = document.getElementById('modal-kamar-overlay');
+        if (m) { m.classList.remove('show'); m.style.display = 'none'; }
+        if (o) { o.classList.remove('show'); o.style.display = 'none'; }
+    }
+
+    function openPenghuniModal() {
+        document.getElementById('modal-penghuni-title').textContent = 'Tambah Penghuni Baru';
+        document.getElementById('form-penghuni').action = "{{ route('asrama.penghuni.store') }}";
+        document.getElementById('method-penghuni-field').innerHTML = '';
+        document.getElementById('penghuni-nama').value = '';
+        document.getElementById('penghuni-hp').value = '';
+        document.getElementById('penghuni-kamar').value = '';
+        document.getElementById('penghuni-status').value = 'Aktif';
+        document.getElementById('penghuni-tgl-masuk').value = "{{ date('Y-m-d') }}";
+        document.getElementById('penghuni-catatan').value = '';
+
+        const m = document.getElementById('modal-penghuni');
+        const o = document.getElementById('modal-penghuni-overlay');
+        if (m) { m.classList.add('show'); m.style.display = 'block'; }
+        if (o) { o.classList.add('show'); o.style.display = 'block'; }
+    }
+
+    function openEditPenghuniModal(id, nama, hp, kamarId, status, tglMasuk, tglKeluar, catatan) {
+        document.getElementById('modal-penghuni-title').textContent = 'Edit Penghuni ' + nama;
+        document.getElementById('form-penghuni').action = "/asrama/penghuni/" + id;
+        document.getElementById('method-penghuni-field').innerHTML = '@method("PUT")';
+        document.getElementById('penghuni-nama').value = nama;
+        document.getElementById('penghuni-hp').value = hp;
+        document.getElementById('penghuni-kamar').value = kamarId;
+        document.getElementById('penghuni-status').value = status;
+        document.getElementById('penghuni-tgl-masuk').value = tglMasuk;
+        document.getElementById('penghuni-catatan').value = catatan;
+
+        const m = document.getElementById('modal-penghuni');
+        const o = document.getElementById('modal-penghuni-overlay');
+        if (m) { m.classList.add('show'); m.style.display = 'block'; }
+        if (o) { o.classList.add('show'); o.style.display = 'block'; }
+    }
+
+    function closePenghuniModal() {
+        const m = document.getElementById('modal-penghuni');
+        const o = document.getElementById('modal-penghuni-overlay');
+        if (m) { m.classList.remove('show'); m.style.display = 'none'; }
+        if (o) { o.classList.remove('show'); o.style.display = 'none'; }
+    }
+</script>
+@endpush
