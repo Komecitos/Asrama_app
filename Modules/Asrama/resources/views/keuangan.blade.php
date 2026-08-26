@@ -56,52 +56,52 @@
         </div>
 
         @if($keuangans->isEmpty())
-            <p class="empty-state">Belum ada catatan keuangan. Klik <strong>+ Catat Transaksi</strong> untuk menambahkan transaksi baru.</p>
+        <p class="empty-state">Belum ada catatan keuangan. Klik <strong>+ Catat Transaksi</strong> untuk menambahkan transaksi baru.</p>
         @else
-            <div class="table-wrapper">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Tanggal</th>
-                            <th>Tipe</th>
-                            <th>Kategori</th>
-                            <th>Nominal</th>
-                            <th>Penghuni (Jika Iuran)</th>
-                            <th>Keterangan</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($keuangans as $k)
-                        <tr>
-                            <td class="task-title" style="font-size: 0.85rem;">{{ \Carbon\Carbon::parse($k->tanggal)->format('d M Y') }}</td>
-                            <td>
-                                @if($k->tipe === 'pemasukan')
-                                    <span class="badge badge-success">Pemasukan</span>
-                                @else
-                                    <span class="badge badge-danger">Pengeluaran</span>
-                                @endif
-                            </td>
-                            <td><span class="badge badge-info">{{ $k->kategori }}</span></td>
-                            <td style="font-weight: 700; color: {{ $k->tipe === 'pemasukan' ? '#6ee7b7' : '#f87171' }};">
-                                {{ $k->tipe === 'pemasukan' ? '+' : '-' }} Rp {{ number_format($k->nominal, 0, ',', '.') }}
-                            </td>
-                            <td class="task-meta">
-                                {{ $k->penghuni ? $k->penghuni->nama : '-' }}
-                            </td>
-                            <td class="task-meta">{{ $k->keterangan ?: '-' }}</td>
-                            <td>
-                                <form action="{{ route('asrama.keuangan.destroy', $k->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Hapus catatan transaksi {{ $k->kategori }} ini?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
-                                </form>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
+        <div class="table-wrapper">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Tanggal</th>
+                        <th>Tipe</th>
+                        <th>Kategori</th>
+                        <th>Nominal</th>
+                        <th>Penghuni (Jika Iuran)</th>
+                        <th>Keterangan</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($keuangans as $k)
+                    <tr>
+                        <td class="task-title" style="font-size: 0.85rem;">{{ \Carbon\Carbon::parse($k->tanggal)->format('d M Y') }}</td>
+                        <td>
+                            @if($k->tipe === 'pemasukan')
+                            <span class="badge badge-success">Pemasukan</span>
+                            @else
+                            <span class="badge badge-danger">Pengeluaran</span>
+                            @endif
+                        </td>
+                        <td><span class="badge badge-info">{{ $k->kategori }}</span></td>
+                        <td style="font-weight: 700; color: {{ $k->tipe === 'pemasukan' ? '#6ee7b7' : '#f87171' }};">
+                            {{ $k->tipe === 'pemasukan' ? '+' : '-' }} Rp {{ number_format($k->nominal, 0, ',', '.') }}
+                        </td>
+                        <td class="task-meta">
+                            {{ $k->penghuni ? $k->penghuni->nama : '-' }}
+                        </td>
+                        <td class="task-meta">{{ $k->keterangan ?: '-' }}</td>
+                        <td>
+                            <form action="{{ route('asrama.keuangan.destroy', $k->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Hapus catatan transaksi {{ $k->kategori }} ini?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                            </form>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
         @endif
     </div>
 </div>
@@ -151,7 +151,7 @@
             <select name="penghuni_id" class="form-control">
                 <option value="">-- Tidak Terikat Penghuni Spesifik --</option>
                 @foreach($penghunis as $p)
-                    <option value="{{ $p->id }}">{{ $p->nama }} {{ $p->kamar ? '(' . $p->kamar->nomor_kamar . ')' : '' }}</option>
+                <option value="{{ $p->id }}">{{ $p->nama }} {{ $p->kamar ? '(' . $p->kamar->nomor_kamar . ')' : '' }}</option>
                 @endforeach
             </select>
         </div>
@@ -176,15 +176,27 @@
     function openKeuanganModal() {
         const m = document.getElementById('modal-keuangan');
         const o = document.getElementById('modal-keuangan-overlay');
-        if (m) { m.classList.add('show'); m.style.display = 'block'; }
-        if (o) { o.classList.add('show'); o.style.display = 'block'; }
+        if (m) {
+            m.classList.add('show');
+            m.style.display = 'block';
+        }
+        if (o) {
+            o.classList.add('show');
+            o.style.display = 'block';
+        }
     }
 
     function closeKeuanganModal() {
         const m = document.getElementById('modal-keuangan');
         const o = document.getElementById('modal-keuangan-overlay');
-        if (m) { m.classList.remove('show'); m.style.display = 'none'; }
-        if (o) { o.classList.remove('show'); o.style.display = 'none'; }
+        if (m) {
+            m.classList.remove('show');
+            m.style.display = 'none';
+        }
+        if (o) {
+            o.classList.remove('show');
+            o.style.display = 'none';
+        }
     }
 </script>
 @endpush

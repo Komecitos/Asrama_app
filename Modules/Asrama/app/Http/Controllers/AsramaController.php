@@ -176,13 +176,23 @@ class AsramaController extends Controller
             }
         }
 
+        $totalTerbayarTahunIni = $iurans->whereNotNull('penghuni_id')->sum('nominal');
+        $currentMonthNum = (int) date('n');
+        $lunasBulanIniCount = $iurans->where('bulan', $currentMonthNum)->whereNotNull('penghuni_id')->where('nominal', '>', 0)->count();
+
+        $statsMatriks = [
+            'total_terbayar' => $totalTerbayarTahunIni,
+            'lunas_bulan_ini' => $lunasBulanIniCount,
+            'total_aktif' => $penghuniAktif->count(),
+        ];
+
         $bulanNames = [
             1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
             5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
             9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
         ];
 
-        return view('asrama::matriks', compact('tahun', 'availableYears', 'penghuniAktif', 'penghuniKeluar', 'iuranMap', 'bulanNames'));
+        return view('asrama::matriks', compact('tahun', 'availableYears', 'penghuniAktif', 'penghuniKeluar', 'iuranMap', 'bulanNames', 'statsMatriks'));
     }
 
     public function updateMatriksIuran(Request $request)
