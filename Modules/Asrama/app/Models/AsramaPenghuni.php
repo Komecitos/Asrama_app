@@ -12,6 +12,8 @@ class AsramaPenghuni extends Model
         'kamar_id',
         'nama',
         'nomor_hp',
+        'kampus',
+        'asal_kampung',
         'status_penghuni',
         'tanggal_masuk',
         'tanggal_keluar',

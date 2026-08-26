@@ -51,65 +51,65 @@
         </div>
 
         @if($kamars->isEmpty())
-            <p class="empty-state">Belum ada data kamar. Klik <strong>+ Tambah Kamar</strong> untuk membuat kamar baru.</p>
+        <p class="empty-state">Belum ada data kamar. Klik <strong>+ Tambah Kamar</strong> untuk membuat kamar baru.</p>
         @else
-            <div class="table-wrapper">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Nomor Kamar</th>
-                            <th>Lantai</th>
-                            <th>Kapasitas & Penghuni</th>
-                            <th>Slot Kosong</th>
-                            <th>Status</th>
-                            <th>Fasilitas</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($kamars as $kamar)
-                        @php
-                            $activeCount = $kamar->penghunis->where('status_penghuni', 'Aktif')->count();
-                            $slotKosong = max(0, $kamar->kapasitas - $activeCount);
-                        @endphp
-                        <tr>
-                            <td class="task-title" style="font-weight: 700;">{{ $kamar->nomor_kamar }}</td>
-                            <td>Lantai {{ $kamar->lantai }}</td>
-                            <td>
-                                <strong>{{ $activeCount }}</strong> / {{ $kamar->kapasitas }} Orang
-                            </td>
-                            <td>
-                                @if($slotKosong > 0)
-                                    <span class="badge badge-success" style="font-weight: 700;">{{ $slotKosong }} Slot Tersedia</span>
-                                @else
-                                    <span class="badge badge-secondary">Penuh</span>
-                                @endif
-                            </td>
-                            <td>
-                                @if($kamar->status === 'Tersedia')
-                                    <span class="badge badge-success">Tersedia</span>
-                                @elseif($kamar->status === 'Penuh')
-                                    <span class="badge badge-warning">Penuh</span>
-                                @else
-                                    <span class="badge badge-danger">Perbaikan</span>
-                                @endif
-                            </td>
-                            <td class="task-meta">{{ $kamar->fasilitas ?: '-' }}</td>
-                            <td>
-                                <div style="display: flex; gap: 0.4rem;">
-                                    <button type="button" onclick="openEditKamarModal({{ $kamar->id }}, '{{ addslashes($kamar->nomor_kamar) }}', {{ $kamar->lantai }}, {{ $kamar->kapasitas }}, '{{ $kamar->status }}', '{{ addslashes($kamar->fasilitas ?: '') }}', '{{ addslashes($kamar->catatan ?: '') }}')" class="btn btn-secondary btn-sm">Edit</button>
-                                    <form action="{{ route('asrama.kamar.destroy', $kamar->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Hapus kamar {{ $kamar->nomor_kamar }}?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
+        <div class="table-wrapper">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nomor Kamar</th>
+                        <th>Lantai</th>
+                        <th>Kapasitas & Penghuni</th>
+                        <th>Slot Kosong</th>
+                        <th>Status</th>
+                        <th>Fasilitas</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($kamars as $kamar)
+                    @php
+                    $activeCount = $kamar->penghunis->where('status_penghuni', 'Aktif')->count();
+                    $slotKosong = max(0, $kamar->kapasitas - $activeCount);
+                    @endphp
+                    <tr>
+                        <td class="task-title" style="font-weight: 700;">{{ $kamar->nomor_kamar }}</td>
+                        <td>Lantai {{ $kamar->lantai }}</td>
+                        <td>
+                            <strong>{{ $activeCount }}</strong> / {{ $kamar->kapasitas }} Orang
+                        </td>
+                        <td>
+                            @if($slotKosong > 0)
+                            <span class="badge badge-success" style="font-weight: 700;">{{ $slotKosong }} Slot Tersedia</span>
+                            @else
+                            <span class="badge badge-secondary">Penuh</span>
+                            @endif
+                        </td>
+                        <td>
+                            @if($kamar->status === 'Tersedia')
+                            <span class="badge badge-success">Tersedia</span>
+                            @elseif($kamar->status === 'Penuh')
+                            <span class="badge badge-warning">Penuh</span>
+                            @else
+                            <span class="badge badge-danger">Perbaikan</span>
+                            @endif
+                        </td>
+                        <td class="task-meta">{{ $kamar->fasilitas ?: '-' }}</td>
+                        <td>
+                            <div style="display: flex; gap: 0.4rem;">
+                                <button type="button" onclick="openEditKamarModal({{ $kamar->id }}, '{{ addslashes($kamar->nomor_kamar) }}', {{ $kamar->lantai }}, {{ $kamar->kapasitas }}, '{{ $kamar->status }}', '{{ addslashes($kamar->fasilitas ?: '') }}', '{{ addslashes($kamar->catatan ?: '') }}')" class="btn btn-secondary btn-sm">Edit</button>
+                                <form action="{{ route('asrama.kamar.destroy', $kamar->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Hapus kamar {{ $kamar->nomor_kamar }}?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
         @endif
     </div>
 
@@ -124,65 +124,69 @@
         </div>
 
         @if($penghunis->isEmpty())
-            <p class="empty-state">Belum ada data penghuni. Klik <strong>+ Tambah Penghuni</strong> untuk mencatat penghuni baru.</p>
+        <p class="empty-state">Belum ada data penghuni. Klik <strong>+ Tambah Penghuni</strong> untuk mencatat penghuni baru.</p>
         @else
-            <div class="table-wrapper">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Nama Penghuni</th>
-                            <th>No. Telepon / HP</th>
-                            <th>Kamar</th>
-                            <th>Status</th>
-                            <th>Tgl Masuk</th>
-                            <th>Tgl Keluar</th>
-                            <th>Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach($penghunis as $penghuni)
-                        <tr>
-                            <td class="task-title" style="font-weight: 600;">{{ $penghuni->nama }}</td>
-                            <td class="task-meta">{{ $penghuni->nomor_hp ?: '-' }}</td>
-                            <td>
-                                @if($penghuni->kamar)
-                                    <span class="badge badge-info">{{ $penghuni->kamar->nomor_kamar }}</span>
-                                @else
-                                    <span class="task-meta">Belum Ada Kamar</span>
-                                @endif
-                            </td>
-                            <td>
+        <div class="table-wrapper">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nama Penghuni</th>
+                        <th>No. Telepon / HP</th>
+                        <th>Kampus</th>
+                        <th>Asal Kampung</th>
+                        <th>Kamar</th>
+                        <th>Status</th>
+                        <th>Tgl Masuk</th>
+                        <th>Tgl Keluar</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($penghunis as $penghuni)
+                    <tr>
+                        <td class="task-title" style="font-weight: 600;">{{ $penghuni->nama }}</td>
+                        <td class="task-meta">{{ $penghuni->nomor_hp ?: '-' }}</td>
+                        <td>{{ $penghuni->kampus ?: '-' }}</td>
+                        <td class="task-meta">{{ $penghuni->asal_kampung ?: '-' }}</td>
+                        <td>
+                            @if($penghuni->kamar)
+                            <span class="badge badge-info">{{ $penghuni->kamar->nomor_kamar }}</span>
+                            @else
+                            <span class="task-meta">Belum Ada Kamar</span>
+                            @endif
+                        </td>
+                        <td>
+                            @if($penghuni->status_penghuni === 'Aktif')
+                            <span class="badge badge-success">Aktif</span>
+                            @else
+                            <span class="badge badge-secondary">Keluar</span>
+                            @endif
+                        </td>
+                        <td class="task-meta">{{ $penghuni->tanggal_masuk ? \Carbon\Carbon::parse($penghuni->tanggal_masuk)->format('d M Y') : '-' }}</td>
+                        <td class="task-meta">{{ $penghuni->tanggal_keluar ? \Carbon\Carbon::parse($penghuni->tanggal_keluar)->format('d M Y') : '-' }}</td>
+                        <td>
+                            <div style="display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap;">
+                                {{-- EDIT BUTTON --}}
+                                <button type="button" onclick="openEditPenghuniModal({{ $penghuni->id }}, '{{ addslashes($penghuni->nama) }}', '{{ addslashes($penghuni->nomor_hp ?: '') }}', '{{ addslashes($penghuni->kampus ?: '') }}', '{{ addslashes($penghuni->asal_kampung ?: '') }}', '{{ $penghuni->kamar_id ?: '' }}', '{{ $penghuni->tanggal_masuk ?: '' }}', '{{ addslashes($penghuni->catatan ?: '') }}')" class="btn btn-secondary btn-sm" title="Edit data penghuni">Edit</button>
+
+                                {{-- KELUAR BUTTON (FOR ACTIVE RESIDENTS) --}}
                                 @if($penghuni->status_penghuni === 'Aktif')
-                                    <span class="badge badge-success">Aktif</span>
-                                @else
-                                    <span class="badge badge-secondary">Keluar</span>
+                                <button type="button" onclick="openKeluarPenghuniModal({{ $penghuni->id }}, '{{ addslashes($penghuni->nama) }}')" class="btn btn-warning btn-sm" style="background: #eab308; color: #000; border: none; font-weight: 600;" title="Tandai penghuni keluar asrama">🚪 Keluar</button>
                                 @endif
-                            </td>
-                            <td class="task-meta">{{ $penghuni->tanggal_masuk ? \Carbon\Carbon::parse($penghuni->tanggal_masuk)->format('d M Y') : '-' }}</td>
-                            <td class="task-meta">{{ $penghuni->tanggal_keluar ? \Carbon\Carbon::parse($penghuni->tanggal_keluar)->format('d M Y') : '-' }}</td>
-                            <td>
-                                <div style="display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap;">
-                                    {{-- EDIT BUTTON --}}
-                                    <button type="button" onclick="openEditPenghuniModal({{ $penghuni->id }}, '{{ addslashes($penghuni->nama) }}', '{{ addslashes($penghuni->nomor_hp ?: '') }}', '{{ $penghuni->kamar_id ?: '' }}', '{{ $penghuni->status_penghuni }}', '{{ $penghuni->tanggal_masuk ?: '' }}', '{{ $penghuni->tanggal_keluar ?: '' }}', '{{ addslashes($penghuni->catatan ?: '') }}')" class="btn btn-secondary btn-sm" title="Edit data penghuni">Edit</button>
 
-                                    {{-- KELUAR BUTTON (FOR ACTIVE RESIDENTS) --}}
-                                    @if($penghuni->status_penghuni === 'Aktif')
-                                        <button type="button" onclick="openKeluarPenghuniModal({{ $penghuni->id }}, '{{ addslashes($penghuni->nama) }}')" class="btn btn-warning btn-sm" style="background: #eab308; color: #000; border: none; font-weight: 600;" title="Tandai penghuni keluar asrama">🚪 Keluar</button>
-                                    @endif
-
-                                    {{-- DELETE BUTTON --}}
-                                    <form action="{{ route('asrama.penghuni.destroy', $penghuni->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Hapus data penghuni {{ $penghuni->nama }}?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm" title="Hapus penghuni">Hapus</button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
+                                {{-- DELETE BUTTON --}}
+                                <form action="{{ route('asrama.penghuni.destroy', $penghuni->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Hapus data penghuni {{ $penghuni->nama }}?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger btn-sm" title="Hapus penghuni">Hapus</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
         @endif
     </div>
 </div>
@@ -260,23 +264,24 @@
                 <select id="penghuni-kamar" name="kamar_id" class="form-control">
                     <option value="">-- Tanpa Kamar --</option>
                     @foreach($kamars as $k)
-                        <option value="{{ $k->id }}">{{ $k->nomor_kamar }} (Lantai {{ $k->lantai }})</option>
+                    <option value="{{ $k->id }}">{{ $k->nomor_kamar }} (Lantai {{ $k->lantai }})</option>
                     @endforeach
                 </select>
             </div>
         </div>
         <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
             <div class="form-group">
-                <label class="form-label">Status Penghuni <span class="required">*</span></label>
-                <select id="penghuni-status" name="status_penghuni" class="form-control" required>
-                    <option value="Aktif">Aktif</option>
-                    <option value="Keluar">Keluar / Non-Aktif</option>
-                </select>
+                <label class="form-label">Kampus</label>
+                <input type="text" id="penghuni-kampus" name="kampus" class="form-control" placeholder="cth: Universitas Indonesia">
             </div>
             <div class="form-group">
-                <label class="form-label">Tanggal Masuk</label>
-                <input type="date" id="penghuni-tgl-masuk" name="tanggal_masuk" class="form-control" value="{{ date('Y-m-d') }}">
+                <label class="form-label">Asal Kampung / Daerah</label>
+                <input type="text" id="penghuni-asal-kampung" name="asal_kampung" class="form-control" placeholder="cth: Bandung, Jawa Barat">
             </div>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Tanggal Masuk (Opsional)</label>
+            <input type="date" id="penghuni-tgl-masuk" name="tanggal_masuk" class="form-control">
         </div>
         <div class="form-group">
             <label class="form-label">Catatan</label>
@@ -333,8 +338,14 @@
 
         const m = document.getElementById('modal-kamar');
         const o = document.getElementById('modal-kamar-overlay');
-        if (m) { m.classList.add('show'); m.style.display = 'block'; }
-        if (o) { o.classList.add('show'); o.style.display = 'block'; }
+        if (m) {
+            m.classList.add('show');
+            m.style.display = 'block';
+        }
+        if (o) {
+            o.classList.add('show');
+            o.style.display = 'block';
+        }
     }
 
     function openEditKamarModal(id, nomor, lantai, kapasitas, status, fasilitas, catatan) {
@@ -350,15 +361,27 @@
 
         const m = document.getElementById('modal-kamar');
         const o = document.getElementById('modal-kamar-overlay');
-        if (m) { m.classList.add('show'); m.style.display = 'block'; }
-        if (o) { o.classList.add('show'); o.style.display = 'block'; }
+        if (m) {
+            m.classList.add('show');
+            m.style.display = 'block';
+        }
+        if (o) {
+            o.classList.add('show');
+            o.style.display = 'block';
+        }
     }
 
     function closeKamarModal() {
         const m = document.getElementById('modal-kamar');
         const o = document.getElementById('modal-kamar-overlay');
-        if (m) { m.classList.remove('show'); m.style.display = 'none'; }
-        if (o) { o.classList.remove('show'); o.style.display = 'none'; }
+        if (m) {
+            m.classList.remove('show');
+            m.style.display = 'none';
+        }
+        if (o) {
+            o.classList.remove('show');
+            o.style.display = 'none';
+        }
     }
 
     function openPenghuniModal() {
@@ -367,39 +390,59 @@
         document.getElementById('method-penghuni-field').innerHTML = '';
         document.getElementById('penghuni-nama').value = '';
         document.getElementById('penghuni-hp').value = '';
+        document.getElementById('penghuni-kampus').value = '';
+        document.getElementById('penghuni-asal-kampung').value = '';
         document.getElementById('penghuni-kamar').value = '';
-        document.getElementById('penghuni-status').value = 'Aktif';
-        document.getElementById('penghuni-tgl-masuk').value = "{{ date('Y-m-d') }}";
+        document.getElementById('penghuni-tgl-masuk').value = '';
         document.getElementById('penghuni-catatan').value = '';
 
         const m = document.getElementById('modal-penghuni');
         const o = document.getElementById('modal-penghuni-overlay');
-        if (m) { m.classList.add('show'); m.style.display = 'block'; }
-        if (o) { o.classList.add('show'); o.style.display = 'block'; }
+        if (m) {
+            m.classList.add('show');
+            m.style.display = 'block';
+        }
+        if (o) {
+            o.classList.add('show');
+            o.style.display = 'block';
+        }
     }
 
-    function openEditPenghuniModal(id, nama, hp, kamarId, status, tglMasuk, tglKeluar, catatan) {
+    function openEditPenghuniModal(id, nama, hp, kampus, asalKampung, kamarId, tglMasuk, catatan) {
         document.getElementById('modal-penghuni-title').textContent = 'Edit Penghuni ' + nama;
         document.getElementById('form-penghuni').action = "/asrama/penghuni/" + id;
         document.getElementById('method-penghuni-field').innerHTML = '@method("PUT")';
         document.getElementById('penghuni-nama').value = nama;
         document.getElementById('penghuni-hp').value = hp;
+        document.getElementById('penghuni-kampus').value = kampus;
+        document.getElementById('penghuni-asal-kampung').value = asalKampung;
         document.getElementById('penghuni-kamar').value = kamarId;
-        document.getElementById('penghuni-status').value = status;
         document.getElementById('penghuni-tgl-masuk').value = tglMasuk;
         document.getElementById('penghuni-catatan').value = catatan;
 
         const m = document.getElementById('modal-penghuni');
         const o = document.getElementById('modal-penghuni-overlay');
-        if (m) { m.classList.add('show'); m.style.display = 'block'; }
-        if (o) { o.classList.add('show'); o.style.display = 'block'; }
+        if (m) {
+            m.classList.add('show');
+            m.style.display = 'block';
+        }
+        if (o) {
+            o.classList.add('show');
+            o.style.display = 'block';
+        }
     }
 
     function closePenghuniModal() {
         const m = document.getElementById('modal-penghuni');
         const o = document.getElementById('modal-penghuni-overlay');
-        if (m) { m.classList.remove('show'); m.style.display = 'none'; }
-        if (o) { o.classList.remove('show'); o.style.display = 'none'; }
+        if (m) {
+            m.classList.remove('show');
+            m.style.display = 'none';
+        }
+        if (o) {
+            o.classList.remove('show');
+            o.style.display = 'none';
+        }
     }
 
     function openKeluarPenghuniModal(id, nama) {
@@ -408,15 +451,27 @@
 
         const m = document.getElementById('modal-keluar-penghuni');
         const o = document.getElementById('modal-keluar-penghuni-overlay');
-        if (m) { m.classList.add('show'); m.style.display = 'block'; }
-        if (o) { o.classList.add('show'); o.style.display = 'block'; }
+        if (m) {
+            m.classList.add('show');
+            m.style.display = 'block';
+        }
+        if (o) {
+            o.classList.add('show');
+            o.style.display = 'block';
+        }
     }
 
     function closeKeluarPenghuniModal() {
         const m = document.getElementById('modal-keluar-penghuni');
         const o = document.getElementById('modal-keluar-penghuni-overlay');
-        if (m) { m.classList.remove('show'); m.style.display = 'none'; }
-        if (o) { o.classList.remove('show'); o.style.display = 'none'; }
+        if (m) {
+            m.classList.remove('show');
+            m.style.display = 'none';
+        }
+        if (o) {
+            o.classList.remove('show');
+            o.style.display = 'none';
+        }
     }
 </script>
 @endpush

@@ -66,11 +66,13 @@ class AsramaController extends Controller
             'kamar_id' => 'nullable|exists:asrama_kamars,id',
             'nama' => 'required|string|max:255',
             'nomor_hp' => 'nullable|string|max:50',
-            'status_penghuni' => 'required|in:Aktif,Keluar',
+            'kampus' => 'nullable|string|max:255',
+            'asal_kampung' => 'nullable|string|max:255',
             'tanggal_masuk' => 'nullable|date',
             'tanggal_keluar' => 'nullable|date',
             'catatan' => 'nullable|string',
         ]);
+        $validated['status_penghuni'] = 'Aktif';
 
         $penghuni = AsramaPenghuni::create($validated);
         if ($penghuni->kamar_id) {
@@ -89,7 +91,8 @@ class AsramaController extends Controller
             'kamar_id' => 'nullable|exists:asrama_kamars,id',
             'nama' => 'required|string|max:255',
             'nomor_hp' => 'nullable|string|max:50',
-            'status_penghuni' => 'required|in:Aktif,Keluar',
+            'kampus' => 'nullable|string|max:255',
+            'asal_kampung' => 'nullable|string|max:255',
             'tanggal_masuk' => 'nullable|date',
             'tanggal_keluar' => 'nullable|date',
             'catatan' => 'nullable|string',
