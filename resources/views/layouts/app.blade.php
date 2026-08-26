@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MyHub</title>
+    <link rel="icon" type="image/png" href="{{ asset('assets/images/logo_MyHub.png') }}">
 
     {{-- Theme --}}
     <link rel="stylesheet" href="{{ asset('css/theme/color.css') }}">
@@ -65,7 +66,32 @@
         document.getElementById('modal-docs').classList.remove('show');
         document.getElementById('modal-docs-overlay').classList.remove('show');
     }
+
+    function syncGlobalNavbar() {
+        try {
+            const hidden = JSON.parse(localStorage.getItem('myhub_hidden_modules') || '[]');
+            document.querySelectorAll('.portal-nav .portal-nav-btn').forEach(btn => {
+                const href = btn.getAttribute('href') || '';
+                let key = '';
+                if (href.includes('todos') || href.includes('todo')) key = 'todo';
+                else if (href.includes('freefires') || href.includes('freefire')) key = 'freefire';
+                else if (href.includes('kuliah')) key = 'kuliah';
+
+                if (key && hidden.includes(key)) {
+                    btn.style.display = 'none';
+                } else {
+                    btn.style.display = 'inline-flex';
+                }
+            });
+        } catch (e) {}
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        syncGlobalNavbar();
+    });
 </script>
+
+@stack('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // toast dipanggil dari script terpisah di bawah
@@ -88,7 +114,7 @@
 </script>
 @endif
 
-@if($errors->any())
+@if(isset($errors) && $errors->any())
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         showToast("{{ $errors->first() }}", 'error');
@@ -100,11 +126,14 @@
 
     {{-- Global Header --}}
     <header class="global-header">
-        <a href="/" class="app-name">MyHub</a>
+        <a href="/" class="app-name">
+            <img src="{{ asset('assets/images/logo_MyHub.png') }}" alt="MyHub Logo" style="height: 32px; width: auto; object-fit: contain; border-radius: 6px;">
+            <span>MyHub</span>
+        </a>
         <nav class="portal-nav">
             <a href="{{ route('todo.index') }}" class="portal-nav-btn {{ Request::is('todos*') ? 'active' : '' }}">Todo</a>
             <a href="{{ route('freefire.index') }}" class="portal-nav-btn {{ Request::is('freefires*') ? 'active' : '' }}">Free Fire</a>
-            <a href="{{ route('kuliah.matakuliah') }}" class="portal-nav-btn {{ Request::is('kuliah*') ? 'active' : '' }}">Kuliah</a>
+            <a href="{{ route('kuliah.jadwal') }}" class="portal-nav-btn {{ Request::is('kuliah*') ? 'active' : '' }}">Kuliah</a>
         </nav>
     </header>
 
@@ -135,6 +164,10 @@
         </div>
 
         <div style="max-height: 65vh; overflow-y: auto;">
+            <div style="text-align: center; margin: 10px 0 20px;">
+                <img src="{{ asset('assets/images/logo_MyHub.png') }}" alt="MyHub Logo" style="height: 64px; width: auto; object-fit: contain; margin-bottom: 8px;">
+                <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary); margin: 0;">MyHub Portal</h2>
+            </div>
             <div class="docs-info-row">
                 <span class="task-meta">Nama Project</span>
                 <span class="task-title">MyHub</span>

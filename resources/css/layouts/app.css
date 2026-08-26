@@ -27,6 +27,9 @@ body {
     letter-spacing: 1px;
     color: var(--text-primary);
     text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
 }
 
 .global-header .back-btn {
@@ -44,16 +47,90 @@ body {
     border-color: var(--border-hover);
 }
 
+.portal-nav {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.portal-nav-btn {
+    padding: 0.4rem 0.8rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border-default);
+    color: var(--text-muted);
+    text-decoration: none;
+    font-size: 0.8rem;
+    transition: var(--transition-fast);
+}
+
+.portal-nav-btn:hover {
+    border-color: var(--border-hover);
+    color: var(--text-primary);
+}
+
+.portal-nav-btn.active {
+    background: var(--accent-primary);
+    border-color: var(--accent-primary);
+    color: white;
+}
+
 /* ===== TOP BAR ===== */
 .top-bar {
     width: 100%;
     background: rgba(9, 11, 19, 0.8);
     border-bottom: 1px solid var(--border-subtle);
     backdrop-filter: blur(6px);
-    padding: 0.6rem var(--container-pad);
+    padding: 0.75rem var(--container-pad);
     display: flex;
     align-items: center;
-    gap: var(--space-sm);
+    gap: var(--space-md);
+    flex-wrap: wrap;
+    position: sticky;
+    top: 0;
+    z-index: var(--z-overlay);
+}
+
+.top-bar>* {
+    display: flex;
+    align-items: center;
+}
+
+.top-bar button,
+.top-bar a {
+    padding: var(--space-xs) var(--space-lg);
+    border-radius: var(--radius-sm);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    transition: var(--transition-fast);
+}
+
+.top-bar button {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-default);
+    cursor: pointer;
+}
+
+.top-bar button:hover {
+    border-color: var(--border-hover);
+    background: var(--bg-card-hover);
+}
+
+.top-bar a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    border: 1px solid var(--border-default);
+}
+
+.top-bar a:hover {
+    color: var(--text-primary);
+    border-color: var(--border-hover);
+}
+
+.task-counter {
+    margin-left: auto;
+    font-size: 0.8rem;
+    color: var(--text-muted);
 }
 
 /* ===== MAIN CONTENT ===== */
@@ -84,6 +161,25 @@ body {
     padding: 0 var(--container-pad);
     text-align: center;
     font-size: 0.85rem;
+}
+
+.docs-changelog-item {
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.bottom-bar-inner:hover {
+    color: var(--text-primary);
+}
+
+.docs-info-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 1px solid var(--border-subtle);
 }
 
 /* ===== PORTAL GRID (Dashboard) ===== */

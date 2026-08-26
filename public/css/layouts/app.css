@@ -27,6 +27,9 @@ body {
     letter-spacing: 1px;
     color: var(--text-primary);
     text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
 }
 
 .global-header .back-btn {

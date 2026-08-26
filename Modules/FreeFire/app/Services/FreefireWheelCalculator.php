@@ -15,6 +15,19 @@ class FreefireWheelCalculator
         20 => 30,
         30 => 15,
         100 => 5,
+        'crystal' => 10,
+    ];
+
+    public const TOKEN_NUMERIC_VAL = [
+        1 => 1,
+        2 => 2,
+        3 => 3,
+        5 => 5,
+        10 => 10,
+        20 => 20,
+        30 => 30,
+        100 => 100,
+        'crystal' => 250,
     ];
 
     public const FADED_PRICES = [9, 19, 39, 69, 99, 199, 399, 799];
@@ -36,11 +49,13 @@ class FreefireWheelCalculator
 
         foreach ($slots as $slot) {
             if ($slot->type === 'token' && $slot->slot_count > 0) {
-                $val = (int) $slot->token_value;
+                $valKey = (string) $slot->token_value;
                 $count = (int) $slot->slot_count;
-                $baseWeight = self::TOKEN_BASE_WEIGHT[$val] ?? 0;
+                $baseWeight = self::TOKEN_BASE_WEIGHT[$valKey] ?? (self::TOKEN_BASE_WEIGHT[(int)$valKey] ?? 10);
+                $tokenVal = self::TOKEN_NUMERIC_VAL[$valKey] ?? (self::TOKEN_NUMERIC_VAL[(int)$valKey] ?? (int)$valKey);
                 $tokenSlots[] = [
-                    'val' => $val,
+                    'val' => $valKey,
+                    'token_numeric' => $tokenVal,
                     'count' => $count,
                     'weight' => $baseWeight * $count,
                 ];
@@ -81,7 +96,7 @@ class FreefireWheelCalculator
         $expectedToken = 0.0;
         if ($totalBobot > 0) {
             foreach ($tokenSlots as $t) {
-                $expectedToken += ($t['weight'] / $totalBobot) * $t['val'];
+                $expectedToken += ($t['weight'] / $totalBobot) * $t['token_numeric'];
             }
         }
 

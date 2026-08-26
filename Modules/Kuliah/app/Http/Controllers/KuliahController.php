@@ -3,50 +3,22 @@
 namespace Modules\Kuliah\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
+use Modules\Kuliah\Models\KuliahCourse;
+use Modules\Kuliah\Models\Semester;
+use Modules\Kuliah\Models\SemesterCourse;
 
 class KuliahController extends Controller
 {
-    private function defaultCourses(): array
-    {
-        return [
-            ['kode' => 'MK-101', 'nama' => 'Web Programming', 'sks' => 3, 'nilai' => ['A', 'A'], 'status' => 'Passed', 'jenis' => 'Core', 'dosen' => 'Budi Santoso'],
-            ['kode' => 'MK-102', 'nama' => 'Database Systems', 'sks' => 3, 'nilai' => ['A', 'B'], 'status' => 'Passed', 'jenis' => 'Core', 'dosen' => 'Siti Aminah'],
-            ['kode' => 'MK-103', 'nama' => 'Data Structures', 'sks' => 2, 'nilai' => ['B'], 'status' => 'In Progress', 'jenis' => 'Elective Core', 'dosen' => 'Andi Pratama'],
-            ['kode' => 'MK-104', 'nama' => 'English Language', 'sks' => 2, 'nilai' => ['B', 'A'], 'status' => 'Passed', 'jenis' => 'Supporting', 'dosen' => 'Rina Wijaya'],
-        ];
-    }
-
     private function getCourses(): array
     {
-        $courses = session('kuliah_courses');
-
-        if (!is_array($courses)) {
-            $courses = $this->defaultCourses();
-            $courses = array_map(function ($course) {
-                $course['nilai'] = $this->normalizeGradeEntries($course['nilai'] ?? []);
-                return $course;
-            }, $courses);
-            $courses = $this->applyStatuses($courses);
-            session()->put('kuliah_courses', $courses);
-            return $courses;
-        }
-
-        $normalizedCourses = array_map(function ($course) {
-            if (!isset($course['nilai'])) {
-                return $course;
-            }
-
-            $course['nilai'] = $this->normalizeGradeEntries($course['nilai']);
-
-            return $course;
-        }, $courses);
-
-        $normalizedCourses = $this->applyStatuses($normalizedCourses);
-
-        session()->put('kuliah_courses', $normalizedCourses);
-
-        return $normalizedCourses;
+        return KuliahCourse::query()->orderBy('id')->get()->map(function ($course) {
+            $payload = $course->toArray();
+            $payload['nilai'] = $this->normalizeGradeEntries($payload['nilai'] ?? []);
+            return $payload;
+        })->all();
     }
 
     private function normalizeGrades($value): array
@@ -57,10 +29,12 @@ class KuliahController extends Controller
 
         $grades = array_values(array_filter(array_map('trim', $rawGrades), fn($grade) => $grade !== ''));
 
-        return array_values(array_map(function ($grade) {
+        $validGrades = ['A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-', 'D', 'E', 'F'];
+
+        return array_values(array_map(function ($grade) use ($validGrades) {
             $normalized = strtoupper(trim((string) $grade));
 
-            if (in_array($normalized, ['A', 'B', 'C', 'D', 'E', 'F'], true)) {
+            if (in_array($normalized, $validGrades, true)) {
                 return $normalized;
             }
 
@@ -68,14 +42,19 @@ class KuliahController extends Controller
                 $numericValue = (float) $normalized;
 
                 if ($numericValue >= 85) return 'A';
-                if ($numericValue >= 75) return 'B';
-                if ($numericValue >= 65) return 'C';
-                if ($numericValue >= 55) return 'D';
-                if ($numericValue >= 45) return 'E';
+                if ($numericValue >= 80) return 'A-';
+                if ($numericValue >= 75) return 'B+';
+                if ($numericValue >= 70) return 'B';
+                if ($numericValue >= 65) return 'B-';
+                if ($numericValue >= 60) return 'C+';
+                if ($numericValue >= 55) return 'C';
+                if ($numericValue >= 50) return 'C-';
+                if ($numericValue >= 40) return 'D';
+                if ($numericValue >= 30) return 'E';
                 return 'F';
             }
 
-            return 'F';
+            return $normalized;
         }, $grades));
     }
 
@@ -110,14 +89,14 @@ class KuliahController extends Controller
 
     private function bestGrade(array $course): string
     {
-        $gradeOrder = ['A' => 5, 'B' => 4, 'C' => 3, 'D' => 2, 'E' => 1, 'F' => 0];
+        $gradeOrder = ['A' => 10, 'A-' => 9.5, 'B+' => 9, 'B' => 8, 'B-' => 7.5, 'C+' => 6.5, 'C' => 6, 'C-' => 5.5, 'D' => 3, 'E' => 2, 'F' => 1];
         $grades = $this->gradesFromCourse($course);
 
         if (empty($grades)) {
-            return 'F';
+            return 'Belum Diambil';
         }
 
-        return collect($grades)->sortByDesc(fn($grade) => $gradeOrder[strtoupper($grade)] ?? 0)->first();
+        return collect($grades)->sortByDesc(fn($grade) => $gradeOrder[strtoupper((string)$grade)] ?? 0)->first();
     }
 
     private function applyStatuses(array $courses): array
@@ -167,25 +146,81 @@ class KuliahController extends Controller
         return 'F';
     }
 
-    public function matakuliah()
+    private function semesterIdFromInput(array $semesters): ?int
     {
+        $semesterNumber = collect($semesters)
+            ->filter(fn($semester) => $semester !== '' && $semester !== null)
+            ->map(fn($semester) => (int) $semester)
+            ->first();
+
+        return $semesterNumber
+            ? Semester::query()->where('number', $semesterNumber)->value('id')
+            : null;
+    }
+
+    public function matakuliah(Request $request)
+    {
+        $allSemesters = Semester::query()->orderBy('number')->get();
         $matakuliah = $this->getCourses();
-        $passedCourses = array_filter($matakuliah, fn($course) => strtolower($course['status'] ?? '') === 'passed');
+
+        $passedCourses = array_filter($matakuliah, function ($course) {
+            $st = strtolower(trim($course['status'] ?? ''));
+            return str_starts_with($st, 'lulus') || $st === 'passed';
+        });
         $totalCourseCredits = array_sum(array_column($matakuliah, 'sks'));
         $dGradeCredits = array_sum(array_map(function ($course) {
-            return $this->bestGrade($course) === 'D' ? (int) ($course['sks'] ?? 0) : 0;
+            $st = strtolower(trim($course['status'] ?? ''));
+            return ($st === 'lulus (d)' || $this->bestGrade($course) === 'D') ? (int) ($course['sks'] ?? 0) : 0;
         }, $matakuliah));
 
         $summary = [
             'all' => array_sum(array_column($passedCourses, 'sks')),
-            'core' => array_sum(array_column(array_filter($passedCourses, fn($course) => strtolower($course['jenis'] ?? '') === 'core'), 'sks')),
-            'elective' => array_sum(array_column(array_filter($passedCourses, fn($course) => strtolower($course['jenis'] ?? '') === 'elective core'), 'sks')),
-            'supporting' => array_sum(array_column(array_filter($passedCourses, fn($course) => strtolower($course['jenis'] ?? '') === 'supporting'), 'sks')),
+            'core' => array_sum(array_column(array_filter($passedCourses, fn($course) => in_array(strtolower($course['jenis'] ?? ''), ['core', 'wajib'], true)), 'sks')),
+            'elective' => array_sum(array_column(array_filter($passedCourses, fn($course) => in_array(strtolower($course['jenis'] ?? ''), ['elective core', 'pilihan inti'], true)), 'sks')),
+            'supporting' => array_sum(array_column(array_filter($passedCourses, fn($course) => in_array(strtolower($course['jenis'] ?? ''), ['supporting', 'pilihan pendukung'], true)), 'sks')),
             'd_credits' => $dGradeCredits,
             'd_percentage' => $totalCourseCredits > 0 ? round(($dGradeCredits / $totalCourseCredits) * 100, 1) : 0,
+            'total_credits' => $totalCourseCredits,
+            'total_courses' => count($matakuliah),
         ];
 
-        return view('kuliah::matakuliah', compact('matakuliah', 'summary'));
+        return view('kuliah::matakuliah', compact('matakuliah', 'summary', 'allSemesters'));
+    }
+
+    public function jadwal(Request $request)
+    {
+        $allSemesters = Semester::query()->orderBy('number')->get();
+        $hasCoursesSemesters = Semester::query()->whereHas('courses')->pluck('number')->toArray();
+
+        $requestedSemester = (int) $request->input('semester');
+        if ($requestedSemester >= 1 && $requestedSemester <= 14) {
+            $currentSemester = $requestedSemester;
+        } else {
+            $currentSemester = !empty($hasCoursesSemesters) ? max($hasCoursesSemesters) : 9;
+        }
+
+        $semester = Semester::query()->where('number', $currentSemester)->first();
+        $courses = $semester
+            ? $semester->courses()->orderBy('id')->get()
+            : collect();
+
+        $jadwal = $courses;
+
+        $summary = [
+            'total_courses' => $courses->count(),
+            'total_credits' => $courses->sum('sks'),
+            'passed_courses' => $courses->where('status', 'Passed')->count(),
+            'passed_credits' => $courses->where('status', 'Passed')->sum('sks'),
+        ];
+
+        return view('kuliah::jadwal', compact('jadwal', 'courses', 'summary', 'allSemesters', 'currentSemester', 'hasCoursesSemesters'));
+    }
+
+    public function semester(Semester $semester)
+    {
+        $courses = $semester->courses()->orderBy('id')->get();
+
+        return view('kuliah::semester.show', compact('semester', 'courses'));
     }
 
     public function store(Request $request)
@@ -200,55 +235,190 @@ class KuliahController extends Controller
         $validated = $request->validate([
             'kode' => 'required|string|max:50',
             'nama' => 'required|string|max:255',
+            'ruangan' => 'nullable|string|max:100',
+            'dosen' => 'nullable|string|max:255',
+            'hari' => 'nullable|in:Senin,Selasa,Rabu,Kamis,Jumat',
+            'jam_mulai' => 'nullable|date_format:H:i',
+            'jam_selesai' => 'nullable|date_format:H:i|after:jam_mulai',
             'sks' => 'required|integer|min:1|max:10',
-            'nilai' => 'nullable|array|max:3',
-            'nilai.*' => 'nullable|in:A,B,C,D,E,F',
-            'semester' => 'nullable|array|max:3',
+            'nilai' => 'nullable|array|max:5',
+            'nilai.*' => 'nullable|in:A,A-,B+,B,B-,C+,C,C-,D,E,F',
+            'semester' => 'nullable|array|max:5',
             'semester.*' => 'nullable|integer|min:1|max:14|distinct',
-            'status' => 'required|in:Auto,Not Taken',
-            'jenis' => 'required|in:Core,Elective Core,Supporting',
+            'status' => 'required|string',
+            'jenis' => 'required|in:Wajib,Pilihan Inti,Pilihan Pendukung,Core,Elective Core,Supporting',
+        ], [
+            'kode.required' => 'Kode Mata Kuliah wajib diisi.',
+            'nama.required' => 'Nama Mata Kuliah wajib diisi.',
+            'sks.required' => 'SKS wajib diisi.',
+            'sks.integer' => 'SKS harus berupa angka antara 1-10.',
+            'jenis.required' => 'Kategori Mata Kuliah wajib dipilih.',
         ]);
 
-        if ($validated['status'] === 'Auto' && empty($validated['nilai'])) {
-            return back()->withErrors(['nilai' => 'Select at least one grade for a course that has been taken.'])->withInput();
+        $rawGrades = array_values(array_filter($validated['nilai'] ?? [], fn($g) => $g !== null && $g !== ''));
+
+        if (($validated['status'] === 'Auto' || $validated['status'] === 'Lulus' || $validated['status'] === 'Belum Lulus') && empty($rawGrades)) {
+            return back()->withErrors(['nilai' => 'Pilih minimal satu nilai untuk mata kuliah yang sudah/pernah diambil.'])->withInput();
         }
 
-        $courses = $this->getCourses();
-        $courseCode = strtoupper($validated['kode']);
-        $gradeEntries = array_map(function ($grade, $index) use ($validated) {
-            $semester = $validated['semester'][$index] ?? null;
+        $semesterId = $this->semesterIdFromInput($validated['semester'] ?? [])
+            ?? Semester::firstOrCreate(['number' => 1], ['name' => 'Semester 1'])->id;
 
-            return [
-                'semester' => $semester !== '' && $semester !== null ? (int) $semester : null,
-                'grade' => $grade,
-            ];
-        }, $validated['nilai'] ?? [], array_keys($validated['nilai'] ?? []));
-        $courseIndex = collect($courses)->search(fn($course) => strtoupper($course['kode']) === $courseCode);
+        $jamSelesai = $validated['jam_selesai']
+            ?? (!empty($validated['jam_mulai']) ? Carbon::createFromFormat('H:i', $validated['jam_mulai'])->addHours((int) $validated['sks'])->format('H:i') : null);
 
-        if ($courseIndex !== false) {
-            $existingEntries = $courses[$courseIndex]['nilai'] ?? [];
-            foreach ($gradeEntries as $gradeEntry) {
-                $entriesWithoutSemester = array_filter($existingEntries, fn($entry) => !is_array($entry) || ($entry['semester'] ?? null) !== $gradeEntry['semester']);
-                $existingEntries = [...$entriesWithoutSemester, $gradeEntry];
-            }
-            $courses[$courseIndex]['nilai'] = $validated['status'] === 'Not Taken'
-                ? []
-                : $this->normalizeGradeEntries($existingEntries);
-        } else {
-            $courses[] = [
+        if ($request->boolean('from_semester')) {
+            $semNumber = Semester::where('id', $semesterId)->value('number') ?: 9;
+
+            SemesterCourse::query()->create([
+                'semester_id' => $semesterId,
                 'kode' => strtoupper($validated['kode']),
                 'nama' => $validated['nama'],
                 'sks' => (int) $validated['sks'],
-                'nilai' => $gradeEntries,
-                'status' => $validated['status'] === 'Not Taken' ? 'Not Taken' : 'Failed',
                 'jenis' => $validated['jenis'],
-                'dosen' => 'Not assigned',
+                'dosen' => $validated['dosen'] ?? null,
+                'ruangan' => $validated['ruangan'] ?? null,
+                'hari' => $validated['hari'] ?? null,
+                'jam_mulai' => $validated['jam_mulai'] ?? null,
+                'jam_selesai' => $jamSelesai,
+            ]);
+
+            // Sync to master KuliahCourse
+            $kCourse = KuliahCourse::query()->whereRaw('UPPER(kode) = ?', [strtoupper($validated['kode'])])->first();
+            if ($kCourse) {
+                $kCourse->update([
+                    'semester_id' => $semesterId,
+                    'nama' => $validated['nama'],
+                    'sks' => (int) $validated['sks'],
+                    'jenis' => $validated['jenis'],
+                    'dosen' => $validated['dosen'] ?? null,
+                    'ruangan' => $validated['ruangan'] ?? null,
+                    'hari' => $validated['hari'] ?? null,
+                    'jam_mulai' => $validated['jam_mulai'] ?? null,
+                    'jam_selesai' => $jamSelesai,
+                ]);
+            } else {
+                KuliahCourse::create([
+                    'semester_id' => $semesterId,
+                    'kode' => strtoupper($validated['kode']),
+                    'nama' => $validated['nama'],
+                    'sks' => (int) $validated['sks'],
+                    'jenis' => $validated['jenis'],
+                    'dosen' => $validated['dosen'] ?? null,
+                    'ruangan' => $validated['ruangan'] ?? null,
+                    'hari' => $validated['hari'] ?? null,
+                    'jam_mulai' => $validated['jam_mulai'] ?? null,
+                    'jam_selesai' => $jamSelesai,
+                    'status' => 'Belum Diambil',
+                    'nilai' => [],
+                ]);
+            }
+
+            return redirect()->route('kuliah.jadwal', ['tab' => 'matakuliah', 'semester' => $semNumber])
+                ->with('success', 'Jadwal matakuliah berhasil ditambahkan.');
+        }
+
+        $courseCode = strtoupper($validated['kode']);
+        $rawSemesters = $validated['semester'] ?? [];
+        $gradeEntries = [];
+        foreach ($rawGrades as $idx => $gVal) {
+            $semVal = $rawSemesters[$idx] ?? null;
+            $gradeEntries[] = [
+                'semester' => $semVal !== '' && $semVal !== null ? (int) $semVal : null,
+                'grade' => $gVal,
             ];
         }
 
-        $courses = $this->applyStatuses($courses);
+        // Determine status
+        if ($validated['status'] === 'Not Taken' || $validated['status'] === 'Belum Diambil' || empty($gradeEntries)) {
+            $status = 'Belum Diambil';
+            $gradeEntries = [];
+        } else {
+            $gradeOrder = ['A' => 10, 'A-' => 9.5, 'B+' => 9, 'B' => 8, 'B-' => 7.5, 'C+' => 6.5, 'C' => 6, 'C-' => 5.5, 'D' => 3, 'E' => 2, 'F' => 1];
+            $bestVal = 0;
+            $bestGrade = 'F';
+            foreach ($gradeEntries as $gItem) {
+                $gStr = strtoupper($gItem['grade'] ?? 'F');
+                $val = $gradeOrder[$gStr] ?? 0;
+                if ($val > $bestVal) {
+                    $bestVal = $val;
+                    $bestGrade = $gStr;
+                }
+            }
+            if (in_array($bestGrade, ['A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-'], true)) {
+                $status = 'Lulus';
+            } elseif ($bestGrade === 'D') {
+                $status = 'Lulus (D)';
+            } else {
+                $status = 'Belum Lulus';
+            }
+        }
 
-        session()->put('kuliah_courses', $courses);
+        $course = KuliahCourse::query()->whereRaw('UPPER(kode) = ?', [$courseCode])->first();
+
+        if ($course) {
+            $course->update([
+                'semester_id' => $semesterId,
+                'kode' => $courseCode,
+                'nama' => $validated['nama'],
+                'ruangan' => $validated['ruangan'] ?? null,
+                'dosen' => $validated['dosen'] ?? null,
+                'hari' => $validated['hari'] ?? null,
+                'jam_mulai' => $validated['jam_mulai'] ?? null,
+                'jam_selesai' => $jamSelesai,
+                'sks' => (int) $validated['sks'],
+                'nilai' => $gradeEntries,
+                'status' => $status,
+                'jenis' => $validated['jenis'],
+            ]);
+        } else {
+            KuliahCourse::query()->create([
+                'semester_id' => $semesterId,
+                'kode' => $courseCode,
+                'nama' => $validated['nama'],
+                'ruangan' => $validated['ruangan'] ?? null,
+                'dosen' => $validated['dosen'] ?? null,
+                'hari' => $validated['hari'] ?? null,
+                'jam_mulai' => $validated['jam_mulai'] ?? null,
+                'jam_selesai' => $jamSelesai,
+                'sks' => (int) $validated['sks'],
+                'nilai' => $gradeEntries,
+                'status' => $status,
+                'jenis' => $validated['jenis'],
+            ]);
+        }
+
+        return redirect()->route('kuliah.matakuliah')->with('success', 'Matakuliah berhasil ditambahkan.');
+
+        // Also sync to SemesterCourse if semester is set
+        if ($semesterId) {
+            $sc = SemesterCourse::query()->where('semester_id', $semesterId)->whereRaw('UPPER(kode) = ?', [$courseCode])->first();
+            if ($sc) {
+                $sc->update([
+                    'nama' => $validated['nama'],
+                    'sks' => (int) $validated['sks'],
+                    'jenis' => $validated['jenis'],
+                    'dosen' => $validated['dosen'] ?? null,
+                    'ruangan' => $validated['ruangan'] ?? null,
+                    'hari' => $validated['hari'] ?? null,
+                    'jam_mulai' => $validated['jam_mulai'] ?? null,
+                    'jam_selesai' => $jamSelesai,
+                ]);
+            } else {
+                SemesterCourse::create([
+                    'semester_id' => $semesterId,
+                    'kode' => $courseCode,
+                    'nama' => $validated['nama'],
+                    'sks' => (int) $validated['sks'],
+                    'jenis' => $validated['jenis'],
+                    'dosen' => $validated['dosen'] ?? null,
+                    'ruangan' => $validated['ruangan'] ?? null,
+                    'hari' => $validated['hari'] ?? null,
+                    'jam_mulai' => $validated['jam_mulai'] ?? null,
+                    'jam_selesai' => $jamSelesai,
+                ]);
+            }
+        }
 
         return redirect()->route('kuliah.matakuliah')->with('success', 'Course created successfully.');
     }
@@ -265,56 +435,138 @@ class KuliahController extends Controller
         $validated = $request->validate([
             'kode' => 'required|string|max:50',
             'nama' => 'required|string|max:255',
+            'ruangan' => 'nullable|string|max:100',
+            'dosen' => 'nullable|string|max:255',
+            'hari' => 'nullable|in:Senin,Selasa,Rabu,Kamis,Jumat',
+            'jam_mulai' => 'nullable|date_format:H:i',
+            'jam_selesai' => 'nullable|date_format:H:i|after:jam_mulai',
             'sks' => 'required|integer|min:1|max:10',
-            'nilai' => 'nullable|array|max:3',
-            'nilai.*' => 'nullable|in:A,B,C,D,E,F',
-            'semester' => 'nullable|array|max:3',
+            'nilai' => 'nullable|array|max:5',
+            'nilai.*' => 'nullable|in:A,A-,B+,B,B-,C+,C,C-,D,E,F',
+            'semester' => 'nullable|array|max:5',
             'semester.*' => 'nullable|integer|min:1|max:14|distinct',
-            'status' => 'required|in:Auto,Not Taken',
-            'jenis' => 'required|in:Core,Elective Core,Supporting',
+            'status' => 'required|string',
+            'jenis' => 'required|in:Wajib,Pilihan Inti,Pilihan Pendukung,Core,Elective Core,Supporting',
         ]);
 
-        if ($validated['status'] === 'Auto' && empty($validated['nilai'])) {
-            return back()->withErrors(['nilai' => 'Select at least one grade for a course that has been taken.'])->withInput();
-        }
+        $course = KuliahCourse::query()->whereRaw('UPPER(kode) = ?', [strtoupper($kode)])->first();
 
-        $courses = $this->getCourses();
-        $index = collect($courses)->search(fn($item) => strtoupper($item['kode']) === strtoupper($kode));
-
-        if ($index === false) {
+        if (!$course) {
             abort(404);
         }
 
-        $courses[$index] = [
+        $rawGrades = array_values(array_filter($validated['nilai'] ?? [], fn($g) => $g !== null && $g !== ''));
+
+        if (($validated['status'] === 'Auto' || $validated['status'] === 'Lulus' || $validated['status'] === 'Belum Lulus') && empty($rawGrades)) {
+            return back()->withErrors(['nilai' => 'Pilih minimal satu nilai untuk mata kuliah yang sudah/pernah diambil.'])->withInput();
+        }
+
+        if ($validated['status'] === 'Not Taken' || $validated['status'] === 'Belum Diambil') {
+            $nilaiEntries = [];
+            $status = 'Belum Diambil';
+        } else {
+            $rawSemesters = $validated['semester'] ?? [];
+            $nilaiEntries = [];
+            foreach ($rawGrades as $idx => $gVal) {
+                $semVal = $rawSemesters[$idx] ?? null;
+                $nilaiEntries[] = [
+                    'semester' => $semVal !== '' && $semVal !== null ? (int) $semVal : null,
+                    'grade' => $gVal,
+                ];
+            }
+
+            // Automatic status determination from best grade
+            $gradeOrder = ['A' => 10, 'A-' => 9.5, 'B+' => 9, 'B' => 8, 'B-' => 7.5, 'C+' => 6.5, 'C' => 6, 'C-' => 5.5, 'D' => 3, 'E' => 2, 'F' => 1];
+            $bestVal = 0;
+            $bestGrade = 'F';
+            foreach ($nilaiEntries as $gItem) {
+                $gStr = strtoupper($gItem['grade'] ?? 'F');
+                $val = $gradeOrder[$gStr] ?? 0;
+                if ($val > $bestVal) {
+                    $bestVal = $val;
+                    $bestGrade = $gStr;
+                }
+            }
+
+            if (in_array($bestGrade, ['A', 'A-', 'B+', 'B', 'B-', 'C+', 'C', 'C-'], true)) {
+                $status = 'Lulus';
+            } elseif ($bestGrade === 'D') {
+                $status = 'Lulus (D)';
+            } else {
+                $status = 'Belum Lulus';
+            }
+        }
+
+        $course->update([
+            'semester_id' => $this->semesterIdFromInput($validated['semester'] ?? []),
             'kode' => strtoupper($validated['kode']),
             'nama' => $validated['nama'],
+            'ruangan' => $validated['ruangan'] ?? null,
+            'dosen' => $validated['dosen'] ?? null,
+            'hari' => $validated['hari'] ?? null,
+            'jam_mulai' => $validated['jam_mulai'] ?? null,
+            'jam_selesai' => $validated['jam_selesai'] ?? null,
             'sks' => (int) $validated['sks'],
-            'nilai' => $validated['status'] === 'Not Taken'
-                ? []
-                : $this->normalizeGradeEntries(array_map(function ($grade, $index) use ($validated) {
-                    $semester = $validated['semester'][$index] ?? null;
-
-                    return ['semester' => $semester !== '' && $semester !== null ? (int) $semester : null, 'grade' => $grade];
-                }, $validated['nilai'], array_keys($validated['nilai']))),
-            'status' => $validated['status'] === 'Not Taken' ? 'Not Taken' : 'Failed',
+            'nilai' => $nilaiEntries,
+            'status' => $status,
             'jenis' => $validated['jenis'],
-            'dosen' => $courses[$index]['dosen'] ?? 'Not assigned',
-        ];
+        ]);
 
-        $courses = $this->applyStatuses($courses);
+        return redirect()->route('kuliah.matakuliah')->with('success', 'Matakuliah berhasil diperbarui.');
+    }
 
-        session()->put('kuliah_courses', $courses);
+    public function updateSchedule(Request $request, SemesterCourse $semesterCourse)
+    {
+        $validated = $request->validate([
+            'kode' => [
+                'required',
+                'string',
+                'max:50',
+                Rule::unique('kuliah_semester_courses', 'kode')
+                    ->where(fn($query) => $query->where('semester_id', $semesterCourse->semester_id))
+                    ->ignore($semesterCourse->id),
+            ],
+            'nama' => 'required|string|max:255',
+            'sks' => 'required|integer|min:1|max:10',
+            'ruangan' => 'nullable|string|max:100',
+            'dosen' => 'nullable|string|max:255',
+            'hari' => 'nullable|in:Senin,Selasa,Rabu,Kamis,Jumat',
+            'jam_mulai' => 'nullable|date_format:H:i',
+            'jam_selesai' => 'nullable|date_format:H:i|after:jam_mulai',
+        ]);
 
-        return redirect()->route('kuliah.matakuliah')->with('success', 'Course updated successfully.');
+        $jamSelesai = $validated['jam_selesai']
+            ?? (!empty($validated['jam_mulai']) ? Carbon::createFromFormat('H:i', $validated['jam_mulai'])->addHours((int) $validated['sks'])->format('H:i') : null);
+
+        $semesterCourse->update([
+            ...$validated,
+            'jam_selesai' => $jamSelesai,
+            'kode' => strtoupper($validated['kode']),
+        ]);
+
+        return redirect()->route('kuliah.jadwal', ['tab' => 'matakuliah'])->with('success', 'Schedule updated successfully.');
+    }
+
+    public function destroySemesterCourse(SemesterCourse $semesterCourse)
+    {
+        $semesterCourse->delete();
+
+        return redirect()->route('kuliah.jadwal', ['tab' => 'matakuliah'])
+            ->with('success', 'Semester course deleted successfully.');
     }
 
     public function destroy($kode)
     {
-        $courses = $this->getCourses();
-        $courses = array_values(array_filter($courses, fn($course) => strtoupper($course['kode']) !== strtoupper($kode)));
+        $courseModel = request()->boolean('from_semester') ? SemesterCourse::class : KuliahCourse::class;
+        $courseModel::query()->whereRaw('UPPER(kode) = ?', [strtoupper($kode)])->delete();
 
-        session()->put('kuliah_courses', $courses);
+        $redirectRoute = request()->boolean('from_semester')
+            ? 'kuliah.jadwal'
+            : 'kuliah.matakuliah';
 
-        return redirect()->route('kuliah.matakuliah')->with('success', 'Course deleted successfully.');
+        return redirect()->route(
+            $redirectRoute,
+            request()->boolean('from_semester') ? ['tab' => 'matakuliah'] : []
+        )->with('success', 'Course deleted successfully.');
     }
 }

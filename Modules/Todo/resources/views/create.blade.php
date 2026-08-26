@@ -11,7 +11,7 @@
     <h2 class="title">New Task</h2>
 </div>
 
-<form action="{{ route('todo.store') }}" method="POST" class="form-layout">
+<form action="{{ route('todo.store') }}" method="POST" class="form-layout" autocomplete="off">
     @csrf
 
     <div class="form-group">

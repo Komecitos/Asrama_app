@@ -7,6 +7,8 @@
 @section('topbar')
 <a href="{{ route('freefire.calc') }}" class="btn btn-primary">Kalkulator</a>
 <a href="{{ route('freefire.session') }}" class="btn btn-secondary">Sesi Spin</a>
+<a href="{{ route('freefire.info') }}" class="btn btn-secondary">Informasi</a>
+
 @endsection
 
 @section('content')
@@ -16,9 +18,9 @@
 
         {{-- PILIH JENIS SPIN --}}
         <div class="calc-tabs">
-            <button class="btn btn-primary tab-btn active" onclick="switchTab('faded')">Faded Wheel</button>
-            <button class="btn btn-secondary tab-btn" onclick="switchTab('token')">Token Ring</button>
-            <button class="btn btn-secondary tab-btn" onclick="switchTab('tower')">Token Tower</button>
+            <button type="button" class="tab-btn active" onclick="switchTab('faded')">⚡ Faded Wheel</button>
+            <button type="button" class="tab-btn" onclick="switchTab('token')">🪙 Token Ring</button>
+            <button type="button" class="tab-btn" onclick="switchTab('tower')">🗼 Token Tower</button>
         </div>
 
         {{-- FADED WHEEL --}}
@@ -74,10 +76,23 @@
                 {{-- KOMPOSISI TOKEN --}}
                 <div>
                     <label class="form-label">Komposisi Token (jumlah slot di wheel)</label>
+                    @php
+                    $tokenOptions = [
+                    1 => 'x1',
+                    2 => 'x2',
+                    3 => 'x3',
+                    5 => 'x5',
+                    10 => 'x10',
+                    20 => 'x20',
+                    30 => 'x30',
+                    100 => 'x100',
+                    'crystal' => 'Crystal Royale',
+                    ];
+                    @endphp
                     <div class="wheel-token-grid">
-                        @foreach([1, 2, 3, 5, 10, 20, 30, 100] as $val)
+                        @foreach($tokenOptions as $val => $label)
                         <div class="wheel-token-item">
-                            <span class="wheel-token-label">x{{ $val }}</span>
+                            <span class="wheel-token-label" style="{{ $val === 'crystal' ? 'font-size: 0.7rem; color: #a855f7;' : '' }}">{{ $label }}</span>
                             <input type="number" value="0" min="0"
                                 class="form-control wheel-token-input calc-token-input"
                                 data-tokenval="{{ $val }}"
@@ -219,8 +234,8 @@
 
 @push('scripts')
 <script>
-    const fadedBase = [9, 19, 39, 69, 99, 199, 399, 799];
-    const tokenBaseWeight = {
+    var fadedBase = window.fadedBase || [9, 19, 39, 69, 99, 199, 399, 799];
+    var tokenBaseWeight = window.tokenBaseWeight || {
         1: 300,
         2: 200,
         3: 150,
@@ -228,7 +243,20 @@
         10: 60,
         20: 30,
         30: 15,
-        100: 5
+        100: 5,
+        'crystal': 10
+    };
+
+    var tokenNumericVal = window.tokenNumericVal || {
+        1: 1,
+        2: 2,
+        3: 3,
+        5: 5,
+        10: 10,
+        20: 20,
+        30: 30,
+        100: 100,
+        'crystal': 250
     };
     let calcItemIndex = 0;
 
@@ -239,8 +267,10 @@
 
         const tabs = ['faded', 'token', 'tower'];
         document.querySelectorAll('.tab-btn').forEach((btn, i) => {
-            btn.className = tabs[i] === tab ? 'btn btn-primary tab-btn' : 'btn btn-secondary tab-btn';
+            btn.className = tabs[i] === tab ? 'tab-btn active' : 'tab-btn';
         });
+
+        document.querySelector('.calc-layout')?.classList.toggle('wide', tab === 'tower');
 
         if (tab === 'tower') calcTower();
     }
@@ -303,11 +333,12 @@
         let tokenSlots = [];
         document.querySelectorAll('.calc-token-input').forEach(input => {
             const count = parseInt(input.value) || 0;
-            const val = parseInt(input.dataset.tokenval);
+            const rawVal = input.dataset.tokenval;
+            const weightBase = tokenBaseWeight[rawVal] || 10;
             if (count > 0) tokenSlots.push({
-                val,
+                val: rawVal,
                 count,
-                weight: tokenBaseWeight[val] * count
+                weight: weightBase * count
             });
         });
 
@@ -343,7 +374,8 @@
         let expectedToken = 0;
         tokenSlots.forEach(t => {
             const dropRate = totalBobot > 0 ? t.weight / totalBobot : 0;
-            expectedToken += dropRate * t.val;
+            const numVal = tokenNumericVal[t.val] || (parseInt(t.val) || 0);
+            expectedToken += dropRate * numVal;
         });
 
         document.getElementById('calc-total-bobot').textContent = totalBobot.toFixed(0);
@@ -353,9 +385,10 @@
 
         tokenSlots.forEach(t => {
             const rate = totalBobot > 0 ? (t.weight / totalBobot * 100) : 0;
+            const displayLabel = t.val === 'crystal' ? 'Crystal Royale' : `Token x${t.val}`;
             dropRateHtml += `
                 <div class="session-stat">
-                    <span class="task-meta">Token x${t.val}</span>
+                    <span class="task-meta">${displayLabel}</span>
                     <span class="task-title">${rate.toFixed(1)}%</span>
                 </div>`;
         });
@@ -417,10 +450,10 @@
 
         const tabs = ['faded', 'token', 'tower'];
         document.querySelectorAll('.tab-btn').forEach((btn, i) => {
-            btn.className = tabs[i] === tab ? 'btn btn-primary tab-btn' : 'btn btn-secondary tab-btn';
+            btn.className = tabs[i] === tab ? 'tab-btn active' : 'tab-btn';
         });
 
-        document.querySelector('.calc-layout').classList.toggle('wide', tab === 'tower');
+        document.querySelector('.calc-layout')?.classList.toggle('wide', tab === 'tower');
 
         if (tab === 'tower') calcTower();
     }

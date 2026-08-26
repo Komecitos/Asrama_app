@@ -61,6 +61,15 @@ class FreeFireController extends Controller
                     $session->remaining_token = $session->token_target !== null
                         ? max(0, $session->token_target - $session->current_token)
                         : 0;
+
+                    $tokenRate = ($session->avg_token_per_spin !== null && $session->avg_token_per_spin > 0)
+                        ? $session->avg_token_per_spin
+                        : ($session->expected_token_per_spin > 0 ? $session->expected_token_per_spin : 3);
+
+                    $session->est_spins_left = ($session->remaining_token > 0 && $tokenRate > 0)
+                        ? (int) ceil($session->remaining_token / $tokenRate)
+                        : 0;
+                    $session->est_diamond_left = FreefireWheelCalculator::spinsToDiamond($session->est_spins_left);
                 } else if ($session->spin_type === 'faded_wheel') {
                     $session->luck_actual = 50;
                     $session->remaining_token = 0;
@@ -146,8 +155,8 @@ class FreeFireController extends Controller
             'item_name'           => $request->item_name,
             'spin_type'           => $request->spin_type,
             'token_needed'        => $request->spin_type === 'token_tower' ? 5 : $request->token_needed,
-            'luck_percentage'     => 0,
-            'discount_percentage' => ($request->price_mode === 'discount' || $request->tower_price_mode === 'discount') ? 1 : 0,
+            'luck_percentage'     => $request->tower_luck ?? 0,
+            'discount_percentage' => $request->has_discount ? 1 : 0,
             'modal_diamond'       => 0,
             'spent_diamond'       => 0,
             'current_spin'        => 0,
@@ -161,21 +170,92 @@ class FreeFireController extends Controller
 
         if ($request->slots) {
             foreach ($request->slots as $slot) {
+                $type = $slot['type'] ?? 'token';
                 $slotCount = intval($slot['slot_count'] ?? 0);
-                if ($slotCount === 0) continue;
+
+                if ($type === 'item') {
+                    if (empty(trim($slot['item_name'] ?? ''))) continue;
+                    $slotCount = max(1, $slotCount);
+                } else {
+                    if ($slotCount === 0) continue;
+                }
 
                 FreefireWheelSlot::create([
-                    'session_id'  => $session->id,
-                    'type'        => $slot['type'],
-                    'token_value' => ($slot['type'] === 'token') ? $slot['token_value'] : null,
-                    'item_name'   => ($slot['type'] === 'item') ? ($slot['item_name'] ?? null) : null,
-                    'rarity'      => $slot['rarity'] ?? null,
-                    'slot_count'  => $slotCount,
+                    'session_id'     => $session->id,
+                    'type'           => $type,
+                    'token_value'    => ($type === 'token') ? ($slot['token_value'] ?? null) : null,
+                    'item_name'      => ($type === 'item') ? trim($slot['item_name']) : null,
+                    'token_exchange' => ($type === 'item') ? ($slot['token_exchange'] ?? null) : null,
+                    'rarity'         => $slot['rarity'] ?? 'epic',
+                    'slot_count'     => $slotCount,
                 ]);
             }
         }
 
         return redirect()->route('freefire.session')->with('success', 'Sesi spin baru dibuat!');
+    }
+
+    public function updateSession(Request $request, $id)
+    {
+        $session = FreefireSpinSession::findOrFail($id);
+
+        $request->validate([
+            'item_name'      => 'required|string|max:255',
+            'spin_type'      => 'required|in:token_ring,faded_wheel,token_tower',
+            'token_needed'   => 'nullable|integer|min:1',
+            'event_start'    => 'nullable|date',
+            'event_end'      => 'nullable|date|after_or_equal:event_start',
+            'spent_diamond'  => 'nullable|integer|min:0',
+            'current_spin'   => 'nullable|integer|min:0',
+            'current_token'  => 'nullable|integer|min:0',
+            'starting_token' => 'nullable|integer|min:0',
+            'ticket_count'   => 'nullable|integer|min:0',
+            'status'         => 'required|in:active,completed',
+            'slots'          => 'nullable|array',
+        ]);
+
+        $session->update([
+            'item_name'           => $request->item_name,
+            'spin_type'           => $request->spin_type,
+            'token_needed'        => $request->spin_type === 'token_tower' ? 5 : ($request->token_needed ?? $session->token_needed),
+            'event_start'         => $request->event_start,
+            'event_end'           => $request->event_end,
+            'spent_diamond'       => $request->spent_diamond ?? $session->spent_diamond,
+            'current_spin'        => $request->current_spin ?? $session->current_spin,
+            'current_token'       => $request->current_token ?? $session->current_token,
+            'starting_token'      => $request->starting_token ?? $session->starting_token,
+            'ticket_count'        => $request->ticket_count ?? $session->ticket_count,
+            'discount_percentage' => $request->has_discount ? 1 : 0,
+            'luck_percentage'     => $request->tower_luck ?? $session->luck_percentage,
+            'status'              => $request->status,
+        ]);
+
+        if ($request->has('slots') && is_array($request->slots)) {
+            $session->slots()->delete();
+            foreach ($request->slots as $slot) {
+                $type = $slot['type'] ?? 'token';
+                $slotCount = intval($slot['slot_count'] ?? 0);
+
+                if ($type === 'item') {
+                    if (empty(trim($slot['item_name'] ?? ''))) continue;
+                    $slotCount = max(1, $slotCount);
+                } else {
+                    if ($slotCount === 0) continue;
+                }
+
+                FreefireWheelSlot::create([
+                    'session_id'     => $session->id,
+                    'type'           => $type,
+                    'token_value'    => ($type === 'token') ? ($slot['token_value'] ?? null) : null,
+                    'item_name'      => ($type === 'item') ? trim($slot['item_name']) : null,
+                    'token_exchange' => ($type === 'item') ? ($slot['token_exchange'] ?? null) : null,
+                    'rarity'         => $slot['rarity'] ?? 'epic',
+                    'slot_count'     => $slotCount,
+                ]);
+            }
+        }
+
+        return redirect()->route('freefire.session')->with('success', 'Sesi spin berhasil diperbarui!');
     }
 
     public function addLog(Request $request, $id)
@@ -188,6 +268,9 @@ class FreeFireController extends Controller
             'token_gained'       => 'nullable|integer|min:0',
             'tower_token_number' => 'nullable|integer|min:1|max:5',
             'got_item_id'        => 'nullable|array',
+            'direct_drop'        => 'nullable',
+            'direct_item_name'   => 'nullable|string|max:255',
+            'auto_complete'      => 'nullable|boolean',
         ]);
 
         $session->current_spin += $request->spin_count;
@@ -196,25 +279,35 @@ class FreeFireController extends Controller
         $resultParts = [];
 
         if ($session->spin_type === 'token_tower') {
-            // Token Tower: naik level berdasarkan checkbox
             if ($request->tower_token_number) {
                 $session->current_token = max($session->current_token, $request->tower_token_number);
                 $resultParts[] = 'Naik ke Token ' . $request->tower_token_number;
             }
         } else {
-            // Token Ring: akumulasi token bebas
             $session->current_token += $request->token_gained ?? 0;
             if ($request->token_gained > 0) {
                 $resultParts[] = 'Token +' . $request->token_gained;
             }
         }
 
-        $session->save();
+        // Direct Item Drop (dapat hadiah langsung)
+        if ($request->has('direct_drop') || !empty($request->direct_item_name)) {
+            $directItemName = !empty($request->direct_item_name) ? trim($request->direct_item_name) : $session->item_name;
+            $existing = $session->obtained_items ?? [];
+            if (!in_array($directItemName, $existing)) {
+                $existing[] = $directItemName;
+            }
+            $session->obtained_items = array_values($existing);
+            $resultParts[] = '🎁 Hadiah Langsung: ' . $directItemName;
 
-        // Item langsung yang didapat (khusus Token Ring, via checkbox slot item)
+            if ($request->filled('auto_complete') && $request->auto_complete == 1) {
+                $session->status = 'completed';
+            }
+        }
+
+        // Item dari slot wheel (Token Ring)
         if ($request->got_item_id && is_array($request->got_item_id)) {
             $obtainedNames = [];
-
             foreach ($request->got_item_id as $slotId) {
                 $slot = FreefireWheelSlot::find($slotId);
                 if ($slot && $slot->type === 'item') {
@@ -224,12 +317,12 @@ class FreeFireController extends Controller
 
             if (!empty($obtainedNames)) {
                 $existing = $session->obtained_items ?? [];
-                $session->obtained_items = array_unique(array_merge($existing, $obtainedNames));
-                $session->save();
-
-                $resultParts[] = 'Dapat item: ' . implode(', ', $obtainedNames);
+                $session->obtained_items = array_values(array_unique(array_merge($existing, $obtainedNames)));
+                $resultParts[] = '🎁 Dapat item: ' . implode(', ', $obtainedNames);
             }
         }
+
+        $session->save();
 
         FreefireSpinLog::create([
             'session_id'    => $session->id,
@@ -239,10 +332,13 @@ class FreeFireController extends Controller
             'token_gained'  => $request->token_gained ?? 0,
         ]);
 
-        // Auto-complete Token Tower kalau sudah dapat token 5
         if ($session->spin_type === 'token_tower' && $session->current_token >= 5) {
             $session->update(['status' => 'completed']);
             return redirect()->route('freefire.session')->with('success', 'Selamat! Bundle utama berhasil didapat! 🎉');
+        }
+
+        if ($session->status === 'completed') {
+            return redirect()->route('freefire.session')->with('success', 'Selamat! Target berhasil didapat & sesi selesai! 🎉');
         }
 
         return redirect()->route('freefire.session')->with('success', 'Spin dicatat!');
@@ -256,11 +352,24 @@ class FreeFireController extends Controller
         return redirect()->route('freefire.session')->with('success', 'Sesi selesai!');
     }
 
+    public function reopenSession($id)
+    {
+        $session = FreefireSpinSession::findOrFail($id);
+        $session->update(['status' => 'active']);
+
+        return redirect()->route('freefire.session')->with('success', 'Sesi spin diaktifkan kembali!');
+    }
+
     public function destroy($id)
     {
         $session = FreefireSpinSession::findOrFail($id);
         $session->delete();
 
         return redirect()->route('freefire.session')->with('success', 'Sesi dihapus!');
+    }
+
+    public function info()
+    {
+        return view('freefire::info');
     }
 }

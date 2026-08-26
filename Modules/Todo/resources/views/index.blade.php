@@ -329,7 +329,7 @@
         <h3>New Task</h3>
         <button onclick="closeAllModals()" class="modal-close">&times;</button>
     </div>
-    <form action="{{ route('todo.store') }}" method="POST">
+    <form action="{{ route('todo.store') }}" method="POST" autocomplete="off">
         @csrf
 
         <!-- @if($errors->any())
@@ -466,7 +466,7 @@
         <h3>Edit Task</h3>
         <button onclick="closeAllModals()" class="modal-close">&times;</button>
     </div>
-    <form id="form-edit" method="POST">
+    <form id="form-edit" method="POST" autocomplete="off">
         @csrf
         @method('PUT')
 
