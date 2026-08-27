@@ -234,7 +234,39 @@ class AsramaController extends Controller
             ]
         );
 
-        return redirect()->back()->with('success', 'Data matriks iuran berhasil diperbarui!');
+        // AUTO-SYNC TO KAS TRANSACTIONS (asrama_keuangans)
+        if (!empty($validated['penghuni_id']) && $validated['nominal'] > 0) {
+            $penghuni = AsramaPenghuni::find($validated['penghuni_id']);
+            $namaPenghuni = $penghuni ? $penghuni->nama : 'Penghuni';
+            
+            $bulanPadded = str_pad($validated['bulan'], 2, '0', STR_PAD_LEFT);
+            $txDate = "{$validated['tahun']}-{$bulanPadded}-01";
+
+            // Check if transaction already exists for this resident and month
+            $existingTx = AsramaKeuangan::where('penghuni_id', $validated['penghuni_id'])
+                ->whereYear('tanggal', $validated['tahun'])
+                ->whereMonth('tanggal', $validated['bulan'])
+                ->where('kategori', 'Iuran Bulanan')
+                ->first();
+
+            if ($existingTx) {
+                $existingTx->update([
+                    'nominal' => $validated['nominal'],
+                    'tanggal' => $txDate,
+                ]);
+            } else {
+                AsramaKeuangan::create([
+                    'tanggal' => $txDate,
+                    'tipe' => 'pemasukan',
+                    'kategori' => 'Iuran Bulanan',
+                    'nominal' => $validated['nominal'],
+                    'penghuni_id' => $validated['penghuni_id'],
+                    'keterangan' => 'Iuran ' . $namaPenghuni . ' (Bulan ' . $validated['bulan'] . '/' . $validated['tahun'] . ')',
+                ]);
+            }
+        }
+
+        return redirect()->back()->with('success', 'Data matriks iuran berhasil diperbarui & Transaksi Kas otomatis tersinkron!');
     }
 
     public function storeKamar(Request $request)
@@ -292,9 +324,54 @@ class AsramaController extends Controller
             'keterangan' => 'nullable|string',
         ]);
 
-        AsramaKeuangan::create($validated);
+        $keuangan = AsramaKeuangan::create($validated);
 
-        return redirect()->route('asrama.keuangan')->with('success', 'Catatan keuangan berhasil ditambahkan!');
+        // AUTO-SYNC TO MATRIKS IURAN BULANAN (asrama_iurans)
+        $dateCarbon = \Carbon\Carbon::parse($validated['tanggal']);
+        $tahun = (int) $dateCarbon->format('Y');
+        $bulan = (int) $dateCarbon->format('n');
+
+        if (!empty($validated['penghuni_id']) && ($validated['tipe'] === 'pemasukan' || $validated['kategori'] === 'Iuran Bulanan')) {
+            $iuran = AsramaIuran::where('tahun', $tahun)
+                ->where('bulan', $bulan)
+                ->where('penghuni_id', $validated['penghuni_id'])
+                ->first();
+
+            $newNominal = $iuran ? ($iuran->nominal + $validated['nominal']) : $validated['nominal'];
+
+            AsramaIuran::updateOrCreate(
+                [
+                    'tahun' => $tahun,
+                    'bulan' => $bulan,
+                    'penghuni_id' => $validated['penghuni_id'],
+                ],
+                [
+                    'nominal' => $newNominal,
+                    'status_lunas' => $newNominal > 0,
+                ]
+            );
+        }
+
+        // AUTO-SYNC FOR WIFI AND SAMPAH EXPENSES
+        $lowerKet = strtolower($validated['keterangan'] ?? '');
+        if (str_contains($lowerKet, 'wifi') || $validated['kategori'] === 'Listrik & Air') {
+            if ($validated['tipe'] === 'pengeluaran') {
+                AsramaIuran::updateOrCreate(
+                    ['tahun' => $tahun, 'bulan' => $bulan, 'fasilitas_key' => 'wifi'],
+                    ['nominal' => $validated['nominal'], 'status_lunas' => true]
+                );
+            }
+        }
+        if (str_contains($lowerKet, 'sampah') || ($validated['kategori'] === 'Kebersihan & Keamanan' && str_contains($lowerKet, 'sampah'))) {
+            if ($validated['tipe'] === 'pengeluaran') {
+                AsramaIuran::updateOrCreate(
+                    ['tahun' => $tahun, 'bulan' => $bulan, 'fasilitas_key' => 'sampah'],
+                    ['nominal' => $validated['nominal'], 'status_lunas' => true]
+                );
+            }
+        }
+
+        return redirect()->route('asrama.keuangan')->with('success', 'Catatan keuangan berhasil ditambahkan & Matriks Iuran otomatis diperbarui!');
     }
 
     public function destroyKeuangan($id)
