@@ -255,12 +255,64 @@
 
                     {{-- ACTIVE RESIDENTS ROWS --}}
                     @foreach($penghuniAktif as $p)
+                    @php
+                    $effectiveJoinDate = $p->tanggal_masuk ?: '2026-01-01';
+                    $pJoinCarbon = \Carbon\Carbon::parse($effectiveJoinDate);
+                    $pJoinYear = (int)$pJoinCarbon->format('Y');
+                    $pJoinMonth = (int)$pJoinCarbon->format('m');
+                    $pJoinDay = (int)$pJoinCarbon->format('d');
+
+                    $nowCarbon = \Carbon\Carbon::now();
+                    $cYear = (int)$nowCarbon->format('Y');
+                    $cMonth = (int)$nowCarbon->format('n');
+
+                    $untilM = 12;
+                    if ($tahun == $cYear) {
+                        $untilM = $cMonth;
+                    } elseif ($tahun > $cYear) {
+                        $untilM = 0;
+                    }
+
+                    $pTotalObligation = 0;
+                    if ($tahun >= $pJoinYear) {
+                        $startM = ($tahun == $pJoinYear) ? $pJoinMonth : 1;
+                        for ($m = $startM; $m <= $untilM; $m++) {
+                            if ($tahun == $pJoinYear && $m == $pJoinMonth) {
+                                $tDays = $pJoinCarbon->daysInMonth;
+                                if ($pJoinDay == 1) {
+                                    $pTotalObligation += $tarifDefault;
+                                } else {
+                                    $sisaH = max(1, $tDays - $pJoinDay);
+                                    $rawP = ($tarifDefault / $tDays) * $sisaH;
+                                    $pTotalObligation += (int) (round($rawP / 1000) * 1000);
+                                }
+                            } else {
+                                $pTotalObligation += $tarifDefault;
+                            }
+                        }
+                    }
+
+                    $pTotalPaid = \Modules\Asrama\Models\AsramaKeuangan::where('penghuni_id', $p->id)
+                        ->whereYear('tanggal', $tahun)
+                        ->sum('nominal');
+
+                    $pTunggakan = max(0, $pTotalObligation - $pTotalPaid);
+                    @endphp
                     <tr class="matriks-row">
                         <td class="col-nama">
                             <div style="display: flex; flex-direction: column;">
                                 <span style="font-weight: 600; color: #f8fafc;">{{ $p->nama }}</span>
                                 @if($p->kamar)
                                 <span style="font-size: 0.72rem; color: #94a3b8; margin-top: 1px;">Kamar {{ $p->kamar->nomor_kamar }}</span>
+                                @endif
+                                @if($pTunggakan > 0)
+                                <span style="font-size: 0.72rem; color: #f87171; font-weight: 700; margin-top: 2px;" title="Total kekurangan iuran s.d {{ \Carbon\Carbon::now()->format('F') }}">
+                                    Kurang: Rp {{ number_format($pTunggakan, 0, ',', '.') }}
+                                </span>
+                                @else
+                                <span style="font-size: 0.72rem; color: #6ee7b7; font-weight: 700; margin-top: 2px;" title="Iuran s.d bulan {{ \Carbon\Carbon::now()->format('F') }} telah lunas">
+                                    ✓ Lunas
+                                </span>
                                 @endif
                             </div>
                         </td>
