@@ -29,23 +29,19 @@
     <div class="asrama-stats-grid">
         <div class="asrama-stat-card">
             <p class="task-meta">Total Kamar</p>
-            <h3 style="color: var(--text-primary); margin: 0.25rem 0; font-size: 1.8rem;">{{ $summary['total_kamar'] }} Kamar</h3>
-            <p class="task-meta" style="font-size: 0.75rem;">Seluruh unit kamar</p>
+            <h3 style="color: var(--text-primary); margin: 0.25rem 0 0 0; font-size: 1.8rem;">{{ $summary['total_kamar'] }} Kamar</h3>
         </div>
         <div class="asrama-stat-card">
             <p class="task-meta">Kamar Ada Slot / Kosong</p>
-            <h3 style="color: #38bdf8; margin: 0.25rem 0; font-size: 1.8rem;">{{ $summary['kamar_tersedia'] }} Unit</h3>
-            <p class="task-meta" style="font-size: 0.75rem;">Masih bisa diisi</p>
+            <h3 style="color: #38bdf8; margin: 0.25rem 0 0 0; font-size: 1.8rem;">{{ $summary['kamar_tersedia'] }} Unit</h3>
         </div>
         <div class="asrama-stat-card">
             <p class="task-meta">Penghuni Aktif / Kapasitas</p>
-            <h3 style="color: #fde047; margin: 0.25rem 0; font-size: 1.8rem;">{{ $summary['total_penghuni'] }} / {{ $summary['total_kapasitas'] }} Orang</h3>
-            <p class="task-meta" style="font-size: 0.75rem;">Tinggal di asrama saat ini</p>
+            <h3 style="color: #fde047; margin: 0.25rem 0 0 0; font-size: 1.8rem;">{{ $summary['total_penghuni'] }} / {{ $summary['total_kapasitas'] }} Orang</h3>
         </div>
         <div class="asrama-stat-card" style="border-color: rgba(110, 231, 183, 0.4); background: rgba(16, 185, 129, 0.1);">
             <p class="task-meta" style="color: #6ee7b7; font-weight: 600;">🟢 Slot Tempat Tidur Tersedia</p>
-            <h3 style="color: #6ee7b7; margin: 0.25rem 0; font-size: 2rem; font-weight: 800;">{{ $summary['slot_tersedia'] }} Bed</h3>
-            <p class="task-meta" style="font-size: 0.75rem; color: #a7f3d0;">Jumlah slot siap huni</p>
+            <h3 style="color: #6ee7b7; margin: 0.25rem 0 0 0; font-size: 2rem; font-weight: 800;">{{ $summary['slot_tersedia'] }} Bed</h3>
         </div>
     </div>
 
@@ -54,7 +50,6 @@
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
             <div>
                 <h3 class="widget-title" style="margin: 0;">👤 Data Penghuni Asrama</h3>
-                <p class="task-meta" style="margin: 0.2rem 0 0 0;">Daftar penghuni (dukungan Tambah, Edit, Keluar & Hapus)</p>
             </div>
             <button type="button" onclick="openPenghuniModal()" class="btn btn-primary btn-sm">+ Tambah Penghuni</button>
         </div>
@@ -136,7 +131,6 @@
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
             <div>
                 <h3 class="widget-title" style="margin: 0;">🚪 Daftar Kamar Asrama</h3>
-                <p class="task-meta" style="margin: 0.2rem 0 0 0;">Manajemen data kamar, lantai, kapasitas & ketersediaan slot</p>
             </div>
             <button type="button" onclick="openKamarModal()" class="btn btn-primary btn-sm">+ Tambah Kamar</button>
         </div>
@@ -211,7 +205,6 @@
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
             <div>
                 <h3 class="widget-title" style="margin: 0;">📜 Log Aktivitas & Penghuni Keluar</h3>
-                <p class="task-meta" style="margin: 0.2rem 0 0 0;">Riwayat dan catatan log resmi penghuni yang telah keluar dari asrama</p>
             </div>
         </div>
 
