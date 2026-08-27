@@ -105,8 +105,8 @@
 </div>
 
 {{-- MODAL KONFIRMASI HAPUS TRANSAKSI --}}
-<div id="modal-delete-keuangan" class="modal" aria-hidden="true" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(4px); z-index: 9999; align-items: center; justify-content: center;">
-    <div class="modal-content" style="background: #1e293b; border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 16px; padding: 1.75rem; max-width: 420px; width: 90%; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);">
+<div id="modal-delete-keuangan" class="modal" aria-hidden="true" style="display: none !important; position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; width: 100vw !important; height: 100vh !important; background: rgba(15, 23, 42, 0.8) !important; backdrop-filter: blur(4px) !important; z-index: 99999 !important; align-items: center !important; justify-content: center !important; padding: 1rem;">
+    <div class="modal-content" style="background: #1e293b; border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 16px; padding: 1.75rem; max-width: 420px; width: 100%; margin: auto !important; position: relative !important; top: auto !important; left: auto !important; transform: none !important; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.75);">
         <div style="text-align: center; margin-bottom: 1.25rem;">
             <div style="width: 56px; height: 56px; border-radius: 50%; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #ef4444; font-size: 1.75rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem auto;">
                 ⚠️
@@ -183,7 +183,7 @@
                 <select name="penghuni_id" class="form-control">
                     <option value="">-- Bukan Transaksi Spesifik Penghuni --</option>
                     @foreach($penghunis as $p)
-                        <option value="{{ $p->id }}">{{ $p->nama }} (Kamar {{ $p->kamar ? $p->kamar->nomor_kamar : '-' }})</option>
+                    <option value="{{ $p->id }}">{{ $p->nama }} (Kamar {{ $p->kamar ? $p->kamar->nomor_kamar : '-' }})</option>
                     @endforeach
                 </select>
             </div>
@@ -253,12 +253,18 @@
         const modal = document.getElementById('modal-delete-keuangan');
         if (form) form.action = deleteUrl;
         if (text) text.innerText = 'Apakah Anda yakin ingin menghapus transaksi "' + transactionInfo + '"? Matriks iuran terkait akan otomatis disesuaikan.';
-        if (modal) modal.style.display = 'flex';
+        if (modal) {
+            modal.style.setProperty('display', 'flex', 'important');
+            modal.style.setProperty('align-items', 'center', 'important');
+            modal.style.setProperty('justify-content', 'center', 'important');
+        }
     }
 
     function closeDeleteModal() {
         const modal = document.getElementById('modal-delete-keuangan');
-        if (modal) modal.style.display = 'none';
+        if (modal) {
+            modal.style.setProperty('display', 'none', 'important');
+        }
     }
 
     window.addEventListener('click', function(e) {
