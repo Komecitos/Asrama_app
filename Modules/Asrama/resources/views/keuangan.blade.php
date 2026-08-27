@@ -91,11 +91,9 @@
                         </td>
                         <td class="task-meta">{{ $k->keterangan ?: '-' }}</td>
                         <td>
-                            <form action="{{ route('asrama.keuangan.destroy', $k->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Hapus catatan transaksi {{ $k->kategori }} ini?');">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
-                            </form>
+                            <button type="button" class="btn btn-danger btn-sm" onclick="openDeleteModal('{{ route('asrama.keuangan.destroy', $k->id) }}', '{{ addslashes($k->kategori) }} - Rp {{ number_format($k->nominal, 0, ',', '.') }}')">
+                                Hapus
+                            </button>
                         </td>
                     </tr>
                     @endforeach
@@ -106,72 +104,101 @@
     </div>
 </div>
 
+{{-- MODAL KONFIRMASI HAPUS TRANSAKSI --}}
+<div id="modal-delete-keuangan" class="modal" aria-hidden="true" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(4px); z-index: 9999; align-items: center; justify-content: center;">
+    <div class="modal-content" style="background: #1e293b; border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 16px; padding: 1.75rem; max-width: 420px; width: 90%; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);">
+        <div style="text-align: center; margin-bottom: 1.25rem;">
+            <div style="width: 56px; height: 56px; border-radius: 50%; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #ef4444; font-size: 1.75rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem auto;">
+                ⚠️
+            </div>
+            <h3 style="color: #f8fafc; font-size: 1.15rem; font-weight: 700; margin: 0 0 0.5rem 0;">Konfirmasi Hapus Transaksi</h3>
+            <p style="color: #94a3b8; font-size: 0.88rem; line-height: 1.5; margin: 0;" id="delete-modal-text">
+                Apakah Anda yakin ingin menghapus catatan transaksi ini?
+            </p>
+        </div>
+        <form id="delete-keuangan-form" action="" method="POST">
+            @csrf
+            @method('DELETE')
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 1.5rem;">
+                <button type="button" class="btn btn-secondary" onclick="closeDeleteModal()" style="background: #334155; color: #f8fafc; border: 1px solid rgba(255, 255, 255, 0.1); padding: 0.65rem 1rem; border-radius: 10px; font-weight: 600; cursor: pointer;">
+                    Batal
+                </button>
+                <button type="submit" class="btn btn-danger" style="background: #ef4444; color: #ffffff; border: none; padding: 0.65rem 1rem; border-radius: 10px; font-weight: 600; cursor: pointer;">
+                    Ya, Hapus
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 {{-- MODAL TAMBAH TRANSAKSI KEUANGAN --}}
 <div id="modal-keuangan" class="modal modal-create" aria-hidden="true">
-    <div class="modal-header">
-        <h3>Catat Transaksi Keuangan</h3>
-        <button onclick="closeKeuanganModal()" class="modal-close">&times;</button>
-    </div>
-    <form action="{{ route('asrama.keuangan.store') }}" method="POST" autocomplete="off">
-        @csrf
-        <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-            <div class="form-group">
-                <label class="form-label">Tipe Transaksi <span class="required">*</span></label>
-                <select name="tipe" class="form-control" required>
-                    <option value="pemasukan">🟢 Pemasukan (+)</option>
-                    <option value="pengeluaran">🔴 Pengeluaran (-)</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Kategori <span class="required">*</span></label>
-                <select name="kategori" class="form-control" required>
-                    <option value="Iuran Bulanan">Iuran Bulanan</option>
-                    <option value="Pembayaran WiFi">Pembayaran WiFi</option>
-                    <option value="Pembayaran Sampah">Pembayaran Sampah</option>
-                    <option value="Listrik & Air">Listrik & Air</option>
-                    <option value="Kebersihan & Keamanan">Kebersihan & Keamanan</option>
-                    <option value="Perbaikan & Maintenance">Perbaikan & Maintenance</option>
-                    <option value="Pembelian Peralatan">Pembelian Peralatan</option>
-                    <option value="Lain-lain">Lain-lain</option>
-                </select>
-            </div>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Catat Transaksi Keuangan</h3>
+            <button type="button" class="modal-close" onclick="closeKeuanganModal()">&times;</button>
         </div>
-
-        <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-            <div class="form-group">
-                <label class="form-label">Nominal Transaksi <span class="required">*</span></label>
-                <div style="display: flex; align-items: center; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); border-radius: var(--radius-md, 8px); padding: 0 0.75rem;">
-                    <span style="font-weight: 700; color: #6ee7b7; margin-right: 0.4rem; font-size: 0.95rem;">Rp</span>
-                    <input type="text" id="tx-nominal-formatted" class="form-control" style="border: none; background: transparent; padding-left: 0; font-weight: 600;" placeholder="100.000" onkeyup="formatCurrencyInput(this)" required>
-                    <input type="hidden" id="tx-nominal-raw" name="nominal" value="">
+        <form action="{{ route('asrama.keuangan.store') }}" method="POST">
+            @csrf
+            <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label class="form-label">Tipe Transaksi <span class="required">*</span></label>
+                    <select name="tipe" class="form-control" required>
+                        <option value="pemasukan">🟢 Pemasukan (+)</option>
+                        <option value="pengeluaran">🔴 Pengeluaran (-)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Kategori <span class="required">*</span></label>
+                    <select name="kategori" class="form-control" required>
+                        <option value="Iuran Bulanan">Iuran Bulanan</option>
+                        <option value="Pembayaran WiFi">Pembayaran WiFi</option>
+                        <option value="Pembayaran Sampah">Pembayaran Sampah</option>
+                        <option value="Listrik & Air">Listrik & Air</option>
+                        <option value="Kebersihan & Keamanan">Kebersihan & Keamanan</option>
+                        <option value="Perbaikan & Maintenance">Perbaikan & Maintenance</option>
+                        <option value="Pembelian Peralatan">Pembelian Peralatan</option>
+                        <option value="Lain-lain">Lain-lain</option>
+                    </select>
                 </div>
             </div>
-            <div class="form-group">
-                <label class="form-label">Tanggal Transaksi <span class="required">*</span></label>
-                <input type="date" name="tanggal" class="form-control" value="{{ date('Y-m-d') }}" required>
+
+            <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label class="form-label">Nominal Transaksi <span class="required">*</span></label>
+                    <div style="display: flex; align-items: center; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 0 0.75rem;">
+                        <span style="font-weight: 700; color: #94a3b8; margin-right: 0.5rem;">Rp</span>
+                        <input type="text" id="tx-nominal-formatted" class="form-control" placeholder="0" required oninput="formatCurrencyInput(this)" style="border: none; background: transparent; padding-left: 0;">
+                    </div>
+                    <input type="hidden" name="nominal" id="tx-nominal-raw" value="0">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tanggal Transaksi <span class="required">*</span></label>
+                    <input type="date" name="tanggal" class="form-control" value="{{ date('Y-m-d') }}" required>
+                </div>
             </div>
-        </div>
 
-        <div class="form-group">
-            <label class="form-label">Penghuni Pembayar (Opsional)</label>
-            <select name="penghuni_id" class="form-control">
-                <option value="">-- Tidak Terikat Penghuni Spesifik --</option>
-                @foreach($penghunis as $p)
-                <option value="{{ $p->id }}">{{ $p->nama }} {{ $p->kamar ? '(' . $p->kamar->nomor_kamar . ')' : '' }}</option>
-                @endforeach
-            </select>
-        </div>
+            <div class="form-group">
+                <label class="form-label">Penghuni Terkait (Khusus Iuran)</label>
+                <select name="penghuni_id" class="form-control">
+                    <option value="">-- Bukan Transaksi Spesifik Penghuni --</option>
+                    @foreach($penghunis as $p)
+                        <option value="{{ $p->id }}">{{ $p->nama }} (Kamar {{ $p->kamar ? $p->kamar->nomor_kamar : '-' }})</option>
+                    @endforeach
+                </select>
+            </div>
 
-        <div class="form-group">
-            <label class="form-label">Keterangan / Catatan</label>
-            <textarea name="keterangan" class="form-control" rows="2" placeholder="cth: Pembayaran Iuran Bulan Agustus 2026"></textarea>
-        </div>
+            <div class="form-group">
+                <label class="form-label">Keterangan / Catatan</label>
+                <textarea name="keterangan" class="form-control" rows="2" placeholder="Contoh: Iuran bulan Juli, Pembayaran WiFi Biznet, dll."></textarea>
+            </div>
 
-        <div class="form-actions">
-            <button type="button" onclick="closeKeuanganModal()" class="btn btn-secondary">Batal</button>
-            <button type="submit" class="btn btn-primary">Simpan Transaksi</button>
-        </div>
-    </form>
+            <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
+                <button type="button" class="btn btn-secondary" onclick="closeKeuanganModal()">Batal</button>
+                <button type="submit" class="btn btn-primary">Simpan Transaksi</button>
+            </div>
+        </form>
+    </div>
 </div>
 <div id="modal-keuangan-overlay" class="modal-overlay" onclick="closeKeuanganModal()"></div>
 
@@ -219,5 +246,26 @@
             o.style.display = 'none';
         }
     }
+
+    function openDeleteModal(deleteUrl, transactionInfo) {
+        const form = document.getElementById('delete-keuangan-form');
+        const text = document.getElementById('delete-modal-text');
+        const modal = document.getElementById('modal-delete-keuangan');
+        if (form) form.action = deleteUrl;
+        if (text) text.innerText = 'Apakah Anda yakin ingin menghapus transaksi "' + transactionInfo + '"? Matriks iuran terkait akan otomatis disesuaikan.';
+        if (modal) modal.style.display = 'flex';
+    }
+
+    function closeDeleteModal() {
+        const modal = document.getElementById('modal-delete-keuangan');
+        if (modal) modal.style.display = 'none';
+    }
+
+    window.addEventListener('click', function(e) {
+        const modal = document.getElementById('modal-delete-keuangan');
+        if (e.target === modal) {
+            closeDeleteModal();
+        }
+    });
 </script>
 @endpush
