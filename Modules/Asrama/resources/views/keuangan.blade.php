@@ -168,7 +168,7 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">Kategori <span class="required">*</span></label>
-                    <select name="kategori" class="form-control" required>
+                    <select name="kategori" id="tx-kategori-select" class="form-control" required onchange="togglePenghuniField()">
                         <option value="Iuran Bulanan">Iuran Bulanan</option>
                         <option value="Pembayaran WiFi">Pembayaran WiFi</option>
                         <option value="Pembayaran Sampah">Pembayaran Sampah</option>
@@ -196,9 +196,9 @@
                 </div>
             </div>
 
-            <div class="form-group">
+            <div class="form-group" id="form-group-penghuni">
                 <label class="form-label">Penghuni Terkait (Khusus Iuran)</label>
-                <select name="penghuni_id" class="form-control">
+                <select name="penghuni_id" id="tx-penghuni-select" class="form-control">
                     <option value="">-- Bukan Transaksi Spesifik Penghuni --</option>
                     @foreach($penghunis as $p)
                     <option value="{{ $p->id }}">{{ $p->nama }} (Kamar {{ $p->kamar ? $p->kamar->nomor_kamar : '-' }})</option>
@@ -237,9 +237,30 @@
         if (hiddenElem) hiddenElem.value = rawVal || 0;
     }
 
+    function togglePenghuniField() {
+        const kategoriSelect = document.getElementById('tx-kategori-select');
+        const groupPenghuni = document.getElementById('form-group-penghuni');
+        const penghuniSelect = document.getElementById('tx-penghuni-select');
+
+        if (!kategoriSelect || !groupPenghuni) return;
+
+        const val = kategoriSelect.value;
+        if (val === 'Iuran Bulanan' || val.toLowerCase().includes('iuran')) {
+            groupPenghuni.style.display = 'block';
+            if (penghuniSelect) penghuniSelect.disabled = false;
+        } else {
+            groupPenghuni.style.display = 'none';
+            if (penghuniSelect) {
+                penghuniSelect.value = '';
+                penghuniSelect.disabled = true;
+            }
+        }
+    }
+
     function openKeuanganModal() {
         document.getElementById('tx-nominal-formatted').value = '';
         document.getElementById('tx-nominal-raw').value = '';
+        togglePenghuniField();
         const m = document.getElementById('modal-keuangan');
         const o = document.getElementById('modal-keuangan-overlay');
         if (m) {
@@ -296,6 +317,8 @@
     }
 
     document.addEventListener('DOMContentLoaded', function() {
+        togglePenghuniField();
+
         // Header Topbar Menu Event Listeners (Data Asrama & Keuangan)
         const topbarMenuBtns = document.querySelectorAll('.topbar-menu-btn');
         topbarMenuBtns.forEach(function(btn) {

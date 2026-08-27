@@ -191,88 +191,88 @@
 
             $untilM = 12;
             if ($tahun == $cYear) {
-                $untilM = $cMonth;
+            $untilM = $cMonth;
             } elseif ($tahun > $cYear) {
-                $untilM = 0;
+            $untilM = 0;
             }
 
             $pTotalObligation = 0;
             if ($tahun >= $pJoinYear) {
-                $startM = ($tahun == $pJoinYear) ? $pJoinMonth : 1;
-                for ($m = $startM; $m <= $untilM; $m++) {
-                    if ($tahun == $pJoinYear && $m == $pJoinMonth) {
-                        $tDays = $pJoinCarbon->daysInMonth;
-                        if ($pJoinDay == 1) {
-                            $pTotalObligation += $tarifDefault;
-                        } else {
-                            $sisaH = max(1, $tDays - $pJoinDay);
-                            $rawP = ($tarifDefault / $tDays) * $sisaH;
-                            $pTotalObligation += (int) (round($rawP / 1000) * 1000);
-                        }
-                    } else {
-                        $pTotalObligation += $tarifDefault;
-                    }
+            $startM = ($tahun == $pJoinYear) ? $pJoinMonth : 1;
+            for ($m = $startM; $m <= $untilM; $m++) {
+                if ($tahun==$pJoinYear && $m==$pJoinMonth) {
+                $tDays=$pJoinCarbon->daysInMonth;
+                if ($pJoinDay == 1) {
+                $pTotalObligation += $tarifDefault;
+                } else {
+                $sisaH = max(1, $tDays - $pJoinDay);
+                $rawP = ($tarifDefault / $tDays) * $sisaH;
+                $pTotalObligation += (int) (round($rawP / 1000) * 1000);
                 }
-            }
+                } else {
+                $pTotalObligation += $tarifDefault;
+                }
+                }
+                }
 
-            $pTotalPaid = \Modules\Asrama\Models\AsramaKeuangan::where('penghuni_id', $p->id)
+                $pTotalPaid = \Modules\Asrama\Models\AsramaKeuangan::where('penghuni_id', $p->id)
                 ->whereYear('tanggal', $tahun)
                 ->sum('nominal');
 
-            $pTunggakan = max(0, $pTotalObligation - $pTotalPaid);
-            @endphp
-            <tr>
-                <td class="col-nama">{{ $p->nama }}</td>
-                @foreach($bulanNames as $bNum => $bName)
-                @php
-                $cell = $iuranMap['penghuni_' . $p->id . '_' . $bNum] ?? null;
-                $nom = $cell ? $cell->nominal : 0;
+                $pTunggakan = max(0, $pTotalObligation - $pTotalPaid);
                 @endphp
-                <td>
-                    @if($nom > 0)
-                    <span class="badge-paid">Rp {{ number_format($nom, 0, ',', '.') }}</span>
-                    @else
-                    <span class="badge-empty">-</span>
-                    @endif
-                </td>
+                <tr>
+                    <td class="col-nama">{{ $p->nama }}</td>
+                    @foreach($bulanNames as $bNum => $bName)
+                    @php
+                    $cell = $iuranMap['penghuni_' . $p->id . '_' . $bNum] ?? null;
+                    $nom = $cell ? $cell->nominal : 0;
+                    @endphp
+                    <td>
+                        @if($nom > 0)
+                        <span class="badge-paid">Rp {{ number_format($nom, 0, ',', '.') }}</span>
+                        @else
+                        <span class="badge-empty">-</span>
+                        @endif
+                    </td>
+                    @endforeach
+                    <td style="font-weight: 700; text-align: center; color: {{ $pTunggakan > 0 ? '#dc2626' : '#16a34a' }};">
+                        @if($pTunggakan > 0)
+                        Rp {{ number_format($pTunggakan, 0, ',', '.') }}
+                        @else
+                        ✓ LUNAS
+                        @endif
+                    </td>
+                </tr>
                 @endforeach
-                <td style="font-weight: 700; text-align: center; color: {{ $pTunggakan > 0 ? '#dc2626' : '#16a34a' }};">
-                    @if($pTunggakan > 0)
-                    Rp {{ number_format($pTunggakan, 0, ',', '.') }}
-                    @else
-                    ✓ LUNAS
-                    @endif
-                </td>
-            </tr>
-            @endforeach
 
-            {{-- FORMER RESIDENTS --}}
-            @if($penghuniKeluar->count() > 0)
-            <tr>
-                <td colspan="14" class="row-divider">Penghuni Keluar (Non-Aktif)</td>
-            </tr>
-            @foreach($penghuniKeluar as $p)
-            <tr>
-                <td class="col-nama" style="color: #64748b;">{{ $p->nama }} (Keluar)</td>
-                @foreach($bulanNames as $bNum => $bName)
-                @php
-                $cell = $iuranMap['penghuni_' . $p->id . '_' . $m ?? 1] ?? null;
-                $nom = $cell ? $cell->nominal : 0;
-                @endphp
-                <td>
-                    @if($nom > 0)
-                    <span class="badge-paid">Rp {{ number_format($nom, 0, ',', '.') }}</span>
-                    @else
-                    <span class="badge-empty">-</span>
-                    @endif
-                </td>
+                {{-- FORMER RESIDENTS --}}
+                @if($penghuniKeluar->count() > 0)
+                <tr>
+                    <td colspan="14" class="row-divider">Penghuni Keluar (Non-Aktif)</td>
+                </tr>
+                @foreach($penghuniKeluar as $p)
+                <tr>
+                    <td class="col-nama" style="color: #64748b;">{{ $p->nama }} (Keluar)</td>
+                    @foreach($bulanNames as $bNum => $bName)
+                    @php
+                    $cell = $iuranMap['penghuni_' . $p->id . '_' . $m ?? 1] ?? null;
+                    $nom = $cell ? $cell->nominal : 0;
+                    @endphp
+                    <td>
+                        @if($nom > 0)
+                        <span class="badge-paid">Rp {{ number_format($nom, 0, ',', '.') }}</span>
+                        @else
+                        <span class="badge-empty">-</span>
+                        @endif
+                    </td>
+                    @endforeach
+                    <td style="font-weight: 700; text-align: center; color: #94a3b8;">
+                        -
+                    </td>
+                </tr>
                 @endforeach
-                <td style="font-weight: 700; text-align: center; color: #94a3b8;">
-                    -
-                </td>
-            </tr>
-            @endforeach
-            @endif
+                @endif
         </tbody>
     </table>
 
