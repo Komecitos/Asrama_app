@@ -51,6 +51,12 @@
                 <h3 class="widget-title" style="margin: 0;">Riwayat Transaksi Keuangan</h3>
             </div>
             <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
+                <input type="text" id="search-keuangan" onkeyup="filterKeuanganTable()" placeholder="🔍 Cari transaksi (nama, kategori, keterangan...)" class="form-control" style="width: 250px; font-size: 0.85rem; padding: 0.35rem 0.75rem;">
+                <select id="filter-tipe" onchange="filterKeuanganTable()" class="form-control" style="width: 135px; font-size: 0.85rem; padding: 0.35rem 0.75rem; cursor: pointer;">
+                    <option value="">Semua Tipe</option>
+                    <option value="pemasukan">Pemasukan</option>
+                    <option value="pengeluaran">Pengeluaran</option>
+                </select>
                 <a href="{{ route('asrama.keuangan.export.excel') }}" class="btn btn-secondary btn-sm" style="background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.4); color: #6ee7b7; font-weight: 600; display: inline-flex; align-items: center; gap: 0.35rem;" title="Download Riwayat Transaksi Format Excel (.csv)">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
@@ -92,7 +98,7 @@
                 </thead>
                 <tbody>
                     @foreach($keuangans as $k)
-                    <tr>
+                    <tr class="keuangan-row" data-tipe="{{ $k->tipe }}">
                         <td class="task-title" style="font-size: 0.85rem;">{{ \Carbon\Carbon::parse($k->tanggal)->format('d M Y') }}</td>
                         <td>
                             @if($k->tipe === 'pemasukan')
@@ -118,6 +124,7 @@
                     @endforeach
                 </tbody>
             </table>
+            <p id="empty-search-msg" class="empty-state" style="display: none; margin-top: 1rem;">Tidak ada transaksi yang cocok dengan kata kunci pencarian/filter.</p>
         </div>
         @endif
     </div>
@@ -227,6 +234,37 @@
     function formatNumberWithDots(val) {
         val = val.toString().replace(/\D/g, '');
         return val.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    }
+
+    function filterKeuanganTable() {
+        const searchInput = document.getElementById('search-keuangan');
+        const filterTipe = document.getElementById('filter-tipe');
+        if (!searchInput || !filterTipe) return;
+
+        const keyword = searchInput.value.toLowerCase().trim();
+        const selectedTipe = filterTipe.value.toLowerCase();
+        const rows = document.querySelectorAll('.keuangan-row');
+
+        let visibleCount = 0;
+        rows.forEach(row => {
+            const rowTipe = (row.getAttribute('data-tipe') || '').toLowerCase();
+            const rowText = (row.textContent || row.innerText).toLowerCase();
+
+            const matchesSearch = !keyword || rowText.includes(keyword);
+            const matchesTipe = !selectedTipe || rowTipe === selectedTipe;
+
+            if (matchesSearch && matchesTipe) {
+                row.style.display = '';
+                visibleCount++;
+            } else {
+                row.style.display = 'none';
+            }
+        });
+
+        const emptySearchMsg = document.getElementById('empty-search-msg');
+        if (emptySearchMsg) {
+            emptySearchMsg.style.display = (visibleCount === 0 && rows.length > 0) ? 'block' : 'none';
+        }
     }
 
     function formatCurrencyInput(elem) {
