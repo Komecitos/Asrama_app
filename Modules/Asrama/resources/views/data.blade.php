@@ -59,8 +59,12 @@
             <button type="button" onclick="openPenghuniModal()" class="btn btn-primary btn-sm">+ Tambah Penghuni</button>
         </div>
 
-        @if($penghunis->isEmpty())
-        <p class="empty-state">Belum ada data penghuni. Klik <strong>+ Tambah Penghuni</strong> untuk mencatat penghuni baru.</p>
+        @php
+        $penghuniAktifList = $penghunis->where('status_penghuni', 'Aktif');
+        @endphp
+
+        @if($penghuniAktifList->isEmpty())
+        <p class="empty-state">Belum ada data penghuni aktif. Klik <strong>+ Tambah Penghuni</strong> untuk mencatat penghuni baru.</p>
         @else
         <div class="table-wrapper">
             <table class="table">
@@ -77,7 +81,7 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($penghunis as $penghuni)
+                    @foreach($penghuniAktifList as $penghuni)
                     <tr>
                         <td class="task-title" style="font-weight: 600;">{{ $penghuni->nama }}</td>
                         <td class="task-meta">{{ $penghuni->nomor_hp ?: '-' }}</td>
