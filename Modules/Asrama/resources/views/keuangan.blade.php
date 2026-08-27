@@ -116,9 +116,14 @@
                         </td>
                         <td class="task-meta">{{ $k->keterangan ?: '-' }}</td>
                         <td>
-                            <button type="button" class="btn btn-danger btn-sm" onclick="openDeleteModal('{{ route('asrama.keuangan.destroy', $k->id) }}', '{{ addslashes($k->kategori) }} - Rp {{ number_format($k->nominal, 0, ',', '.') }}')">
-                                Hapus
-                            </button>
+                            <div style="display: flex; gap: 0.35rem; align-items: center;">
+                                <button type="button" onclick="openEditKeuanganModal({{ $k->id }}, '{{ $k->tanggal }}', '{{ $k->tipe }}', '{{ addslashes($k->kategori) }}', {{ $k->nominal }}, '{{ $k->penghuni_id ?: '' }}', '{{ addslashes($k->keterangan ?: '') }}')" class="btn btn-secondary btn-sm" title="Edit catatan transaksi">
+                                    Edit
+                                </button>
+                                <button type="button" class="btn btn-danger btn-sm" onclick="openDeleteModal('{{ route('asrama.keuangan.destroy', $k->id) }}', '{{ addslashes($k->kategori) }} - Rp {{ number_format($k->nominal, 0, ',', '.') }}')">
+                                    Hapus
+                                </button>
+                            </div>
                         </td>
                     </tr>
                     @endforeach
@@ -156,19 +161,20 @@
 </div>
 <div id="modal-delete-keuangan-overlay" class="modal-overlay" onclick="closeDeleteModal()"></div>
 
-{{-- MODAL TAMBAH TRANSAKSI KEUANGAN --}}
+{{-- MODAL CATAT / EDIT TRANSAKSI KEUANGAN --}}
 <div id="modal-keuangan" class="modal modal-create" aria-hidden="true">
     <div class="modal-content">
         <div class="modal-header">
-            <h3>Catat Transaksi Keuangan</h3>
+            <h3 id="modal-keuangan-title">Catat Transaksi Keuangan</h3>
             <button type="button" class="modal-close" onclick="closeKeuanganModal()">&times;</button>
         </div>
-        <form action="{{ route('asrama.keuangan.store') }}" method="POST">
+        <form id="form-keuangan" action="{{ route('asrama.keuangan.store') }}" method="POST">
             @csrf
+            <div id="method-keuangan-field"></div>
             <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                 <div class="form-group">
                     <label class="form-label">Tipe Transaksi <span class="required">*</span></label>
-                    <select name="tipe" class="form-control" required>
+                    <select name="tipe" id="tx-tipe-select" class="form-control" required>
                         <option value="pemasukan">🟢 Pemasukan (+)</option>
                         <option value="pengeluaran">🔴 Pengeluaran (-)</option>
                     </select>
@@ -199,7 +205,7 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">Tanggal Transaksi <span class="required">*</span></label>
-                    <input type="date" name="tanggal" class="form-control" value="{{ date('Y-m-d') }}" required>
+                    <input type="date" name="tanggal" id="tx-tanggal-input" class="form-control" value="{{ date('Y-m-d') }}" required>
                 </div>
             </div>
 
@@ -215,7 +221,7 @@
 
             <div class="form-group">
                 <label class="form-label">Keterangan / Catatan</label>
-                <textarea name="keterangan" class="form-control" rows="2" placeholder="Contoh: Iuran bulan Juli, Pembayaran WiFi Biznet, dll."></textarea>
+                <textarea name="keterangan" id="tx-keterangan-input" class="form-control" rows="2" placeholder="Contoh: Iuran bulan Juli, Pembayaran WiFi Biznet, dll."></textarea>
             </div>
 
             <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
@@ -296,9 +302,55 @@
     }
 
     function openKeuanganModal() {
-        document.getElementById('tx-nominal-formatted').value = '';
-        document.getElementById('tx-nominal-raw').value = '';
+        const title = document.getElementById('modal-keuangan-title');
+        const form = document.getElementById('form-keuangan');
+        const methodField = document.getElementById('method-keuangan-field');
+
+        if (title) title.textContent = 'Catat Transaksi Keuangan';
+        if (form) form.action = "{{ route('asrama.keuangan.store') }}";
+        if (methodField) methodField.innerHTML = '';
+
+        if (document.getElementById('tx-tipe-select')) document.getElementById('tx-tipe-select').value = 'pemasukan';
+        if (document.getElementById('tx-kategori-select')) document.getElementById('tx-kategori-select').value = 'Iuran Bulanan';
+        if (document.getElementById('tx-nominal-formatted')) document.getElementById('tx-nominal-formatted').value = '';
+        if (document.getElementById('tx-nominal-raw')) document.getElementById('tx-nominal-raw').value = '0';
+        if (document.getElementById('tx-tanggal-input')) document.getElementById('tx-tanggal-input').value = '{{ date("Y-m-d") }}';
+        if (document.getElementById('tx-penghuni-select')) document.getElementById('tx-penghuni-select').value = '';
+        if (document.getElementById('tx-keterangan-input')) document.getElementById('tx-keterangan-input').value = '';
+
         togglePenghuniField();
+
+        const m = document.getElementById('modal-keuangan');
+        const o = document.getElementById('modal-keuangan-overlay');
+        if (m) {
+            m.classList.add('show');
+            m.style.display = 'block';
+        }
+        if (o) {
+            o.classList.add('show');
+            o.style.display = 'block';
+        }
+    }
+
+    function openEditKeuanganModal(id, tanggal, tipe, kategori, nominal, penghuniId, keterangan) {
+        const title = document.getElementById('modal-keuangan-title');
+        const form = document.getElementById('form-keuangan');
+        const methodField = document.getElementById('method-keuangan-field');
+
+        if (title) title.textContent = 'Edit Catatan Transaksi';
+        if (form) form.action = "/asrama/keuangan/" + id;
+        if (methodField) methodField.innerHTML = '<input type="hidden" name="_method" value="PUT">';
+
+        if (document.getElementById('tx-tipe-select')) document.getElementById('tx-tipe-select').value = tipe;
+        if (document.getElementById('tx-kategori-select')) document.getElementById('tx-kategori-select').value = kategori;
+        if (document.getElementById('tx-nominal-formatted')) document.getElementById('tx-nominal-formatted').value = formatNumberWithDots(nominal);
+        if (document.getElementById('tx-nominal-raw')) document.getElementById('tx-nominal-raw').value = nominal;
+        if (document.getElementById('tx-tanggal-input')) document.getElementById('tx-tanggal-input').value = tanggal;
+        if (document.getElementById('tx-penghuni-select')) document.getElementById('tx-penghuni-select').value = penghuniId;
+        if (document.getElementById('tx-keterangan-input')) document.getElementById('tx-keterangan-input').value = keterangan;
+
+        togglePenghuniField();
+
         const m = document.getElementById('modal-keuangan');
         const o = document.getElementById('modal-keuangan-overlay');
         if (m) {

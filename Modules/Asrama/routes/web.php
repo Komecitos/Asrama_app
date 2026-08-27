@@ -30,5 +30,6 @@ Route::prefix('asrama')->name('asrama.')->group(function () {
     Route::get('/keuangan/matriks', [AsramaController::class, 'matriksKeuangan'])->name('keuangan.matriks');
     Route::post('/keuangan/matriks/update', [AsramaController::class, 'updateMatriksIuran'])->name('keuangan.matriks.update');
     Route::post('/keuangan', [AsramaController::class, 'storeKeuangan'])->name('keuangan.store');
+    Route::put('/keuangan/{id}', [AsramaController::class, 'updateKeuangan'])->name('keuangan.update');
     Route::delete('/keuangan/{id}', [AsramaController::class, 'destroyKeuangan'])->name('keuangan.destroy');
 });
