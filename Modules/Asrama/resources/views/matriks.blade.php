@@ -298,7 +298,7 @@
                             $proratedFee = (int) (round($rawProrata / 1000) * 1000);
                             }
                             }
-                        @endphp
+                            @endphp
 
                             @if($isPriorToJoin && $nominal == 0)
                             <td class="cell-not-joined" title="Masuk: {{ \Carbon\Carbon::parse($p->tanggal_masuk)->format('d/m/Y') }}">

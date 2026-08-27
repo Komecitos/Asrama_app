@@ -337,7 +337,17 @@ class AsramaController extends Controller
         $bulan = (int) $dateCarbon->format('n');
 
         if (!empty($validated['penghuni_id']) && ($validated['tipe'] === 'pemasukan' || $validated['kategori'] === 'Iuran Bulanan')) {
-            $this->allocateResidentPayment($validated['penghuni_id'], $tahun, $validated['nominal']);
+            // Reset and re-allocate total accumulated payments for accuracy
+            AsramaIuran::where('penghuni_id', $validated['penghuni_id'])->where('tahun', $tahun)->delete();
+            
+            $totalPaidYear = AsramaKeuangan::where('penghuni_id', $validated['penghuni_id'])
+                ->whereYear('tanggal', $tahun)
+                ->where(function($q) {
+                    $q->where('tipe', 'pemasukan')->orWhere('kategori', 'Iuran Bulanan');
+                })
+                ->sum('nominal');
+
+            $this->allocateResidentPayment($validated['penghuni_id'], $tahun, $totalPaidYear);
         }
 
         // AUTO-SYNC FOR WIFI AND SAMPAH EXPENSES
@@ -365,9 +375,64 @@ class AsramaController extends Controller
     public function destroyKeuangan($id)
     {
         $keuangan = AsramaKeuangan::findOrFail($id);
+
+        $penghuniId = $keuangan->penghuni_id;
+        $tanggal = $keuangan->tanggal;
+        $dateCarbon = \Carbon\Carbon::parse($tanggal);
+        $tahun = (int) $dateCarbon->format('Y');
+        $bulan = (int) $dateCarbon->format('n');
+        $kategori = $keuangan->kategori;
+        $keterangan = strtolower($keuangan->keterangan ?? '');
+
+        // Delete the transaction record
         $keuangan->delete();
 
-        return redirect()->route('asrama.keuangan')->with('success', 'Catatan keuangan berhasil dihapus!');
+        // 1. RE-SYNC RESIDENT IURAN MATRIX IF RESIDENT TRANSACTION DELETED
+        if ($penghuniId) {
+            AsramaIuran::where('penghuni_id', $penghuniId)->where('tahun', $tahun)->delete();
+
+            $remainingTotalPaid = AsramaKeuangan::where('penghuni_id', $penghuniId)
+                ->whereYear('tanggal', $tahun)
+                ->where(function($q) {
+                    $q->where('tipe', 'pemasukan')->orWhere('kategori', 'Iuran Bulanan');
+                })
+                ->sum('nominal');
+
+            if ($remainingTotalPaid > 0) {
+                $this->allocateResidentPayment($penghuniId, $tahun, $remainingTotalPaid);
+            }
+        }
+
+        // 2. RE-SYNC WIFI OR SAMPAH EXPENSES IF OPERATIONAL EXPENSE DELETED
+        if (str_contains($keterangan, 'wifi') || $kategori === 'Listrik & Air') {
+            $otherWifi = AsramaKeuangan::whereYear('tanggal', $tahun)
+                ->whereMonth('tanggal', $bulan)
+                ->where('tipe', 'pengeluaran')
+                ->where(function($q) {
+                    $q->where('kategori', 'Listrik & Air')->orWhere('keterangan', 'like', '%wifi%');
+                })
+                ->exists();
+
+            if (!$otherWifi) {
+                AsramaIuran::where('tahun', $tahun)->where('bulan', $bulan)->where('fasilitas_key', 'wifi')->delete();
+            }
+        }
+
+        if (str_contains($keterangan, 'sampah') || $kategori === 'Kebersihan & Keamanan') {
+            $otherSampah = AsramaKeuangan::whereYear('tanggal', $tahun)
+                ->whereMonth('tanggal', $bulan)
+                ->where('tipe', 'pengeluaran')
+                ->where(function($q) {
+                    $q->where('kategori', 'Kebersihan & Keamanan')->orWhere('keterangan', 'like', '%sampah%');
+                })
+                ->exists();
+
+            if (!$otherSampah) {
+                AsramaIuran::where('tahun', $tahun)->where('bulan', $bulan)->where('fasilitas_key', 'sampah')->delete();
+            }
+        }
+
+        return redirect()->route('asrama.keuangan')->with('success', 'Catatan keuangan berhasil dihapus & Matriks Iuran otomatis disesuaikan!');
     }
 
     private function allocateResidentPayment($penghuniId, $tahun, $amountReceived)
