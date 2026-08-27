@@ -396,8 +396,8 @@ class AsramaController extends Controller
 
             $targetFee = $tarifDefault;
             if ($tahun == $joinYear && $m == $joinMonth) {
-                $totalDaysInMonth = $joinCarbon->daysInMonth;
-                if ($joinDay == 1) {
+                $totalDaysInMonth = $joinCarbon ? $joinCarbon->daysInMonth : 30;
+                if ($joinDay == 1 || !$joinCarbon) {
                     $targetFee = $tarifDefault;
                 } else {
                     $sisaHari = max(1, $totalDaysInMonth - $joinDay);
