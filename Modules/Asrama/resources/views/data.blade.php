@@ -11,12 +11,6 @@
 
 @section('content')
 
-@php
-$wifiSettings = \Modules\Asrama\Http\Controllers\AsramaController::getWifiSettings();
-@endphp
-
-
-
 <div class="page-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
     <div class="sub-nav-tabs" id="asrama-sub-nav" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
         <a href="{{ route('asrama.data') }}" class="sub-nav-btn btn btn-sm {{ request()->routeIs('asrama.data') ? 'btn-primary' : 'btn-secondary' }}" data-nav="data">
@@ -31,17 +25,6 @@ $wifiSettings = \Modules\Asrama\Http\Controllers\AsramaController::getWifiSettin
     </div>
 
     <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
-        {{-- WIFI SETTINGS BUTTON --}}
-        <button type="button" onclick="openWifiModal()" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 0.35rem; font-weight: 600;" title="Atur SSID & Password WiFi Asrama">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #94a3b8;">
-                <path d="M5 12.55a11 11 0 0 1 14.08 0"></path>
-                <path d="M1.42 9a16 16 0 0 1 21.16 0"></path>
-                <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
-                <line x1="12" y1="20" x2="12.01" y2="20"></line>
-            </svg>
-            <span>Pengaturan WiFi</span>
-        </button>
-
         {{-- TOGGLE SHOW/HIDE AKSI COLUMN BUTTON --}}
         <div style="display: flex; align-items: center; background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255, 255, 255, 0.12); padding: 0.35rem 0.85rem; border-radius: 30px; gap: 0.6rem;">
             <span style="font-size: 0.85rem; font-weight: 700; color: #cbd5e1; display: inline-flex; align-items: center; gap: 0.35rem;">
@@ -101,7 +84,6 @@ $wifiSettings = \Modules\Asrama\Http\Controllers\AsramaController::getWifiSettin
                             <th>Asal Kampung</th>
                             <th>Kamar</th>
                             <th>Status</th>
-                            <th>Akses WiFi</th>
                             <th>Tgl Masuk</th>
                             <th class="col-aksi-header">Aksi</th>
                         </tr>
@@ -127,30 +109,7 @@ $wifiSettings = \Modules\Asrama\Http\Controllers\AsramaController::getWifiSettin
                                 <span class="badge badge-secondary">Keluar</span>
                                 @endif
                             </td>
-                            <td>
-                                @php
-                                $cYear = (int) date('Y');
-                                $cMonth = (int) date('n');
-                                $isLunasCurrentMonth = \Modules\Asrama\Models\AsramaIuran::where('penghuni_id', $penghuni->id)
-                                ->where('tahun', $cYear)
-                                ->where('bulan', $cMonth)
-                                ->where('nominal', '>', 0)
-                                ->exists();
-                                $waUrl = $isLunasCurrentMonth ? \Modules\Asrama\Http\Controllers\AsramaController::buildWaUrl($penghuni->nomor_hp, $penghuni->nama, date('F'), $cYear, 0) : null;
-                                @endphp
 
-                                @if($isLunasCurrentMonth && (!empty($penghuni->nomor_hp) || !empty($penghuni->telepon)))
-                                <button type="button" onclick="sendWifiWaDirect({{ $penghuni->id }}, this)" class="btn btn-sm" style="background: rgba(37, 211, 102, 0.15); border: 1px solid rgba(37, 211, 102, 0.4); color: #4ade80; font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.25rem; cursor: pointer;" title="Kirim Password WiFi via Fonnte WA Gateway">
-                                    📲 Pass WiFi
-                                </button>
-                                @elseif($isLunasCurrentMonth)
-                                <span class="badge badge-success" style="font-size: 0.75rem;">✓ WiFi Open</span>
-                                @else
-                                <span class="badge badge-secondary" style="font-size: 0.75rem; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5;" title="Lunasi iuran bulan berjalan untuk membuka akses WiFi">
-                                    🔒 WiFi Locked
-                                </span>
-                                @endif
-                            </td>
                             <td class="task-meta">{{ $penghuni->tanggal_masuk ? \Carbon\Carbon::parse($penghuni->tanggal_masuk)->format('d M Y') : '-' }}</td>
                             <td class="col-aksi-cell">
                                 <div style="display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap;">
@@ -504,41 +463,7 @@ $wifiSettings = \Modules\Asrama\Http\Controllers\AsramaController::getWifiSettin
 </div>
 <div id="modal-hapus-penghuni-overlay" class="modal-overlay" onclick="closeHapusPenghuniModal()"></div>
 
-{{-- MODAL PENGATURAN WIFI --}}
-<div id="modal-wifi" class="modal modal-create" style="display: none; max-width: 480px;">
-    <div class="modal-header">
-        <h3 style="margin: 0; display: flex; align-items: center; gap: 0.5rem;">📶 Pengaturan WiFi & WA Gateway</h3>
-        <button type="button" onclick="closeWifiModal()" class="modal-close">&times;</button>
-    </div>
-    <div class="modal-body" style="padding-top: 1rem;">
-        <form action="{{ route('asrama.wifi.settings') }}" method="POST">
-            @csrf
-            <div class="form-group" style="margin-bottom: 1rem;">
-                <label class="form-label">SSID (Nama WiFi) <span class="required">*</span></label>
-                <input type="text" name="wifi_ssid" class="form-control" value="{{ $wifiSettings['ssid'] }}" required placeholder="Contoh: MyHub_Asrama_WiFi">
-            </div>
-            <div class="form-group" style="margin-bottom: 1rem;">
-                <label class="form-label">Password WiFi <span class="required">*</span></label>
-                <input type="text" name="wifi_password" class="form-control" value="{{ $wifiSettings['password'] }}" required placeholder="Contoh: Asrama2026!Pass">
-            </div>
-            <div class="form-group" style="margin-bottom: 1.25rem;">
-                <label class="form-label" style="display: flex; justify-content: space-between; align-items: center;">
-                    <span>Fonnte API Token (WA Gateway)</span>
-                    <a href="https://fonnte.com" target="_blank" style="font-size: 0.75rem; color: #38bdf8; text-decoration: underline;">Daftar Gratis fonnte.com</a>
-                </label>
-                <input type="text" name="fonnte_token" class="form-control" value="{{ $wifiSettings['fonnte_token'] ?? '' }}" placeholder="Masukkan Token Fonnte (Opsional untuk Kirim Background)">
-                <small style="color: #94a3b8; font-size: 0.75rem; display: block; margin-top: 0.35rem;">
-                    *Jika Token Fonnte diisi, pesan WA terkirim otomatis di background tanpa redirect.
-                </small>
-            </div>
-            <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
-                <button type="button" class="btn btn-secondary" onclick="closeWifiModal()">Batal</button>
-                <button type="submit" class="btn btn-primary">Simpan Pengaturan</button>
-            </div>
-        </form>
-    </div>
-</div>
-<div id="modal-wifi-overlay" class="modal-overlay" onclick="closeWifiModal()" style="display: none;"></div>
+
 
 @endsection
 
@@ -691,65 +616,7 @@ $wifiSettings = \Modules\Asrama\Http\Controllers\AsramaController::getWifiSettin
         }
     }
 
-    function openWifiModal() {
-        const m = document.getElementById('modal-wifi');
-        const o = document.getElementById('modal-wifi-overlay');
-        if (m) {
-            m.classList.add('show');
-            m.style.display = 'block';
-        }
-        if (o) {
-            o.classList.add('show');
-            o.style.display = 'block';
-        }
-    }
 
-    function closeWifiModal() {
-        const m = document.getElementById('modal-wifi');
-        const o = document.getElementById('modal-wifi-overlay');
-        if (m) {
-            m.classList.remove('show');
-            m.style.display = 'none';
-        }
-        if (o) {
-            o.classList.remove('show');
-            o.style.display = 'none';
-        }
-    }
-
-    function sendWifiWaDirect(penghuniId, btnElem) {
-        const originalText = btnElem.innerHTML;
-        btnElem.disabled = true;
-        btnElem.innerHTML = '⏳ Sending...';
-
-        fetch("{{ route('asrama.wifi.send.wa') }}", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRF-TOKEN": "{{ csrf_token() }}"
-            },
-            body: JSON.stringify({ penghuni_id: penghuniId })
-        })
-        .then(res => res.json())
-        .then(data => {
-            btnElem.disabled = false;
-            btnElem.innerHTML = originalText;
-
-            if (data.status) {
-                alert('✅ ' + data.message);
-            } else if (data.is_fallback && data.fallback_url) {
-                alert('ℹ️ ' + data.message);
-                window.open(data.fallback_url, '_blank');
-            } else {
-                alert('⚠️ ' + (data.message || 'Gagal mengirim WhatsApp.'));
-            }
-        })
-        .catch(err => {
-            btnElem.disabled = false;
-            btnElem.innerHTML = originalText;
-            alert('⚠️ Terjadi kesalahan jaringan saat menghubungkan ke server.');
-        });
-    }
 
     function openHapusPenghuniModal(id, nama) {
         document.getElementById('hapus-penghuni-nama').textContent = nama;

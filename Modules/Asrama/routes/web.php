@@ -32,7 +32,4 @@ Route::prefix('asrama')->name('asrama.')->group(function () {
     Route::post('/keuangan', [AsramaController::class, 'storeKeuangan'])->name('keuangan.store');
     Route::delete('/keuangan/{id}', [AsramaController::class, 'destroyKeuangan'])->name('keuangan.destroy');
 
-    // WiFi Settings & WA Direct Dispatch Action
-    Route::post('/wifi/settings', [AsramaController::class, 'saveWifiSettings'])->name('wifi.settings');
-    Route::post('/wifi/send-wa', [AsramaController::class, 'sendWifiWaDirect'])->name('wifi.send.wa');
 });
