@@ -343,6 +343,20 @@ class AsramaController extends Controller
             if ($totalPaidYear > 0) {
                 $this->allocateResidentPayment($validated['penghuni_id'], $validated['tahun'], $totalPaidYear);
             }
+
+            $penghuni = AsramaPenghuni::find($validated['penghuni_id']);
+            if ($penghuni && !empty($penghuni->telepon)) {
+                $bulanNamesFull = [
+                    1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April', 5 => 'Mei', 6 => 'Juni',
+                    7 => 'Juli', 8 => 'Agustus', 9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+                ];
+                $bName = $bulanNamesFull[$validated['bulan']] ?? 'Bulan Ini';
+                $waUrl = self::buildWaUrl($penghuni->telepon, $penghuni->nama, $bName, $validated['tahun'], $validated['nominal']);
+                if ($waUrl) {
+                    session()->flash('wa_success_url', $waUrl);
+                    session()->flash('wa_success_nama', $penghuni->nama);
+                }
+            }
         }
 
         return redirect()->back()->with('success', 'Data matriks iuran & Transaksi Kas berhasil tersinkronisasi 100%!');
@@ -437,6 +451,24 @@ class AsramaController extends Controller
                 ['tahun' => $tahun, 'bulan' => $bulan, 'fasilitas_key' => 'sampah'],
                 ['nominal' => $validated['nominal'], 'status_lunas' => true]
             );
+        }
+
+        if (!empty($validated['penghuni_id'])) {
+            $penghuni = AsramaPenghuni::find($validated['penghuni_id']);
+            if ($penghuni && !empty($penghuni->telepon)) {
+                $txCarbon = \Carbon\Carbon::parse($validated['tanggal']);
+                $bulanNamesFull = [
+                    1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April', 5 => 'Mei', 6 => 'Juni',
+                    7 => 'Juli', 8 => 'Agustus', 9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+                ];
+                $bName = $bulanNamesFull[(int)$txCarbon->format('n')] ?? 'Bulan Ini';
+                $tYear = $txCarbon->format('Y');
+                $waUrl = self::buildWaUrl($penghuni->telepon, $penghuni->nama, $bName, $tYear, $validated['nominal']);
+                if ($waUrl) {
+                    session()->flash('wa_success_url', $waUrl);
+                    session()->flash('wa_success_nama', $penghuni->nama);
+                }
+            }
         }
 
         return redirect()->route('asrama.keuangan')->with('success', 'Catatan keuangan berhasil ditambahkan & Matriks Iuran otomatis dialokasikan!');
@@ -813,5 +845,55 @@ class AsramaController extends Controller
         ];
 
         return view('asrama::export_matriks_pdf', compact('tahun', 'tarifDefault', 'penghuniAktif', 'penghuniKeluar', 'iuranMap', 'bulanNames'));
+    }
+
+    public static function getWifiSettings()
+    {
+        return [
+            'ssid' => \Illuminate\Support\Facades\Cache::get('asrama_wifi_ssid', 'MyHub_Asrama_WiFi'),
+            'password' => \Illuminate\Support\Facades\Cache::get('asrama_wifi_password', 'Asrama2026!Pass'),
+        ];
+    }
+
+    public function saveWifiSettings(Request $request)
+    {
+        $validated = $request->validate([
+            'wifi_ssid' => 'required|string|max:100',
+            'wifi_password' => 'required|string|max:100',
+        ]);
+
+        \Illuminate\Support\Facades\Cache::forever('asrama_wifi_ssid', $validated['wifi_ssid']);
+        \Illuminate\Support\Facades\Cache::forever('asrama_wifi_password', $validated['wifi_password']);
+
+        return redirect()->back()->with('success', 'Pengaturan SSID & Password WiFi Asrama berhasil diperbarui!');
+    }
+
+    public static function buildWaUrl($phone, $nama, $bulanName, $tahun, $nominal = 0)
+    {
+        if (empty($phone)) return null;
+
+        $cleanPhone = preg_replace('/\D/', '', $phone);
+        if (str_starts_with($cleanPhone, '0')) {
+            $cleanPhone = '62' . substr($cleanPhone, 1);
+        } elseif (str_starts_with($cleanPhone, '8')) {
+            $cleanPhone = '62' . $cleanPhone;
+        }
+
+        $wifi = self::getWifiSettings();
+        $ssid = $wifi['ssid'];
+        $pass = $wifi['password'];
+
+        $msg = "Halo *{$nama}*,\n\n";
+        $msg .= "Pembayaran iuran Asrama Anda untuk bulan *{$bulanName} {$tahun}* telah *LUNAS*";
+        if ($nominal > 0) {
+            $msg .= " (Rp " . number_format($nominal, 0, ',', '.') . ")";
+        }
+        $msg .= ".\n\n";
+        $msg .= "Berikut informasi akses WiFi Asrama bulan ini:\n";
+        $msg .= "📶 *SSID*: {$ssid}\n";
+        $msg .= "🔑 *Password*: {$pass}\n\n";
+        $msg .= "Terima kasih!";
+
+        return 'https://wa.me/' . $cleanPhone . '?text=' . urlencode($msg);
     }
 }

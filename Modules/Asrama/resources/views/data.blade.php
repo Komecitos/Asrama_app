@@ -11,6 +11,21 @@
 
 @section('content')
 
+@php
+    $wifiSettings = \Modules\Asrama\Http\Controllers\AsramaController::getWifiSettings();
+@endphp
+
+@if(session('wa_success_url'))
+<div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); color: #6ee7b7; border-radius: 8px; padding: 0.85rem 1.25rem; margin-bottom: 1.25rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
+    <div>
+        <strong>✅ Pembayaran Lunas Ditambahkan!</strong> Kirimkan password WiFi ke WhatsApp <strong>{{ session('wa_success_nama') }}</strong>.
+    </div>
+    <a href="{{ session('wa_success_url') }}" target="_blank" class="btn btn-sm" style="background: #25D366; color: #fff; font-weight: 700; display: inline-flex; align-items: center; gap: 0.35rem;">
+        <span>📲 Kirim Pass WiFi via WA</span>
+    </a>
+</div>
+@endif
+
 <div class="page-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
     <div class="sub-nav-tabs" id="asrama-sub-nav" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
         <a href="{{ route('asrama.data') }}" class="sub-nav-btn btn btn-sm {{ request()->routeIs('asrama.data') ? 'btn-primary' : 'btn-secondary' }}" data-nav="data">
@@ -24,16 +39,28 @@
         </a>
     </div>
 
-    {{-- TOGGLE SHOW/HIDE AKSI COLUMN BUTTON --}}
-    <div style="display: flex; align-items: center; background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255, 255, 255, 0.12); padding: 0.35rem 0.85rem; border-radius: 30px; gap: 0.6rem;">
-        <span style="font-size: 0.85rem; font-weight: 700; color: #cbd5e1; display: inline-flex; align-items: center; gap: 0.35rem;">
+    <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+        {{-- WIFI SETTINGS BUTTON --}}
+        <button type="button" onclick="openWifiModal()" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 0.35rem; font-weight: 600;" title="Atur SSID & Password WiFi Asrama">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #94a3b8;">
-                <circle cx="12" cy="12" r="3"></circle>
-                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                <path d="M5 12.55a11 11 0 0 1 14.08 0"></path>
+                <path d="M1.42 9a16 16 0 0 1 21.16 0"></path>
+                <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+                <line x1="12" y1="20" x2="12.01" y2="20"></line>
             </svg>
-            Tombol Aksi:
-        </span>
-        <button type="button" id="btn-toggle-aksi" onclick="toggleAksiColumn()" style="display: flex; align-items: center; gap: 0.4rem; padding: 0.35rem 0.85rem; border-radius: 20px; font-weight: 800; font-size: 0.8rem; border: none; cursor: pointer; transition: all 0.2s ease;">
+            <span>Pengaturan WiFi</span>
+        </button>
+
+        {{-- TOGGLE SHOW/HIDE AKSI COLUMN BUTTON --}}
+        <div style="display: flex; align-items: center; background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255, 255, 255, 0.12); padding: 0.35rem 0.85rem; border-radius: 30px; gap: 0.6rem;">
+            <span style="font-size: 0.85rem; font-weight: 700; color: #cbd5e1; display: inline-flex; align-items: center; gap: 0.35rem;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #94a3b8;">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
+                Tombol Aksi:
+            </span>
+            <button type="button" id="btn-toggle-aksi" onclick="toggleAksiColumn()" style="display: flex; align-items: center; gap: 0.4rem; padding: 0.35rem 0.85rem; border-radius: 20px; font-weight: 800; font-size: 0.8rem; border: none; cursor: pointer; transition: all 0.2s ease;">
             <span id="aksi-status-dot" style="width: 8px; height: 8px; border-radius: 50%; display: inline-block;"></span>
             <span id="aksi-status-text">OFF</span>
         </button>
@@ -83,6 +110,7 @@
                         <th>Asal Kampung</th>
                         <th>Kamar</th>
                         <th>Status</th>
+                        <th>Akses WiFi</th>
                         <th>Tgl Masuk</th>
                         <th class="col-aksi-header">Aksi</th>
                     </tr>
@@ -106,6 +134,30 @@
                             <span class="badge badge-success">Aktif</span>
                             @else
                             <span class="badge badge-secondary">Keluar</span>
+                            @endif
+                        </td>
+                        <td>
+                            @php
+                            $cYear = (int) date('Y');
+                            $cMonth = (int) date('n');
+                            $isLunasCurrentMonth = \Modules\Asrama\Models\AsramaIuran::where('penghuni_id', $penghuni->id)
+                                ->where('tahun', $cYear)
+                                ->where('bulan', $cMonth)
+                                ->where('nominal', '>', 0)
+                                ->exists();
+                            $waUrl = $isLunasCurrentMonth ? \Modules\Asrama\Http\Controllers\AsramaController::buildWaUrl($penghuni->nomor_hp, $penghuni->nama, date('F'), $cYear, 0) : null;
+                            @endphp
+
+                            @if($isLunasCurrentMonth && $waUrl)
+                            <a href="{{ $waUrl }}" target="_blank" class="btn btn-sm" style="background: rgba(37, 211, 102, 0.15); border: 1px solid rgba(37, 211, 102, 0.4); color: #4ade80; font-size: 0.75rem; font-weight: 700; display: inline-flex; align-items: center; gap: 0.25rem;" title="Kirim Password WiFi via WA">
+                                📲 Pass WiFi
+                            </a>
+                            @elseif($isLunasCurrentMonth)
+                            <span class="badge badge-success" style="font-size: 0.75rem;">✓ WiFi Open</span>
+                            @else
+                            <span class="badge badge-secondary" style="font-size: 0.75rem; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5;" title="Lunasi iuran bulan berjalan untuk membuka akses WiFi">
+                                🔒 WiFi Locked
+                            </span>
                             @endif
                         </td>
                         <td class="task-meta">{{ $penghuni->tanggal_masuk ? \Carbon\Carbon::parse($penghuni->tanggal_masuk)->format('d M Y') : '-' }}</td>
@@ -461,6 +513,32 @@
 </div>
 <div id="modal-hapus-penghuni-overlay" class="modal-overlay" onclick="closeHapusPenghuniModal()"></div>
 
+{{-- MODAL PENGATURAN WIFI --}}
+<div id="modal-wifi" class="modal modal-create" style="display: none; max-width: 440px;">
+    <div class="modal-header">
+        <h3 style="margin: 0; display: flex; align-items: center; gap: 0.5rem;">📶 Pengaturan WiFi Asrama</h3>
+        <button type="button" onclick="closeWifiModal()" class="modal-close">&times;</button>
+    </div>
+    <div class="modal-body" style="padding-top: 1rem;">
+        <form action="{{ route('asrama.wifi.settings') }}" method="POST">
+            @csrf
+            <div class="form-group" style="margin-bottom: 1rem;">
+                <label class="form-label">SSID (Nama WiFi) <span class="required">*</span></label>
+                <input type="text" name="wifi_ssid" class="form-control" value="{{ $wifiSettings['ssid'] }}" required placeholder="Contoh: MyHub_Asrama_WiFi">
+            </div>
+            <div class="form-group" style="margin-bottom: 1.5rem;">
+                <label class="form-label">Password WiFi <span class="required">*</span></label>
+                <input type="text" name="wifi_password" class="form-control" value="{{ $wifiSettings['password'] }}" required placeholder="Contoh: Asrama2026!Pass">
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+                <button type="button" class="btn btn-secondary" onclick="closeWifiModal()">Batal</button>
+                <button type="submit" class="btn btn-primary">Simpan Pengaturan</button>
+            </div>
+        </form>
+    </div>
+</div>
+<div id="modal-wifi-overlay" class="modal-overlay" onclick="closeWifiModal()" style="display: none;"></div>
+
 @endsection
 
 @push('scripts')
@@ -610,6 +688,20 @@
             o.classList.remove('show');
             o.style.display = 'none';
         }
+    }
+
+    function openWifiModal() {
+        const m = document.getElementById('modal-wifi');
+        const o = document.getElementById('modal-wifi-overlay');
+        if (m) { m.classList.add('show'); m.style.display = 'block'; }
+        if (o) { o.classList.add('show'); o.style.display = 'block'; }
+    }
+
+    function closeWifiModal() {
+        const m = document.getElementById('modal-wifi');
+        const o = document.getElementById('modal-wifi-overlay');
+        if (m) { m.classList.remove('show'); m.style.display = 'none'; }
+        if (o) { o.classList.remove('show'); o.style.display = 'none'; }
     }
 
     function openHapusPenghuniModal(id, nama) {
