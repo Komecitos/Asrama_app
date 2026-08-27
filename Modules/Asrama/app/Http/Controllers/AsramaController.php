@@ -125,6 +125,21 @@ class AsramaController extends Controller
         return redirect()->route('asrama.data')->with('success', 'Penghuni ' . $penghuni->nama . ' telah ditandai keluar asrama!');
     }
 
+    public function reactivatePenghuni($id)
+    {
+        $penghuni = AsramaPenghuni::findOrFail($id);
+        $penghuni->update([
+            'status_penghuni' => 'Aktif',
+            'tanggal_keluar' => null,
+        ]);
+
+        if ($penghuni->kamar_id) {
+            $this->syncKamarStatus($penghuni->kamar_id);
+        }
+
+        return redirect()->route('asrama.data')->with('success', 'Penghuni ' . $penghuni->nama . ' berhasil diaktifkan kembali sebagai penghuni aktif!');
+    }
+
     public function destroyPenghuni($id)
     {
         $penghuni = AsramaPenghuni::findOrFail($id);

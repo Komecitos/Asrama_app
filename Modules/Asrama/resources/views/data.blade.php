@@ -233,6 +233,7 @@
                         <th>Asal Kampung</th>
                         <th>Kamar Terakhir</th>
                         <th>Catatan Aktivitas Log</th>
+                        <th class="col-aksi-header">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -254,6 +255,28 @@
                         </td>
                         <td>
                             <span class="badge badge-warning" style="background: rgba(245, 158, 11, 0.18); color: #fde047; border: 1px solid rgba(245, 158, 11, 0.35); font-weight: 600;">🚪 Resmi Keluar Asrama</span>
+                        </td>
+                        <td class="col-aksi-cell">
+                            <div style="display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap;">
+                                {{-- REACTIVATE BUTTON --}}
+                                <form action="{{ route('asrama.penghuni.reactivate', $pk->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Aktifkan kembali {{ addslashes($pk->nama) }} sebagai penghuni aktif?');">
+                                    @csrf
+                                    @method('PATCH')
+                                    <button type="submit" class="btn btn-success btn-sm" style="background: #10b981; color: #fff; border: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.3rem;" title="Aktifkan kembali penghuni">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="23 4 23 10 17 10"></polyline>
+                                            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                                        </svg>
+                                        <span>Aktifkan</span>
+                                    </button>
+                                </form>
+
+                                {{-- EDIT BUTTON --}}
+                                <button type="button" onclick="openEditPenghuniModal({{ $pk->id }}, '{{ addslashes($pk->nama) }}', '{{ addslashes($pk->nomor_hp ?: '') }}', '{{ addslashes($pk->kampus ?: '') }}', '{{ addslashes($pk->asal_kampung ?: '') }}', '{{ $pk->kamar_id ?: '' }}', '{{ $pk->tanggal_masuk ?: '' }}', '{{ addslashes($pk->catatan ?: '') }}')" class="btn btn-secondary btn-sm" title="Edit data penghuni">Edit</button>
+
+                                {{-- DELETE BUTTON --}}
+                                <button type="button" onclick="openHapusPenghuniModal({{ $pk->id }}, '{{ addslashes($pk->nama) }}')" class="btn btn-danger btn-sm" title="Hapus log & data penghuni">Hapus</button>
+                            </div>
                         </td>
                     </tr>
                     @endforeach

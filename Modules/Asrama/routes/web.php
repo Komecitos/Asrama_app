@@ -16,6 +16,7 @@ Route::prefix('asrama')->name('asrama.')->group(function () {
     // Penghuni Actions
     Route::post('/penghuni', [AsramaController::class, 'storePenghuni'])->name('penghuni.store');
     Route::patch('/penghuni/{id}/keluar', [AsramaController::class, 'keluarPenghuni'])->name('penghuni.keluar');
+    Route::patch('/penghuni/{id}/reactivate', [AsramaController::class, 'reactivatePenghuni'])->name('penghuni.reactivate');
     Route::put('/penghuni/{id}', [AsramaController::class, 'updatePenghuni'])->name('penghuni.update');
     Route::delete('/penghuni/{id}', [AsramaController::class, 'destroyPenghuni'])->name('penghuni.destroy');
 
