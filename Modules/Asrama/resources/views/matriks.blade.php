@@ -268,140 +268,140 @@
 
                     $untilM = 12;
                     if ($tahun == $cYear) {
-                        $untilM = $cMonth;
+                    $untilM = $cMonth;
                     } elseif ($tahun > $cYear) {
-                        $untilM = 0;
+                    $untilM = 0;
                     }
 
                     $pTotalObligation = 0;
                     if ($tahun >= $pJoinYear) {
-                        $startM = ($tahun == $pJoinYear) ? $pJoinMonth : 1;
-                        for ($m = $startM; $m <= $untilM; $m++) {
-                            if ($tahun == $pJoinYear && $m == $pJoinMonth) {
-                                $tDays = $pJoinCarbon->daysInMonth;
-                                if ($pJoinDay == 1) {
-                                    $pTotalObligation += $tarifDefault;
-                                } else {
-                                    $sisaH = max(1, $tDays - $pJoinDay);
-                                    $rawP = ($tarifDefault / $tDays) * $sisaH;
-                                    $pTotalObligation += (int) (round($rawP / 1000) * 1000);
-                                }
-                            } else {
-                                $pTotalObligation += $tarifDefault;
-                            }
+                    $startM = ($tahun == $pJoinYear) ? $pJoinMonth : 1;
+                    for ($m = $startM; $m <= $untilM; $m++) {
+                        if ($tahun==$pJoinYear && $m==$pJoinMonth) {
+                        $tDays=$pJoinCarbon->daysInMonth;
+                        if ($pJoinDay == 1) {
+                        $pTotalObligation += $tarifDefault;
+                        } else {
+                        $sisaH = max(1, $tDays - $pJoinDay);
+                        $rawP = ($tarifDefault / $tDays) * $sisaH;
+                        $pTotalObligation += (int) (round($rawP / 1000) * 1000);
                         }
-                    }
+                        } else {
+                        $pTotalObligation += $tarifDefault;
+                        }
+                        }
+                        }
 
-                    $pTotalPaid = \Modules\Asrama\Models\AsramaKeuangan::where('penghuni_id', $p->id)
+                        $pTotalPaid = \Modules\Asrama\Models\AsramaKeuangan::where('penghuni_id', $p->id)
                         ->whereYear('tanggal', $tahun)
                         ->sum('nominal');
 
-                    $pTunggakan = max(0, $pTotalObligation - $pTotalPaid);
-                    @endphp
-                    <tr class="matriks-row">
-                        <td class="col-nama">
-                            <div style="display: flex; flex-direction: column;">
-                                <span style="font-weight: 600; color: #f8fafc;">{{ $p->nama }}</span>
-                                @if($p->kamar)
-                                <span style="font-size: 0.72rem; color: #94a3b8; margin-top: 1px;">Kamar {{ $p->kamar->nomor_kamar }}</span>
-                                @endif
-                                @if($pTunggakan > 0)
-                                <span style="font-size: 0.72rem; color: #f87171; font-weight: 700; margin-top: 2px;" title="Total kekurangan iuran s.d {{ \Carbon\Carbon::now()->format('F') }}">
-                                    Kurang: Rp {{ number_format($pTunggakan, 0, ',', '.') }}
-                                </span>
+                        $pTunggakan = max(0, $pTotalObligation - $pTotalPaid);
+                        @endphp
+                        <tr class="matriks-row">
+                            <td class="col-nama">
+                                <div style="display: flex; flex-direction: column;">
+                                    <span style="font-weight: 600; color: #f8fafc;">{{ $p->nama }}</span>
+                                    @if($p->kamar)
+                                    <span style="font-size: 0.72rem; color: #94a3b8; margin-top: 1px;">Kamar {{ $p->kamar->nomor_kamar }}</span>
+                                    @endif
+                                    @if($pTunggakan > 0)
+                                    <span style="font-size: 0.72rem; color: #f87171; font-weight: 700; margin-top: 2px;" title="Total kekurangan iuran s.d {{ \Carbon\Carbon::now()->format('F') }}">
+                                        Kurang: Rp {{ number_format($pTunggakan, 0, ',', '.') }}
+                                    </span>
+                                    @else
+                                    <span style="font-size: 0.72rem; color: #6ee7b7; font-weight: 700; margin-top: 2px;" title="Iuran s.d bulan {{ \Carbon\Carbon::now()->format('F') }} telah lunas">
+                                        ✓ Lunas
+                                    </span>
+                                    @endif
+                                </div>
+                            </td>
+                            @foreach($bulanNames as $bNum => $bName)
+                            @php
+                            $cell = $iuranMap['penghuni_' . $p->id . '_' . $bNum] ?? null;
+                            $nominal = $cell ? $cell->nominal : 0;
+
+                            $isPriorToJoin = false;
+                            $isJoinMonth = false;
+                            $proratedFee = 0;
+                            $sisaHari = 0;
+
+                            $effectiveJoinDate = $p->tanggal_masuk ?: '2026-01-01';
+                            $joinCarbon = \Carbon\Carbon::parse($effectiveJoinDate);
+                            $joinYear = (int)$joinCarbon->format('Y');
+                            $joinMonth = (int)$joinCarbon->format('m');
+                            $joinDay = (int)$joinCarbon->format('d');
+
+                            if ($tahun < $joinYear || ($tahun==$joinYear && $bNum < $joinMonth)) {
+                                $isPriorToJoin=true;
+                                } elseif ($tahun==$joinYear && $bNum==$joinMonth) {
+                                $isJoinMonth=true;
+                                $totalDaysInMonth=$joinCarbon->daysInMonth;
+                                if ($joinDay == 1) {
+                                $sisaHari = $totalDaysInMonth;
+                                $proratedFee = $tarifDefault;
+                                } else {
+                                $sisaHari = max(1, $totalDaysInMonth - $joinDay);
+                                $rawProrata = ($tarifDefault / $totalDaysInMonth) * $sisaHari;
+                                $proratedFee = (int) (round($rawProrata / 1000) * 1000);
+                                }
+                                }
+                                @endphp
+
+                                @if($isPriorToJoin && $nominal == 0)
+                                <td class="cell-not-joined" title="Masuk: {{ \Carbon\Carbon::parse($p->tanggal_masuk)->format('d/m/Y') }}">
+                                    masuk : {{ \Carbon\Carbon::parse($p->tanggal_masuk)->format('d/m/Y') }}
+                                </td>
+                                @elseif($isJoinMonth && $nominal == 0)
+                                <td class="cell-empty" style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4); cursor: pointer;" onclick="openCellModal({{ $p->id }}, null, '{{ addslashes($p->nama) }}', {{ $bNum }}, '{{ $bName }}', {{ $nominal }}, 0, {{ $proratedFee }}, {{ $sisaHari }})" title="Klik untuk bayar iuran prorata {{ $p->nama }} (Masuk {{ \Carbon\Carbon::parse($p->tanggal_masuk)->format('d/m/Y') }})">
+                                    <div style="font-size: 0.65rem; color: #f59e0b; font-weight: 700; text-transform: uppercase;">Masuk {{ \Carbon\Carbon::parse($p->tanggal_masuk)->format('d/m') }}</div>
+                                    <div style="font-size: 0.78rem; font-weight: 700; color: #6ee7b7;">Rp {{ number_format($proratedFee, 0, ',', '.') }}</div>
+                                    <div style="font-size: 0.65rem; color: #cbd5e1;">({{ $sisaHari }} hr)</div>
+                                </td>
                                 @else
-                                <span style="font-size: 0.72rem; color: #6ee7b7; font-weight: 700; margin-top: 2px;" title="Iuran s.d bulan {{ \Carbon\Carbon::now()->format('F') }} telah lunas">
-                                    ✓ Lunas
-                                </span>
+                                <td class="{{ $nominal > 0 ? 'cell-paid' : 'cell-empty' }}" onclick="openCellModal({{ $p->id }}, null, '{{ addslashes($p->nama) }}', {{ $bNum }}, '{{ $bName }}', {{ $nominal }}, {{ $nominal > 0 ? 1 : 0 }}, {{ $proratedFee }}, {{ $sisaHari }})" title="Klik untuk ubah iuran {{ $p->nama }} ({{ $bName }})">
+                                    @if($nominal > 0)
+                                    Rp {{ number_format($nominal, 0, ',', '.') }}
+                                    @else
+                                    <span style="opacity: 0.3;">Rp 0</span>
+                                    @endif
+                                </td>
                                 @endif
-                            </div>
-                        </td>
-                        @foreach($bulanNames as $bNum => $bName)
-                        @php
-                        $cell = $iuranMap['penghuni_' . $p->id . '_' . $bNum] ?? null;
-                        $nominal = $cell ? $cell->nominal : 0;
+                                @endforeach
+                        </tr>
+                        @endforeach
 
-                        $isPriorToJoin = false;
-                        $isJoinMonth = false;
-                        $proratedFee = 0;
-                        $sisaHari = 0;
+                        {{-- KELUAR DIVIDER ROW --}}
+                        <tr>
+                            <td colspan="13" class="row-divider">
+                                🚪 Keluar (Penghuni Non-Aktif)
+                            </td>
+                        </tr>
 
-                        $effectiveJoinDate = $p->tanggal_masuk ?: '2026-01-01';
-                        $joinCarbon = \Carbon\Carbon::parse($effectiveJoinDate);
-                        $joinYear = (int)$joinCarbon->format('Y');
-                        $joinMonth = (int)$joinCarbon->format('m');
-                        $joinDay = (int)$joinCarbon->format('d');
-
-                        if ($tahun < $joinYear || ($tahun==$joinYear && $bNum < $joinMonth)) {
-                            $isPriorToJoin=true;
-                            } elseif ($tahun==$joinYear && $bNum==$joinMonth) {
-                            $isJoinMonth=true;
-                            $totalDaysInMonth=$joinCarbon->daysInMonth;
-                            if ($joinDay == 1) {
-                            $sisaHari = $totalDaysInMonth;
-                            $proratedFee = $tarifDefault;
-                            } else {
-                            $sisaHari = max(1, $totalDaysInMonth - $joinDay);
-                            $rawProrata = ($tarifDefault / $totalDaysInMonth) * $sisaHari;
-                            $proratedFee = (int) (round($rawProrata / 1000) * 1000);
-                            }
-                            }
+                        {{-- FORMER RESIDENTS ROWS --}}
+                        @foreach($penghuniKeluar as $p)
+                        <tr class="matriks-row">
+                            <td class="col-nama">
+                                <div style="display: flex; flex-direction: column; opacity: 0.85;">
+                                    <span style="font-weight: 500; color: #cbd5e1;">{{ $p->nama }}</span>
+                                    <span style="font-size: 0.7rem; color: #64748b;">(Keluar)</span>
+                                </div>
+                            </td>
+                            @foreach($bulanNames as $bNum => $bName)
+                            @php
+                            $cell = $iuranMap['penghuni_' . $p->id . '_' . $bNum] ?? null;
+                            $nominal = $cell ? $cell->nominal : 0;
                             @endphp
-
-                            @if($isPriorToJoin && $nominal == 0)
-                            <td class="cell-not-joined" title="Masuk: {{ \Carbon\Carbon::parse($p->tanggal_masuk)->format('d/m/Y') }}">
-                                masuk : {{ \Carbon\Carbon::parse($p->tanggal_masuk)->format('d/m/Y') }}
-                            </td>
-                            @elseif($isJoinMonth && $nominal == 0)
-                            <td class="cell-empty" style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.4); cursor: pointer;" onclick="openCellModal({{ $p->id }}, null, '{{ addslashes($p->nama) }}', {{ $bNum }}, '{{ $bName }}', {{ $nominal }}, 0, {{ $proratedFee }}, {{ $sisaHari }})" title="Klik untuk bayar iuran prorata {{ $p->nama }} (Masuk {{ \Carbon\Carbon::parse($p->tanggal_masuk)->format('d/m/Y') }})">
-                                <div style="font-size: 0.65rem; color: #f59e0b; font-weight: 700; text-transform: uppercase;">Masuk {{ \Carbon\Carbon::parse($p->tanggal_masuk)->format('d/m') }}</div>
-                                <div style="font-size: 0.78rem; font-weight: 700; color: #6ee7b7;">Rp {{ number_format($proratedFee, 0, ',', '.') }}</div>
-                                <div style="font-size: 0.65rem; color: #cbd5e1;">({{ $sisaHari }} hr)</div>
-                            </td>
-                            @else
-                            <td class="{{ $nominal > 0 ? 'cell-paid' : 'cell-empty' }}" onclick="openCellModal({{ $p->id }}, null, '{{ addslashes($p->nama) }}', {{ $bNum }}, '{{ $bName }}', {{ $nominal }}, {{ $nominal > 0 ? 1 : 0 }}, {{ $proratedFee }}, {{ $sisaHari }})" title="Klik untuk ubah iuran {{ $p->nama }} ({{ $bName }})">
+                            <td class="{{ $nominal > 0 ? 'cell-paid' : 'cell-empty' }}" onclick="openCellModal({{ $p->id }}, null, '{{ addslashes($p->nama) }}', {{ $bNum }}, '{{ $bName }}', {{ $nominal }}, {{ $nominal > 0 ? 1 : 0 }})" title="Klik untuk ubah iuran {{ $p->nama }} ({{ $bName }})">
                                 @if($nominal > 0)
                                 Rp {{ number_format($nominal, 0, ',', '.') }}
                                 @else
-                                <span style="opacity: 0.3;">Rp 0</span>
+                                <span style="opacity: 0.25;">Rp 0</span>
                                 @endif
                             </td>
-                            @endif
                             @endforeach
-                    </tr>
-                    @endforeach
-
-                    {{-- KELUAR DIVIDER ROW --}}
-                    <tr>
-                        <td colspan="13" class="row-divider">
-                            🚪 Keluar (Penghuni Non-Aktif)
-                        </td>
-                    </tr>
-
-                    {{-- FORMER RESIDENTS ROWS --}}
-                    @foreach($penghuniKeluar as $p)
-                    <tr class="matriks-row">
-                        <td class="col-nama">
-                            <div style="display: flex; flex-direction: column; opacity: 0.85;">
-                                <span style="font-weight: 500; color: #cbd5e1;">{{ $p->nama }}</span>
-                                <span style="font-size: 0.7rem; color: #64748b;">(Keluar)</span>
-                            </div>
-                        </td>
-                        @foreach($bulanNames as $bNum => $bName)
-                        @php
-                        $cell = $iuranMap['penghuni_' . $p->id . '_' . $bNum] ?? null;
-                        $nominal = $cell ? $cell->nominal : 0;
-                        @endphp
-                        <td class="{{ $nominal > 0 ? 'cell-paid' : 'cell-empty' }}" onclick="openCellModal({{ $p->id }}, null, '{{ addslashes($p->nama) }}', {{ $bNum }}, '{{ $bName }}', {{ $nominal }}, {{ $nominal > 0 ? 1 : 0 }})" title="Klik untuk ubah iuran {{ $p->nama }} ({{ $bName }})">
-                            @if($nominal > 0)
-                            Rp {{ number_format($nominal, 0, ',', '.') }}
-                            @else
-                            <span style="opacity: 0.25;">Rp 0</span>
-                            @endif
-                        </td>
+                        </tr>
                         @endforeach
-                    </tr>
-                    @endforeach
                 </tbody>
             </table>
         </div>

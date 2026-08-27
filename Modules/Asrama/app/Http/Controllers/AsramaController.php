@@ -547,15 +547,17 @@ class AsramaController extends Controller
         }
 
         if ($remaining > 0) {
-            $decIuran = AsramaIuran::where('tahun', $tahun)
-                ->where('bulan', 12)
-                ->where('penghuni_id', $penghuniId)
-                ->first();
-            $decNom = ($decIuran ? $decIuran->nominal : 0) + $remaining;
-            AsramaIuran::updateOrCreate(
-                ['tahun' => $tahun, 'bulan' => 12, 'penghuni_id' => $penghuniId],
-                ['nominal' => $decNom, 'status_lunas' => true]
-            );
+            $nextYear = $tahun + 1;
+            for ($nm = 1; $nm <= 12; $nm++) {
+                if ($remaining <= 0) break;
+                $targetFee = $tarifDefault;
+                $allocated = min($remaining, $targetFee);
+                AsramaIuran::updateOrCreate(
+                    ['tahun' => $nextYear, 'bulan' => $nm, 'penghuni_id' => $penghuniId],
+                    ['nominal' => $allocated, 'status_lunas' => $allocated >= $targetFee]
+                );
+                $remaining -= $allocated;
+            }
         }
     }
 }
