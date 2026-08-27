@@ -331,30 +331,13 @@ class AsramaController extends Controller
 
         $keuangan = AsramaKeuangan::create($validated);
 
-        // AUTO-SYNC TO MATRIKS IURAN BULANAN (asrama_iurans)
+        // AUTO-SYNC TO MATRIKS IURAN BULANAN (asrama_iurans) WITH WATERFALL / FIFO ALLOCATION
         $dateCarbon = \Carbon\Carbon::parse($validated['tanggal']);
         $tahun = (int) $dateCarbon->format('Y');
         $bulan = (int) $dateCarbon->format('n');
 
         if (!empty($validated['penghuni_id']) && ($validated['tipe'] === 'pemasukan' || $validated['kategori'] === 'Iuran Bulanan')) {
-            $iuran = AsramaIuran::where('tahun', $tahun)
-                ->where('bulan', $bulan)
-                ->where('penghuni_id', $validated['penghuni_id'])
-                ->first();
-
-            $newNominal = $iuran ? ($iuran->nominal + $validated['nominal']) : $validated['nominal'];
-
-            AsramaIuran::updateOrCreate(
-                [
-                    'tahun' => $tahun,
-                    'bulan' => $bulan,
-                    'penghuni_id' => $validated['penghuni_id'],
-                ],
-                [
-                    'nominal' => $newNominal,
-                    'status_lunas' => $newNominal > 0,
-                ]
-            );
+            $this->allocateResidentPayment($validated['penghuni_id'], $tahun, $validated['nominal']);
         }
 
         // AUTO-SYNC FOR WIFI AND SAMPAH EXPENSES
@@ -376,7 +359,7 @@ class AsramaController extends Controller
             }
         }
 
-        return redirect()->route('asrama.keuangan')->with('success', 'Catatan keuangan berhasil ditambahkan & Matriks Iuran otomatis diperbarui!');
+        return redirect()->route('asrama.keuangan')->with('success', 'Catatan keuangan berhasil ditambahkan & Matriks Iuran otomatis dialokasikan!');
     }
 
     public function destroyKeuangan($id)
@@ -385,5 +368,75 @@ class AsramaController extends Controller
         $keuangan->delete();
 
         return redirect()->route('asrama.keuangan')->with('success', 'Catatan keuangan berhasil dihapus!');
+    }
+
+    private function allocateResidentPayment($penghuniId, $tahun, $amountReceived)
+    {
+        $penghuni = AsramaPenghuni::find($penghuniId);
+        if (!$penghuni || $amountReceived <= 0) return;
+
+        $tarifDefault = session('asrama_tarif_default', 100000);
+
+        $joinCarbon = $penghuni->tanggal_masuk ? \Carbon\Carbon::parse($penghuni->tanggal_masuk) : null;
+        $joinYear = $joinCarbon ? (int)$joinCarbon->format('Y') : $tahun;
+        $joinMonth = $joinCarbon ? (int)$joinCarbon->format('m') : 1;
+        $joinDay = $joinCarbon ? (int)$joinCarbon->format('d') : 1;
+
+        $startMonth = 1;
+        if ($tahun < $joinYear) {
+            return;
+        } elseif ($tahun == $joinYear) {
+            $startMonth = $joinMonth;
+        }
+
+        $remaining = $amountReceived;
+
+        for ($m = $startMonth; $m <= 12; $m++) {
+            if ($remaining <= 0) break;
+
+            $targetFee = $tarifDefault;
+            if ($tahun == $joinYear && $m == $joinMonth) {
+                $totalDaysInMonth = $joinCarbon->daysInMonth;
+                if ($joinDay == 1) {
+                    $targetFee = $tarifDefault;
+                } else {
+                    $sisaHari = max(1, $totalDaysInMonth - $joinDay);
+                    $rawProrata = ($tarifDefault / $totalDaysInMonth) * $sisaHari;
+                    $targetFee = (int) (round($rawProrata / 1000) * 1000);
+                }
+            }
+
+            $iuran = AsramaIuran::where('tahun', $tahun)
+                ->where('bulan', $m)
+                ->where('penghuni_id', $penghuniId)
+                ->first();
+
+            $alreadyPaid = $iuran ? $iuran->nominal : 0;
+            $needed = max(0, $targetFee - $alreadyPaid);
+
+            if ($needed > 0) {
+                $allocated = min($remaining, $needed);
+                $newNominal = $alreadyPaid + $allocated;
+
+                AsramaIuran::updateOrCreate(
+                    ['tahun' => $tahun, 'bulan' => $m, 'penghuni_id' => $penghuniId],
+                    ['nominal' => $newNominal, 'status_lunas' => $newNominal >= $targetFee]
+                );
+
+                $remaining -= $allocated;
+            }
+        }
+
+        if ($remaining > 0) {
+            $decIuran = AsramaIuran::where('tahun', $tahun)
+                ->where('bulan', 12)
+                ->where('penghuni_id', $penghuniId)
+                ->first();
+            $decNom = ($decIuran ? $decIuran->nominal : 0) + $remaining;
+            AsramaIuran::updateOrCreate(
+                ['tahun' => $tahun, 'bulan' => 12, 'penghuni_id' => $penghuniId],
+                ['nominal' => $decNom, 'status_lunas' => true]
+            );
+        }
     }
 }
