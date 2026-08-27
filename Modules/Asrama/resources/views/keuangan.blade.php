@@ -5,8 +5,8 @@
 @endpush
 
 @section('topbar')
-<a href="{{ route('asrama.data') }}" class="btn btn-secondary">Data Asrama</a>
-<a href="{{ route('asrama.keuangan') }}" class="btn btn-secondary active">Keuangan</a>
+<a href="{{ route('asrama.data') }}" class="topbar-menu-btn btn btn-secondary {{ request()->routeIs('asrama.data') ? 'active' : '' }}" data-menu="data_asrama">Data Asrama</a>
+<a href="{{ route('asrama.keuangan') }}" class="topbar-menu-btn btn btn-secondary {{ request()->routeIs('asrama.keuangan*') ? 'active' : '' }}" data-menu="keuangan">Keuangan</a>
 @endsection
 
 @section('content')
@@ -275,6 +275,16 @@
     }
 
     document.addEventListener('DOMContentLoaded', function() {
+        // Header Topbar Menu Event Listeners (Data Asrama & Keuangan)
+        const topbarMenuBtns = document.querySelectorAll('.topbar-menu-btn');
+        topbarMenuBtns.forEach(function(btn) {
+            btn.addEventListener('click', function(e) {
+                topbarMenuBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Sub-nav buttons Event Listeners
         const subNavBtns = document.querySelectorAll('.sub-nav-btn');
         subNavBtns.forEach(function(btn) {
             btn.addEventListener('click', function() {

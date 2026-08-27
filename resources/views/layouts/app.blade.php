@@ -95,7 +95,13 @@
 @stack('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // toast dipanggil dari script terpisah di bawah
+        const portalNavBtns = document.querySelectorAll('.portal-nav-btn');
+        portalNavBtns.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                portalNavBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
     });
 </script>
 
