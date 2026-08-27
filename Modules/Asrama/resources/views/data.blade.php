@@ -73,7 +73,6 @@
                         <th>Kamar</th>
                         <th>Status</th>
                         <th>Tgl Masuk</th>
-                        <th>Tgl Keluar</th>
                         <th class="col-aksi-header">Aksi</th>
                     </tr>
                 </thead>
@@ -99,7 +98,6 @@
                             @endif
                         </td>
                         <td class="task-meta">{{ $penghuni->tanggal_masuk ? \Carbon\Carbon::parse($penghuni->tanggal_masuk)->format('d M Y') : '-' }}</td>
-                        <td class="task-meta">{{ $penghuni->tanggal_keluar ? \Carbon\Carbon::parse($penghuni->tanggal_keluar)->format('d M Y') : '-' }}</td>
                         <td class="col-aksi-cell">
                             <div style="display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap;">
                                 {{-- EDIT BUTTON --}}
@@ -130,7 +128,7 @@
     </div>
 
     {{-- KAMAR SECTION --}}
-    <div class="widget-card">
+    <div class="widget-card" style="margin-bottom: 2rem;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
             <div>
                 <h3 class="widget-title" style="margin: 0;">🚪 Daftar Kamar Asrama</h3>
@@ -203,6 +201,64 @@
         </div>
         @endif
     </div>
+
+    {{-- LOG AKTIVITAS / PENGHUNI KELUAR SECTION --}}
+    <div class="widget-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <div>
+                <h3 class="widget-title" style="margin: 0;">📜 Log Aktivitas & Penghuni Keluar</h3>
+                <p class="task-meta" style="margin: 0.2rem 0 0 0;">Riwayat dan catatan log resmi penghuni yang telah keluar dari asrama</p>
+            </div>
+        </div>
+
+        @php
+        $penghuniKeluarList = $penghunis->where('status_penghuni', 'Keluar')->sortByDesc('tanggal_keluar');
+        @endphp
+
+        @if($penghuniKeluarList->isEmpty())
+        <p class="empty-state">Belum ada riwayat log penghuni keluar.</p>
+        @else
+        <div class="table-wrapper">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Tanggal Keluar</th>
+                        <th>Nama Penghuni</th>
+                        <th>No. Telepon / HP</th>
+                        <th>Kampus</th>
+                        <th>Asal Kampung</th>
+                        <th>Kamar Terakhir</th>
+                        <th>Catatan Aktivitas Log</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($penghuniKeluarList as $pk)
+                    <tr>
+                        <td style="font-weight: 700; color: #f59e0b;">
+                            📅 {{ $pk->tanggal_keluar ? \Carbon\Carbon::parse($pk->tanggal_keluar)->format('d M Y') : '-' }}
+                        </td>
+                        <td class="task-title" style="font-weight: 600; color: #cbd5e1;">{{ $pk->nama }}</td>
+                        <td class="task-meta">{{ $pk->nomor_hp ?: '-' }}</td>
+                        <td>{{ $pk->kampus ?: '-' }}</td>
+                        <td class="task-meta">{{ $pk->asal_kampung ?: '-' }}</td>
+                        <td>
+                            @if($pk->kamar)
+                            <span class="badge badge-info">{{ $pk->kamar->nomor_kamar }}</span>
+                            @else
+                            <span class="task-meta">-</span>
+                            @endif
+                        </td>
+                        <td>
+                            <span class="badge badge-warning" style="background: rgba(245, 158, 11, 0.18); color: #fde047; border: 1px solid rgba(245, 158, 11, 0.35); font-weight: 600;">🚪 Resmi Keluar Asrama</span>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+        @endif
+    </div>
+</div>
 </div>
 
 {{-- MODAL TAMBAH/EDIT KAMAR --}}
