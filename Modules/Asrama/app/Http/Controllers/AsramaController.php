@@ -885,4 +885,120 @@ class AsramaController extends Controller
 
         return view('asrama::export_matriks_pdf', compact('tahun', 'tarifDefault', 'penghuniAktif', 'penghuniKeluar', 'iuranMap', 'bulanNames'));
     }
+
+    public function uploadKeuanganPdfDrive(Request $request)
+    {
+        $webAppUrl = env('GOOGLE_DRIVE_WEBAPP_URL');
+        $folderId = env('GOOGLE_DRIVE_FOLDER_ID', '1YMXQesk2E8b-59z4wRFfq61nW4taAwlk');
+
+        if (empty($webAppUrl)) {
+            return response()->json([
+                'status' => false,
+                'message' => 'GOOGLE_DRIVE_WEBAPP_URL belum diatur di file .env'
+            ], 400);
+        }
+
+        $keuangans = AsramaKeuangan::with('penghuni')->orderBy('tanggal', 'desc')->get();
+        $totalPemasukan = AsramaKeuangan::where('tipe', 'pemasukan')->sum('nominal');
+        $totalPengeluaran = AsramaKeuangan::where('tipe', 'pengeluaran')->sum('nominal');
+        $saldoKas = $totalPemasukan - $totalPengeluaran;
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('asrama::export_pdf', compact('keuangans', 'totalPemasukan', 'totalPengeluaran', 'saldoKas'));
+        $pdfOutput = $pdf->output();
+
+        $fileName = 'Laporan_Keuangan_Asrama_' . date('Y-m-d_His') . '.pdf';
+
+        try {
+            $response = \Illuminate\Support\Facades\Http::timeout(30)->post($webAppUrl, [
+                'folder_id' => $folderId,
+                'file_name' => $fileName,
+                'mime_type' => 'application/pdf',
+                'file_data' => base64_encode($pdfOutput),
+            ]);
+
+            $resData = $response->json();
+
+            if ($response->successful() && isset($resData['status']) && $resData['status'] === true) {
+                return response()->json([
+                    'status' => true,
+                    'file_name' => $fileName,
+                    'file_url' => $resData['file_url'] ?? null,
+                    'message' => 'Laporan Transaksi Keuangan berhasil diunggah ke Google Drive!'
+                ]);
+            } else {
+                $errMsg = $resData['message'] ?? 'Gagal mengunggah file ke Google Drive';
+                return response()->json(['status' => false, 'message' => $errMsg], 500);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Koneksi ke Google Drive Gagal: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function uploadMatriksPdfDrive(Request $request)
+    {
+        $webAppUrl = env('GOOGLE_DRIVE_WEBAPP_URL');
+        $folderId = env('GOOGLE_DRIVE_FOLDER_ID', '1YMXQesk2E8b-59z4wRFfq61nW4taAwlk');
+
+        if (empty($webAppUrl)) {
+            return response()->json([
+                'status' => false,
+                'message' => 'GOOGLE_DRIVE_WEBAPP_URL belum diatur di file .env'
+            ], 400);
+        }
+
+        $tahun = (int) $request->input('tahun', date('Y'));
+        $tarifDefault = 500000;
+        $penghuniAktif = AsramaPenghuni::where('status_penghuni', 'Aktif')->orderBy('nama', 'asc')->get();
+        $penghuniKeluar = AsramaPenghuni::where('status_penghuni', 'Keluar')->whereYear('updated_at', $tahun)->orderBy('nama', 'asc')->get();
+
+        $iurans = AsramaIuran::where('tahun', $tahun)->get();
+        $iuranMap = [];
+        foreach ($iurans as $iuran) {
+            $key = $iuran->penghuni_id
+                ? "penghuni_{$iuran->penghuni_id}_{$iuran->bulan}"
+                : "fasilitas_{$iuran->fasilitas_key}_{$iuran->bulan}";
+            $iuranMap[$key] = $iuran;
+        }
+
+        $bulanNames = [
+            1 => 'Jan', 2 => 'Feb', 3 => 'Mar', 4 => 'Apr', 5 => 'Mei', 6 => 'Jun',
+            7 => 'Jul', 8 => 'Agu', 9 => 'Sep', 10 => 'Okt', 11 => 'Nov', 12 => 'Des'
+        ];
+
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('asrama::export_matriks_pdf', compact('tahun', 'tarifDefault', 'penghuniAktif', 'penghuniKeluar', 'iuranMap', 'bulanNames'));
+        $pdfOutput = $pdf->output();
+
+        $fileName = 'Matriks_Iuran_Asrama_' . $tahun . '_' . date('Y-m-d_His') . '.pdf';
+
+        try {
+            $response = \Illuminate\Support\Facades\Http::timeout(30)->post($webAppUrl, [
+                'folder_id' => $folderId,
+                'file_name' => $fileName,
+                'mime_type' => 'application/pdf',
+                'file_data' => base64_encode($pdfOutput),
+            ]);
+
+            $resData = $response->json();
+
+            if ($response->successful() && isset($resData['status']) && $resData['status'] === true) {
+                return response()->json([
+                    'status' => true,
+                    'file_name' => $fileName,
+                    'file_url' => $resData['file_url'] ?? null,
+                    'message' => 'Laporan Matriks Iuran berhasil diunggah ke Google Drive!'
+                ]);
+            } else {
+                $errMsg = $resData['message'] ?? 'Gagal mengunggah file ke Google Drive';
+                return response()->json(['status' => false, 'message' => $errMsg], 500);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Koneksi ke Google Drive Gagal: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }

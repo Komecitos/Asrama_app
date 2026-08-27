@@ -20,11 +20,13 @@ Route::prefix('asrama')->name('asrama.')->group(function () {
     Route::put('/penghuni/{id}', [AsramaController::class, 'updatePenghuni'])->name('penghuni.update');
     Route::delete('/penghuni/{id}', [AsramaController::class, 'destroyPenghuni'])->name('penghuni.destroy');
 
-    // Keuangan & Matriks Export Actions
+    // Keuangan & Matriks Export & Google Drive Actions
     Route::get('/keuangan/export/excel', [AsramaController::class, 'exportKeuanganExcel'])->name('keuangan.export.excel');
     Route::get('/keuangan/export/pdf', [AsramaController::class, 'exportKeuanganPdf'])->name('keuangan.export.pdf');
+    Route::post('/keuangan/upload-drive', [AsramaController::class, 'uploadKeuanganPdfDrive'])->name('keuangan.upload.drive');
     Route::get('/keuangan/matriks/export/excel', [AsramaController::class, 'exportMatriksExcel'])->name('keuangan.matriks.export.excel');
     Route::get('/keuangan/matriks/export/pdf', [AsramaController::class, 'exportMatriksPdf'])->name('keuangan.matriks.export.pdf');
+    Route::post('/keuangan/matriks/upload-drive', [AsramaController::class, 'uploadMatriksPdfDrive'])->name('keuangan.matriks.upload.drive');
 
     // Keuangan & Matriks Main Actions
     Route::get('/keuangan/matriks', [AsramaController::class, 'matriksKeuangan'])->name('keuangan.matriks');

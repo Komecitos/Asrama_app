@@ -76,6 +76,14 @@
                     </svg>
                     <span>Export PDF</span>
                 </a>
+                <button type="button" onclick="uploadKeuanganToDrive(this)" class="btn btn-secondary btn-sm" style="background: rgba(56, 189, 248, 0.15); border-color: rgba(56, 189, 248, 0.4); color: #38bdf8; font-weight: 600; display: inline-flex; align-items: center; gap: 0.35rem;" title="Unggah Laporan PDF Transaksi Kas ke Google Drive">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="17 8 12 3 7 8"></polyline>
+                        <line x1="12" y1="3" x2="12" y2="15"></line>
+                    </svg>
+                    <span>Upload ke Drive</span>
+                </button>
                 <button type="button" onclick="openKeuanganModal()" class="btn btn-primary btn-sm">+ Catat Transaksi</button>
             </div>
         </div>
@@ -271,6 +279,40 @@
         if (emptySearchMsg) {
             emptySearchMsg.style.display = (visibleCount === 0 && rows.length > 0) ? 'block' : 'none';
         }
+    }
+
+    function uploadKeuanganToDrive(btn) {
+        const originalHtml = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '⏳ Uploading...';
+
+        fetch("{{ route('asrama.keuangan.upload.drive') }}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            btn.disabled = false;
+            btn.innerHTML = originalHtml;
+
+            if (data.status) {
+                if (data.file_url && confirm('✅ ' + data.message + '\n\nApakah Anda ingin membuka file tersebut di Google Drive sekarang?')) {
+                    window.open(data.file_url, '_blank');
+                } else if (!data.file_url) {
+                    alert('✅ ' + data.message);
+                }
+            } else {
+                alert('⚠️ ' + (data.message || 'Gagal mengunggah file ke Google Drive.'));
+            }
+        })
+        .catch(err => {
+            btn.disabled = false;
+            btn.innerHTML = originalHtml;
+            alert('⚠️ Terjadi kesalahan jaringan saat mengunggah ke Google Drive: ' + err.message);
+        });
     }
 
     function formatCurrencyInput(elem) {
