@@ -353,11 +353,11 @@ class AsramaController extends Controller
         $validated = $request->validate([
             'nomor_kamar' => 'required|string|max:50',
             'lantai' => 'required|integer|in:1,2',
-            'kapasitas' => 'required|integer|min:1',
             'status' => 'required|in:Tersedia,Penuh,Perbaikan,Gudang',
             'fasilitas' => 'nullable|string',
             'catatan' => 'nullable|string',
         ]);
+        $validated['kapasitas'] = 100;
         $validated['harga_per_bulan'] = 0;
 
         AsramaKamar::create($validated);
@@ -372,11 +372,11 @@ class AsramaController extends Controller
         $validated = $request->validate([
             'nomor_kamar' => 'required|string|max:50',
             'lantai' => 'required|integer|in:1,2',
-            'kapasitas' => 'required|integer|min:1',
             'status' => 'required|in:Tersedia,Penuh,Perbaikan,Gudang',
             'fasilitas' => 'nullable|string',
             'catatan' => 'nullable|string',
         ]);
+        $validated['kapasitas'] = 100;
         $validated['harga_per_bulan'] = 0;
 
         $kamar->update($validated);

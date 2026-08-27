@@ -36,12 +36,8 @@
             <h3 style="color: #38bdf8; margin: 0.25rem 0 0 0; font-size: 1.8rem;">{{ $summary['kamar_tersedia'] }} Unit</h3>
         </div>
         <div class="asrama-stat-card">
-            <p class="task-meta">Penghuni Aktif / Kapasitas</p>
-            <h3 style="color: #fde047; margin: 0.25rem 0 0 0; font-size: 1.8rem;">{{ $summary['total_penghuni'] }} / {{ $summary['total_kapasitas'] }} Orang</h3>
-        </div>
-        <div class="asrama-stat-card" style="border-color: rgba(110, 231, 183, 0.4); background: rgba(16, 185, 129, 0.1);">
-            <p class="task-meta" style="color: #6ee7b7; font-weight: 600;">🟢 Slot Tempat Tidur Tersedia</p>
-            <h3 style="color: #6ee7b7; margin: 0.25rem 0 0 0; font-size: 2rem; font-weight: 800;">{{ $summary['slot_tersedia'] }} Bed</h3>
+            <p class="task-meta">Total Penghuni Aktif</p>
+            <h3 style="color: #fde047; margin: 0.25rem 0 0 0; font-size: 1.8rem;">{{ $summary['total_penghuni'] }} Orang</h3>
         </div>
     </div>
 
@@ -144,8 +140,7 @@
                     <tr>
                         <th>Nomor Kamar</th>
                         <th>Lantai</th>
-                        <th>Kapasitas & Penghuni</th>
-                        <th>Slot Kosong</th>
+                        <th>Penghuni Aktif</th>
                         <th>Status</th>
                         <th>Fasilitas</th>
                         <th class="col-aksi-header">Aksi</th>
@@ -155,20 +150,12 @@
                     @foreach($kamars as $kamar)
                     @php
                     $activeCount = $kamar->penghunis->where('status_penghuni', 'Aktif')->count();
-                    $slotKosong = max(0, $kamar->kapasitas - $activeCount);
                     @endphp
                     <tr>
                         <td class="task-title" style="font-weight: 700;">{{ $kamar->nomor_kamar }}</td>
                         <td>Lantai {{ $kamar->lantai }}</td>
                         <td>
-                            <strong>{{ $activeCount }}</strong> / {{ $kamar->kapasitas }} Orang
-                        </td>
-                        <td>
-                            @if($slotKosong > 0)
-                            <span class="badge badge-success" style="font-weight: 700;">{{ $slotKosong }} Slot Tersedia</span>
-                            @else
-                            <span class="badge badge-secondary">Penuh</span>
-                            @endif
+                            <strong>{{ $activeCount }}</strong> Orang
                         </td>
                         <td>
                             @if($kamar->status === 'Tersedia')
@@ -184,7 +171,7 @@
                         <td class="task-meta">{{ $kamar->fasilitas ?: '-' }}</td>
                         <td class="col-aksi-cell">
                             <div style="display: flex; gap: 0.4rem;">
-                                <button type="button" onclick="openEditKamarModal({{ $kamar->id }}, '{{ addslashes($kamar->nomor_kamar) }}', {{ $kamar->lantai }}, {{ $kamar->kapasitas }}, '{{ $kamar->status }}', '{{ addslashes($kamar->fasilitas ?: '') }}', '{{ addslashes($kamar->catatan ?: '') }}')" class="btn btn-secondary btn-sm">Edit</button>
+                                <button type="button" onclick="openEditKamarModal({{ $kamar->id }}, '{{ addslashes($kamar->nomor_kamar) }}', {{ $kamar->lantai }}, '{{ $kamar->status }}', '{{ addslashes($kamar->fasilitas ?: '') }}', '{{ addslashes($kamar->catatan ?: '') }}')" class="btn btn-secondary btn-sm">Edit</button>
                                 <form action="{{ route('asrama.kamar.destroy', $kamar->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Hapus kamar {{ $kamar->nomor_kamar }}?');">
                                     @csrf
                                     @method('DELETE')
@@ -294,18 +281,12 @@
             <label class="form-label">Nomor Kamar <span class="required">*</span></label>
             <input type="text" id="kamar-nomor" name="nomor_kamar" class="form-control" placeholder="cth: Kamar 101, A-02" required>
         </div>
-        <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-            <div class="form-group">
-                <label class="form-label">Pilih Lantai <span class="required">*</span></label>
-                <select id="kamar-lantai" name="lantai" class="form-control" required>
-                    <option value="1">Lantai 1</option>
-                    <option value="2">Lantai 2</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Kapasitas Orang <span class="required">*</span></label>
-                <input type="number" id="kamar-kapasitas" name="kapasitas" class="form-control" value="1" min="1" required>
-            </div>
+        <div class="form-group">
+            <label class="form-label">Pilih Lantai <span class="required">*</span></label>
+            <select id="kamar-lantai" name="lantai" class="form-control" required>
+                <option value="1">Lantai 1</option>
+                <option value="2">Lantai 2</option>
+            </select>
         </div>
         <div class="form-group">
             <label class="form-label">Status Kamar <span class="required">*</span></label>
@@ -474,7 +455,6 @@
         document.getElementById('method-kamar-field').innerHTML = '';
         document.getElementById('kamar-nomor').value = '';
         document.getElementById('kamar-lantai').value = '1';
-        document.getElementById('kamar-kapasitas').value = '1';
         document.getElementById('kamar-status').value = 'Tersedia';
         document.getElementById('kamar-fasilitas').value = '';
         document.getElementById('kamar-catatan').value = '';
@@ -491,13 +471,12 @@
         }
     }
 
-    function openEditKamarModal(id, nomor, lantai, kapasitas, status, fasilitas, catatan) {
+    function openEditKamarModal(id, nomor, lantai, status, fasilitas, catatan) {
         document.getElementById('modal-kamar-title').textContent = 'Edit Kamar ' + nomor;
         document.getElementById('form-kamar').action = "/asrama/kamar/" + id;
         document.getElementById('method-kamar-field').innerHTML = '@method("PUT")';
         document.getElementById('kamar-nomor').value = nomor;
         document.getElementById('kamar-lantai').value = lantai;
-        document.getElementById('kamar-kapasitas').value = kapasitas;
         document.getElementById('kamar-status').value = status;
         document.getElementById('kamar-fasilitas').value = fasilitas;
         document.getElementById('kamar-catatan').value = catatan;
