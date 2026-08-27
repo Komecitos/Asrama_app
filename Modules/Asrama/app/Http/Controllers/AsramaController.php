@@ -578,4 +578,51 @@ class AsramaController extends Controller
             }
         }
     }
+
+    public function exportKeuanganExcel()
+    {
+        $keuangans = AsramaKeuangan::with('penghuni')->orderBy('tanggal', 'desc')->get();
+        $filename = 'Riwayat_Transaksi_Kas_Asrama_' . date('Y-m-d') . '.csv';
+
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ];
+
+        $callback = function () use ($keuangans) {
+            $file = fopen('php://output', 'w');
+            // UTF-8 BOM for Excel compatibility
+            fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
+            // Header Row
+            fputcsv($file, ['No', 'Tanggal', 'Tipe', 'Kategori', 'Nominal (Rp)', 'Penghuni', 'Keterangan']);
+
+            $no = 1;
+            foreach ($keuangans as $k) {
+                fputcsv($file, [
+                    $no++,
+                    $k->tanggal ? \Carbon\Carbon::parse($k->tanggal)->format('d/m/Y') : '-',
+                    strtoupper($k->tipe),
+                    $k->kategori,
+                    $k->nominal,
+                    $k->penghuni ? $k->penghuni->nama : '-',
+                    $k->keterangan ?: '-',
+                ]);
+            }
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    public function exportKeuanganPdf()
+    {
+        $keuangans = AsramaKeuangan::with('penghuni')->orderBy('tanggal', 'desc')->get();
+
+        $totalPemasukan = $keuangans->where('tipe', 'pemasukan')->sum('nominal');
+        $totalPengeluaran = $keuangans->where('tipe', 'pengeluaran')->sum('nominal');
+        $saldoKas = $totalPemasukan - $totalPengeluaran;
+
+        return view('asrama::export_pdf', compact('keuangans', 'totalPemasukan', 'totalPengeluaran', 'saldoKas'));
+    }
 }
