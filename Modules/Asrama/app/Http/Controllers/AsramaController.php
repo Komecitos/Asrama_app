@@ -129,13 +129,18 @@ class AsramaController extends Controller
     {
         $penghuni = AsramaPenghuni::findOrFail($id);
         $oldKamarId = $penghuni->kamar_id;
+
+        // Delete all associated iuran matrix & cash transaction records for this resident
+        AsramaIuran::where('penghuni_id', $id)->delete();
+        AsramaKeuangan::where('penghuni_id', $id)->delete();
+
         $penghuni->delete();
 
         if ($oldKamarId) {
             $this->syncKamarStatus($oldKamarId);
         }
 
-        return redirect()->route('asrama.data')->with('success', 'Data Penghuni berhasil dihapus!');
+        return redirect()->route('asrama.data')->with('success', 'Data Penghuni beserta riwayat iurannya berhasil dihapus!');
     }
 
     public function keuangan()
@@ -238,7 +243,7 @@ class AsramaController extends Controller
         if (!empty($validated['penghuni_id']) && $validated['nominal'] > 0) {
             $penghuni = AsramaPenghuni::find($validated['penghuni_id']);
             $namaPenghuni = $penghuni ? $penghuni->nama : 'Penghuni';
-            
+
             $bulanPadded = str_pad($validated['bulan'], 2, '0', STR_PAD_LEFT);
             $txDate = "{$validated['tahun']}-{$bulanPadded}-01";
 
