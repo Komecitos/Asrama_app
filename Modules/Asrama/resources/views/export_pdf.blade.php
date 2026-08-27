@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +10,7 @@
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
+
         body {
             background-color: #ffffff;
             color: #1e293b;
@@ -16,6 +18,7 @@
             padding: 2rem;
             font-size: 14px;
         }
+
         .report-header {
             display: flex;
             justify-content: space-between;
@@ -24,33 +27,39 @@
             padding-bottom: 1rem;
             margin-bottom: 1.5rem;
         }
+
         .report-title h1 {
             margin: 0;
             font-size: 1.6rem;
             color: #0f172a;
         }
+
         .report-title p {
             margin: 0.25rem 0 0 0;
             color: #64748b;
             font-size: 0.9rem;
         }
+
         .meta-box {
             text-align: right;
             font-size: 0.85rem;
             color: #475569;
         }
+
         .summary-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 1rem;
             margin-bottom: 1.5rem;
         }
+
         .summary-card {
             border: 1px solid #cbd5e1;
             border-radius: 8px;
             padding: 0.85rem;
             background: #f8fafc;
         }
+
         .summary-card p {
             margin: 0;
             font-size: 0.8rem;
@@ -58,22 +67,27 @@
             text-transform: uppercase;
             font-weight: 700;
         }
+
         .summary-card h3 {
             margin: 0.25rem 0 0 0;
             font-size: 1.25rem;
             font-weight: 800;
         }
+
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 1rem;
         }
-        th, td {
+
+        th,
+        td {
             border: 1px solid #cbd5e1;
             padding: 0.6rem 0.75rem;
             text-align: left;
             font-size: 0.85rem;
         }
+
         th {
             background-color: #0f172a;
             color: #ffffff;
@@ -81,9 +95,11 @@
             text-transform: uppercase;
             font-size: 0.75rem;
         }
+
         tr:nth-child(even) {
             background-color: #f8fafc;
         }
+
         .badge {
             display: inline-block;
             padding: 0.25rem 0.5rem;
@@ -91,13 +107,23 @@
             font-size: 0.75rem;
             font-weight: 700;
         }
-        .badge-success { background: #dcfce7; color: #166534; }
-        .badge-danger { background: #fee2e2; color: #991b1b; }
+
+        .badge-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
         .no-print {
             margin-bottom: 1.5rem;
             display: flex;
             gap: 0.5rem;
         }
+
         .btn-print {
             background: #0284c7;
             color: #fff;
@@ -107,16 +133,19 @@
             cursor: pointer;
             font-weight: 700;
         }
+
         @media print {
             .no-print {
                 display: none !important;
             }
+
             body {
                 padding: 0;
             }
         }
     </style>
 </head>
+
 <body>
 
     <div class="no-print">
@@ -198,4 +227,5 @@
         });
     </script>
 </body>
+
 </html>

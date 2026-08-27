@@ -625,4 +625,137 @@ class AsramaController extends Controller
 
         return view('asrama::export_pdf', compact('keuangans', 'totalPemasukan', 'totalPengeluaran', 'saldoKas'));
     }
+
+    public function exportMatriksExcel(Request $request)
+    {
+        $startYear = 2026;
+        $tahun = (int) $request->input('tahun', date('Y'));
+        if ($tahun < $startYear) {
+            $tahun = $startYear;
+        }
+
+        $penghuniAktif = AsramaPenghuni::where('status_penghuni', 'Aktif')->orderBy('nama')->get();
+        $penghuniKeluar = AsramaPenghuni::where('status_penghuni', 'Keluar')->orderBy('nama')->get();
+        $iurans = AsramaIuran::where('tahun', $tahun)->get();
+
+        $iuranMap = [];
+        foreach ($iurans as $iuran) {
+            if ($iuran->penghuni_id) {
+                $iuranMap['penghuni_' . $iuran->penghuni_id . '_' . $iuran->bulan] = $iuran;
+            } elseif ($iuran->fasilitas_key) {
+                $iuranMap['fasilitas_' . $iuran->fasilitas_key . '_' . $iuran->bulan] = $iuran;
+            }
+        }
+
+        $bulanNames = [
+            1 => 'Jan', 2 => 'Feb', 3 => 'Mar', 4 => 'Apr', 5 => 'Mei', 6 => 'Jun',
+            7 => 'Jul', 8 => 'Agu', 9 => 'Sep', 10 => 'Okt', 11 => 'Nov', 12 => 'Des'
+        ];
+
+        $filename = 'Matriks_Iuran_Bulanan_Asrama_Tahun_' . $tahun . '.csv';
+        $headers = [
+            'Content-Type' => 'text/csv; charset=UTF-8',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+        ];
+
+        $callback = function () use ($tahun, $penghuniAktif, $penghuniKeluar, $iuranMap, $bulanNames) {
+            $file = fopen('php://output', 'w');
+            fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
+            // Header row
+            $headerRow = ['Nama / Fasilitas'];
+            foreach ($bulanNames as $bName) {
+                $headerRow[] = $bName;
+            }
+            $headerRow[] = 'Total Terbayar (Rp)';
+            fputcsv($file, $headerRow);
+
+            // WiFi Row
+            $wifiRow = ['WIFI'];
+            $totalWifi = 0;
+            for ($m = 1; $m <= 12; $m++) {
+                $cell = $iuranMap['fasilitas_wifi_' . $m] ?? null;
+                $wifiRow[] = ($cell && $cell->status_lunas) ? 'LUNAS' : '-';
+                if ($cell && $cell->status_lunas) $totalWifi += $cell->nominal;
+            }
+            $wifiRow[] = $totalWifi;
+            fputcsv($file, $wifiRow);
+
+            // Sampah Row
+            $sampahRow = ['Iuran Sampah'];
+            $totalSampah = 0;
+            for ($m = 1; $m <= 12; $m++) {
+                $cell = $iuranMap['fasilitas_sampah_' . $m] ?? null;
+                $sampahRow[] = ($cell && $cell->status_lunas) ? 'LUNAS' : '-';
+                if ($cell && $cell->status_lunas) $totalSampah += $cell->nominal;
+            }
+            $sampahRow[] = $totalSampah;
+            fputcsv($file, $sampahRow);
+
+            // Active Residents Rows
+            foreach ($penghuniAktif as $p) {
+                $pRow = [$p->nama];
+                $totalP = 0;
+                for ($m = 1; $m <= 12; $m++) {
+                    $cell = $iuranMap['penghuni_' . $p->id . '_' . $m] ?? null;
+                    $nom = $cell ? $cell->nominal : 0;
+                    $pRow[] = $nom > 0 ? $nom : 0;
+                    $totalP += $nom;
+                }
+                $pRow[] = $totalP;
+                fputcsv($file, $pRow);
+            }
+
+            // Former Residents Divider & Rows
+            if ($penghuniKeluar->count() > 0) {
+                fputcsv($file, ['--- PENGHUNI KELUAR ---']);
+                foreach ($penghuniKeluar as $p) {
+                    $pRow = [$p->nama . ' (Keluar)'];
+                    $totalP = 0;
+                    for ($m = 1; $m <= 12; $m++) {
+                        $cell = $iuranMap['penghuni_' . $p->id . '_' . $m] ?? null;
+                        $nom = $cell ? $cell->nominal : 0;
+                        $pRow[] = $nom > 0 ? $nom : 0;
+                        $totalP += $nom;
+                    }
+                    $pRow[] = $totalP;
+                    fputcsv($file, $pRow);
+                }
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    public function exportMatriksPdf(Request $request)
+    {
+        $startYear = 2026;
+        $tahun = (int) $request->input('tahun', date('Y'));
+        if ($tahun < $startYear) {
+            $tahun = $startYear;
+        }
+
+        $tarifDefault = (int) $request->input('tarif_default', 100000);
+        $penghuniAktif = AsramaPenghuni::where('status_penghuni', 'Aktif')->orderBy('nama')->get();
+        $penghuniKeluar = AsramaPenghuni::where('status_penghuni', 'Keluar')->orderBy('nama')->get();
+        $iurans = AsramaIuran::where('tahun', $tahun)->get();
+
+        $iuranMap = [];
+        foreach ($iurans as $iuran) {
+            if ($iuran->penghuni_id) {
+                $iuranMap['penghuni_' . $iuran->penghuni_id . '_' . $iuran->bulan] = $iuran;
+            } elseif ($iuran->fasilitas_key) {
+                $iuranMap['fasilitas_' . $iuran->fasilitas_key . '_' . $iuran->bulan] = $iuran;
+            }
+        }
+
+        $bulanNames = [
+            1 => 'Jan', 2 => 'Feb', 3 => 'Mar', 4 => 'Apr', 5 => 'Mei', 6 => 'Jun',
+            7 => 'Jul', 8 => 'Agu', 9 => 'Sep', 10 => 'Okt', 11 => 'Nov', 12 => 'Des'
+        ];
+
+        return view('asrama::export_matriks_pdf', compact('tahun', 'tarifDefault', 'penghuniAktif', 'penghuniKeluar', 'iuranMap', 'bulanNames'));
+    }
 }

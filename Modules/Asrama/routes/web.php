@@ -23,6 +23,8 @@ Route::prefix('asrama')->name('asrama.')->group(function () {
     // Keuangan Actions
     Route::get('/keuangan/export/excel', [AsramaController::class, 'exportKeuanganExcel'])->name('keuangan.export.excel');
     Route::get('/keuangan/export/pdf', [AsramaController::class, 'exportKeuanganPdf'])->name('keuangan.export.pdf');
+    Route::get('/keuangan/matriks/export/excel', [AsramaController::class, 'exportMatriksExcel'])->name('keuangan.matriks.export.excel');
+    Route::get('/keuangan/matriks/export/pdf', [AsramaController::class, 'exportMatriksPdf'])->name('keuangan.matriks.export.pdf');
     Route::get('/keuangan/matriks', [AsramaController::class, 'matriksKeuangan'])->name('keuangan.matriks');
     Route::post('/keuangan/matriks/update', [AsramaController::class, 'updateMatriksIuran'])->name('keuangan.matriks.update');
     Route::post('/keuangan', [AsramaController::class, 'storeKeuangan'])->name('keuangan.store');
