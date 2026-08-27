@@ -276,7 +276,8 @@
                                             $proratedFee = $tarifDefault;
                                         } else {
                                             $sisaHari = max(1, $totalDaysInMonth - $joinDay);
-                                            $proratedFee = (int) round(($tarifDefault / $totalDaysInMonth) * $sisaHari);
+                                            $rawProrata = ($tarifDefault / $totalDaysInMonth) * $sisaHari;
+                                            $proratedFee = (int) (round($rawProrata / 1000) * 1000);
                                         }
                                     }
                                 }
