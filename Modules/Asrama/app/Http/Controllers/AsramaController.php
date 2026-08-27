@@ -648,17 +648,28 @@ class AsramaController extends Controller
         }
 
         $bulanNames = [
-            1 => 'Jan', 2 => 'Feb', 3 => 'Mar', 4 => 'Apr', 5 => 'Mei', 6 => 'Jun',
-            7 => 'Jul', 8 => 'Agu', 9 => 'Sep', 10 => 'Okt', 11 => 'Nov', 12 => 'Des'
+            1 => 'Jan',
+            2 => 'Feb',
+            3 => 'Mar',
+            4 => 'Apr',
+            5 => 'Mei',
+            6 => 'Jun',
+            7 => 'Jul',
+            8 => 'Agu',
+            9 => 'Sep',
+            10 => 'Okt',
+            11 => 'Nov',
+            12 => 'Des'
         ];
 
+        $tarifDefault = (int) $request->input('tarif_default', 100000);
         $filename = 'Matriks_Iuran_Bulanan_Asrama_Tahun_' . $tahun . '.csv';
         $headers = [
             'Content-Type' => 'text/csv; charset=UTF-8',
             'Content-Disposition' => 'attachment; filename="' . $filename . '"',
         ];
 
-        $callback = function () use ($tahun, $penghuniAktif, $penghuniKeluar, $iuranMap, $bulanNames) {
+        $callback = function () use ($tahun, $tarifDefault, $penghuniAktif, $penghuniKeluar, $iuranMap, $bulanNames) {
             $file = fopen('php://output', 'w');
             fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF));
 
@@ -667,42 +678,79 @@ class AsramaController extends Controller
             foreach ($bulanNames as $bName) {
                 $headerRow[] = $bName;
             }
-            $headerRow[] = 'Total Terbayar (Rp)';
+            $headerRow[] = 'Kekurangan Iuran (Rp)';
             fputcsv($file, $headerRow);
 
             // WiFi Row
             $wifiRow = ['WIFI'];
-            $totalWifi = 0;
             for ($m = 1; $m <= 12; $m++) {
                 $cell = $iuranMap['fasilitas_wifi_' . $m] ?? null;
                 $wifiRow[] = ($cell && $cell->status_lunas) ? 'LUNAS' : '-';
-                if ($cell && $cell->status_lunas) $totalWifi += $cell->nominal;
             }
-            $wifiRow[] = $totalWifi;
+            $wifiRow[] = 0; // Facility has no individual resident debt
             fputcsv($file, $wifiRow);
 
             // Sampah Row
             $sampahRow = ['Iuran Sampah'];
-            $totalSampah = 0;
             for ($m = 1; $m <= 12; $m++) {
                 $cell = $iuranMap['fasilitas_sampah_' . $m] ?? null;
                 $sampahRow[] = ($cell && $cell->status_lunas) ? 'LUNAS' : '-';
-                if ($cell && $cell->status_lunas) $totalSampah += $cell->nominal;
             }
-            $sampahRow[] = $totalSampah;
+            $sampahRow[] = 0; // Facility has no individual resident debt
             fputcsv($file, $sampahRow);
 
             // Active Residents Rows
             foreach ($penghuniAktif as $p) {
                 $pRow = [$p->nama];
-                $totalP = 0;
                 for ($m = 1; $m <= 12; $m++) {
                     $cell = $iuranMap['penghuni_' . $p->id . '_' . $m] ?? null;
                     $nom = $cell ? $cell->nominal : 0;
                     $pRow[] = $nom > 0 ? $nom : 0;
-                    $totalP += $nom;
                 }
-                $pRow[] = $totalP;
+
+                // Calculate Kekurangan Iuran (Shortfall)
+                $effectiveJoinDate = $p->tanggal_masuk ?: '2026-01-01';
+                $pJoinCarbon = \Carbon\Carbon::parse($effectiveJoinDate);
+                $pJoinYear = (int)$pJoinCarbon->format('Y');
+                $pJoinMonth = (int)$pJoinCarbon->format('m');
+                $pJoinDay = (int)$pJoinCarbon->format('d');
+
+                $nowCarbon = \Carbon\Carbon::now();
+                $cYear = (int)$nowCarbon->format('Y');
+                $cMonth = (int)$nowCarbon->format('n');
+
+                $untilM = 12;
+                if ($tahun == $cYear) {
+                    $untilM = $cMonth;
+                } elseif ($tahun > $cYear) {
+                    $untilM = 0;
+                }
+
+                $pTotalObligation = 0;
+                if ($tahun >= $pJoinYear) {
+                    $startM = ($tahun == $pJoinYear) ? $pJoinMonth : 1;
+                    for ($m = $startM; $m <= $untilM; $m++) {
+                        if ($tahun == $pJoinYear && $m == $pJoinMonth) {
+                            $tDays = $pJoinCarbon->daysInMonth;
+                            if ($pJoinDay == 1) {
+                                $pTotalObligation += $tarifDefault;
+                            } else {
+                                $sisaH = max(1, $tDays - $pJoinDay);
+                                $rawP = ($tarifDefault / $tDays) * $sisaH;
+                                $pTotalObligation += (int) (round($rawP / 1000) * 1000);
+                            }
+                        } else {
+                            $pTotalObligation += $tarifDefault;
+                        }
+                    }
+                }
+
+                $pTotalPaid = AsramaKeuangan::where('penghuni_id', $p->id)
+                    ->whereYear('tanggal', $tahun)
+                    ->sum('nominal');
+
+                $pTunggakan = max(0, $pTotalObligation - $pTotalPaid);
+                $pRow[] = $pTunggakan;
                 fputcsv($file, $pRow);
             }
 
@@ -711,14 +759,12 @@ class AsramaController extends Controller
                 fputcsv($file, ['--- PENGHUNI KELUAR ---']);
                 foreach ($penghuniKeluar as $p) {
                     $pRow = [$p->nama . ' (Keluar)'];
-                    $totalP = 0;
                     for ($m = 1; $m <= 12; $m++) {
                         $cell = $iuranMap['penghuni_' . $p->id . '_' . $m] ?? null;
                         $nom = $cell ? $cell->nominal : 0;
                         $pRow[] = $nom > 0 ? $nom : 0;
-                        $totalP += $nom;
                     }
-                    $pRow[] = $totalP;
+                    $pRow[] = 0; // Former resident has no active shortfall
                     fputcsv($file, $pRow);
                 }
             }
@@ -752,8 +798,18 @@ class AsramaController extends Controller
         }
 
         $bulanNames = [
-            1 => 'Jan', 2 => 'Feb', 3 => 'Mar', 4 => 'Apr', 5 => 'Mei', 6 => 'Jun',
-            7 => 'Jul', 8 => 'Agu', 9 => 'Sep', 10 => 'Okt', 11 => 'Nov', 12 => 'Des'
+            1 => 'Jan',
+            2 => 'Feb',
+            3 => 'Mar',
+            4 => 'Apr',
+            5 => 'Mei',
+            6 => 'Jun',
+            7 => 'Jul',
+            8 => 'Agu',
+            9 => 'Sep',
+            10 => 'Okt',
+            11 => 'Nov',
+            12 => 'Des'
         ];
 
         return view('asrama::export_matriks_pdf', compact('tahun', 'tarifDefault', 'penghuniAktif', 'penghuniKeluar', 'iuranMap', 'bulanNames'));
