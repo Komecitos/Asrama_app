@@ -278,8 +278,8 @@
                         $proratedFee = 0;
                         $sisaHari = 0;
 
-                        if ($p->tanggal_masuk) {
-                        $joinCarbon = \Carbon\Carbon::parse($p->tanggal_masuk);
+                        $effectiveJoinDate = $p->tanggal_masuk ?: '2026-01-01';
+                        $joinCarbon = \Carbon\Carbon::parse($effectiveJoinDate);
                         $joinYear = (int)$joinCarbon->format('Y');
                         $joinMonth = (int)$joinCarbon->format('m');
                         $joinDay = (int)$joinCarbon->format('d');

@@ -377,10 +377,10 @@ class AsramaController extends Controller
 
         $tarifDefault = session('asrama_tarif_default', 100000);
 
-        $joinCarbon = $penghuni->tanggal_masuk ? \Carbon\Carbon::parse($penghuni->tanggal_masuk) : null;
-        $joinYear = $joinCarbon ? (int)$joinCarbon->format('Y') : $tahun;
-        $joinMonth = $joinCarbon ? (int)$joinCarbon->format('m') : 1;
-        $joinDay = $joinCarbon ? (int)$joinCarbon->format('d') : 1;
+        $joinCarbon = $penghuni->tanggal_masuk ? \Carbon\Carbon::parse($penghuni->tanggal_masuk) : \Carbon\Carbon::create(2026, 1, 1);
+        $joinYear = (int)$joinCarbon->format('Y');
+        $joinMonth = (int)$joinCarbon->format('m');
+        $joinDay = (int)$joinCarbon->format('d');
 
         $startMonth = 1;
         if ($tahun < $joinYear) {
