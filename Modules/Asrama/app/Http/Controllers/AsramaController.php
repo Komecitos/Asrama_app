@@ -822,6 +822,7 @@ class AsramaController extends Controller
         return [
             'ssid' => \Illuminate\Support\Facades\Cache::get('asrama_wifi_ssid', 'MyHub_Asrama_WiFi'),
             'password' => \Illuminate\Support\Facades\Cache::get('asrama_wifi_password', 'Asrama2026!Pass'),
+            'fonnte_token' => \Illuminate\Support\Facades\Cache::get('asrama_fonnte_token', ''),
         ];
     }
 
@@ -830,12 +831,14 @@ class AsramaController extends Controller
         $validated = $request->validate([
             'wifi_ssid' => 'required|string|max:100',
             'wifi_password' => 'required|string|max:100',
+            'fonnte_token' => 'nullable|string|max:255',
         ]);
 
         \Illuminate\Support\Facades\Cache::forever('asrama_wifi_ssid', $validated['wifi_ssid']);
         \Illuminate\Support\Facades\Cache::forever('asrama_wifi_password', $validated['wifi_password']);
+        \Illuminate\Support\Facades\Cache::forever('asrama_fonnte_token', trim($validated['fonnte_token'] ?? ''));
 
-        return redirect()->back()->with('success', 'Pengaturan SSID & Password WiFi Asrama berhasil diperbarui!');
+        return redirect()->back()->with('success', 'Pengaturan WiFi & Token Fonnte WA Gateway berhasil disimpan!');
     }
 
     public static function buildWaUrl($phone, $nama, $bulanName, $tahun, $nominal = 0)
@@ -865,5 +868,84 @@ class AsramaController extends Controller
         $msg .= "Terima kasih!";
 
         return 'https://wa.me/' . $cleanPhone . '?text=' . urlencode($msg);
+    }
+
+    public function sendWifiWaDirect(Request $request)
+    {
+        $penghuniId = $request->input('penghuni_id');
+        $penghuni = AsramaPenghuni::find($penghuniId);
+
+        if (!$penghuni) {
+            return response()->json(['status' => false, 'message' => 'Data penghuni tidak ditemukan.'], 404);
+        }
+
+        $phone = $penghuni->nomor_hp ?: $penghuni->telepon;
+        if (empty($phone)) {
+            return response()->json(['status' => false, 'message' => 'Nomor HP penghuni tidak tersedia.'], 400);
+        }
+
+        $cYear = (int) date('Y');
+        $bName = date('F');
+        $wifi = self::getWifiSettings();
+        $fonnteToken = trim($wifi['fonnte_token']);
+        $waUrl = self::buildWaUrl($phone, $penghuni->nama, $bName, $cYear, 0);
+
+        $cleanPhone = preg_replace('/\D/', '', $phone);
+        if (str_starts_with($cleanPhone, '0')) {
+            $cleanPhone = '0' . substr($cleanPhone, 1);
+        } elseif (str_starts_with($cleanPhone, '62')) {
+            $cleanPhone = '0' . substr($cleanPhone, 2);
+        }
+
+        $ssid = $wifi['ssid'];
+        $pass = $wifi['password'];
+        $msg = "Halo *{$penghuni->nama}*,\n\n";
+        $msg .= "Pembayaran iuran Asrama Anda untuk bulan *{$bName} {$cYear}* telah *LUNAS*.\n\n";
+        $msg .= "Berikut informasi akses WiFi Asrama bulan ini:\n";
+        $msg .= "📶 *SSID*: {$ssid}\n";
+        $msg .= "🔑 *Password*: {$pass}\n\n";
+        $msg .= "Terima kasih!";
+
+        if (empty($fonnteToken)) {
+            return response()->json([
+                'status' => false,
+                'is_fallback' => true,
+                'fallback_url' => $waUrl,
+                'message' => 'Token Fonnte WA Gateway belum diatur. Mengalihkan ke WA Web/App...'
+            ]);
+        }
+
+        try {
+            $response = \Illuminate\Support\Facades\Http::withHeaders([
+                'Authorization' => $fonnteToken,
+            ])->post('https://api.fonnte.com/send', [
+                'target' => $cleanPhone,
+                'message' => $msg,
+            ]);
+
+            $resData = $response->json();
+
+            if ($response->successful() && isset($resData['status']) && $resData['status'] === true) {
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Pesan WhatsApp berisi Password WiFi berhasil terkirim ke ' . $penghuni->nama . '!'
+                ]);
+            } else {
+                $errDetail = $resData['reason'] ?? $resData['message'] ?? 'Fonnte API Error';
+                return response()->json([
+                    'status' => false,
+                    'is_fallback' => true,
+                    'fallback_url' => $waUrl,
+                    'message' => 'Gagal via Fonnte (' . $errDetail . '). Mengalihkan ke WA Web/App...'
+                ]);
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => false,
+                'is_fallback' => true,
+                'fallback_url' => $waUrl,
+                'message' => 'Koneksi Fonnte Gagal: ' . $e->getMessage() . '. Mengalihkan ke WA Web/App...'
+            ]);
+        }
     }
 }

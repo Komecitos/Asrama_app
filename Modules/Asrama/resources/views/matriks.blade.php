@@ -506,9 +506,9 @@ $wifiSettings = \Modules\Asrama\Http\Controllers\AsramaController::getWifiSettin
 <div id="modal-matriks-overlay" class="modal-overlay" onclick="closeCellModal()"></div>
 
 {{-- MODAL PENGATURAN WIFI --}}
-<div id="modal-wifi" class="modal modal-create" style="display: none; max-width: 440px;">
+<div id="modal-wifi" class="modal modal-create" style="display: none; max-width: 480px;">
     <div class="modal-header">
-        <h3 style="margin: 0; display: flex; align-items: center; gap: 0.5rem;">📶 Pengaturan WiFi Asrama</h3>
+        <h3 style="margin: 0; display: flex; align-items: center; gap: 0.5rem;">📶 Pengaturan WiFi & WA Gateway</h3>
         <button type="button" onclick="closeWifiModal()" class="modal-close">&times;</button>
     </div>
     <div class="modal-body" style="padding-top: 1rem;">
@@ -518,9 +518,19 @@ $wifiSettings = \Modules\Asrama\Http\Controllers\AsramaController::getWifiSettin
                 <label class="form-label">SSID (Nama WiFi) <span class="required">*</span></label>
                 <input type="text" name="wifi_ssid" class="form-control" value="{{ $wifiSettings['ssid'] }}" required placeholder="Contoh: MyHub_Asrama_WiFi">
             </div>
-            <div class="form-group" style="margin-bottom: 1.5rem;">
+            <div class="form-group" style="margin-bottom: 1rem;">
                 <label class="form-label">Password WiFi <span class="required">*</span></label>
                 <input type="text" name="wifi_password" class="form-control" value="{{ $wifiSettings['password'] }}" required placeholder="Contoh: Asrama2026!Pass">
+            </div>
+            <div class="form-group" style="margin-bottom: 1.25rem;">
+                <label class="form-label" style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>Fonnte API Token (WA Gateway)</span>
+                    <a href="https://fonnte.com" target="_blank" style="font-size: 0.75rem; color: #38bdf8; text-decoration: underline;">Daftar Gratis fonnte.com</a>
+                </label>
+                <input type="text" name="fonnte_token" class="form-control" value="{{ $wifiSettings['fonnte_token'] ?? '' }}" placeholder="Masukkan Token Fonnte (Opsional untuk Kirim Background)">
+                <small style="color: #94a3b8; font-size: 0.75rem; display: block; margin-top: 0.35rem;">
+                    *Jika Token Fonnte diisi, pesan WA terkirim otomatis di background tanpa redirect.
+                </small>
             </div>
             <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
                 <button type="button" class="btn btn-secondary" onclick="closeWifiModal()">Batal</button>
@@ -538,27 +548,49 @@ $wifiSettings = \Modules\Asrama\Http\Controllers\AsramaController::getWifiSettin
     function openWifiModal() {
         const m = document.getElementById('modal-wifi');
         const o = document.getElementById('modal-wifi-overlay');
-        if (m) {
-            m.classList.add('show');
-            m.style.display = 'block';
-        }
-        if (o) {
-            o.classList.add('show');
-            o.style.display = 'block';
-        }
+        if (m) { m.classList.add('show'); m.style.display = 'block'; }
+        if (o) { o.classList.add('show'); o.style.display = 'block'; }
     }
 
     function closeWifiModal() {
         const m = document.getElementById('modal-wifi');
         const o = document.getElementById('modal-wifi-overlay');
-        if (m) {
-            m.classList.remove('show');
-            m.style.display = 'none';
-        }
-        if (o) {
-            o.classList.remove('show');
-            o.style.display = 'none';
-        }
+        if (m) { m.classList.remove('show'); m.style.display = 'none'; }
+        if (o) { o.classList.remove('show'); o.style.display = 'none'; }
+    }
+
+    function sendWifiWaDirect(penghuniId, btnElem) {
+        const originalText = btnElem.innerHTML;
+        btnElem.disabled = true;
+        btnElem.innerHTML = '⏳ Sending...';
+
+        fetch("{{ route('asrama.wifi.send.wa') }}", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "X-CSRF-TOKEN": "{{ csrf_token() }}"
+            },
+            body: JSON.stringify({ penghuni_id: penghuniId })
+        })
+        .then(res => res.json())
+        .then(data => {
+            btnElem.disabled = false;
+            btnElem.innerHTML = originalText;
+
+            if (data.status) {
+                alert('✅ ' + data.message);
+            } else if (data.is_fallback && data.fallback_url) {
+                alert('ℹ️ ' + data.message);
+                window.open(data.fallback_url, '_blank');
+            } else {
+                alert('⚠️ ' + (data.message || 'Gagal mengirim WhatsApp.'));
+            }
+        })
+        .catch(err => {
+            btnElem.disabled = false;
+            btnElem.innerHTML = originalText;
+            alert('⚠️ Terjadi kesalahan jaringan saat menghubungkan ke server.');
+        });
     }
 
     function formatNumberWithDots(val) {
