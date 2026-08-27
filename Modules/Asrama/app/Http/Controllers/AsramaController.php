@@ -339,10 +339,10 @@ class AsramaController extends Controller
         if (!empty($validated['penghuni_id']) && ($validated['tipe'] === 'pemasukan' || $validated['kategori'] === 'Iuran Bulanan')) {
             // Reset and re-allocate total accumulated payments for accuracy
             AsramaIuran::where('penghuni_id', $validated['penghuni_id'])->where('tahun', $tahun)->delete();
-            
+
             $totalPaidYear = AsramaKeuangan::where('penghuni_id', $validated['penghuni_id'])
                 ->whereYear('tanggal', $tahun)
-                ->where(function($q) {
+                ->where(function ($q) {
                     $q->where('tipe', 'pemasukan')->orWhere('kategori', 'Iuran Bulanan');
                 })
                 ->sum('nominal');
@@ -352,13 +352,11 @@ class AsramaController extends Controller
 
         // AUTO-SYNC FOR WIFI AND SAMPAH EXPENSES
         $lowerKet = strtolower($validated['keterangan'] ?? '');
-        if (str_contains($lowerKet, 'wifi') || $validated['kategori'] === 'Listrik & Air') {
-            if ($validated['tipe'] === 'pengeluaran') {
-                AsramaIuran::updateOrCreate(
-                    ['tahun' => $tahun, 'bulan' => $bulan, 'fasilitas_key' => 'wifi'],
-                    ['nominal' => $validated['nominal'], 'status_lunas' => true]
-                );
-            }
+        if ($validated['kategori'] === 'Pembayaran WiFi' || str_contains($lowerKet, 'wifi') || $validated['kategori'] === 'Listrik & Air') {
+            AsramaIuran::updateOrCreate(
+                ['tahun' => $tahun, 'bulan' => $bulan, 'fasilitas_key' => 'wifi'],
+                ['nominal' => $validated['nominal'], 'status_lunas' => true]
+            );
         }
         if (str_contains($lowerKet, 'sampah') || ($validated['kategori'] === 'Kebersihan & Keamanan' && str_contains($lowerKet, 'sampah'))) {
             if ($validated['tipe'] === 'pengeluaran') {
@@ -393,7 +391,7 @@ class AsramaController extends Controller
 
             $remainingTotalPaid = AsramaKeuangan::where('penghuni_id', $penghuniId)
                 ->whereYear('tanggal', $tahun)
-                ->where(function($q) {
+                ->where(function ($q) {
                     $q->where('tipe', 'pemasukan')->orWhere('kategori', 'Iuran Bulanan');
                 })
                 ->sum('nominal');
@@ -408,7 +406,7 @@ class AsramaController extends Controller
             $otherWifi = AsramaKeuangan::whereYear('tanggal', $tahun)
                 ->whereMonth('tanggal', $bulan)
                 ->where('tipe', 'pengeluaran')
-                ->where(function($q) {
+                ->where(function ($q) {
                     $q->where('kategori', 'Listrik & Air')->orWhere('keterangan', 'like', '%wifi%');
                 })
                 ->exists();
@@ -422,7 +420,7 @@ class AsramaController extends Controller
             $otherSampah = AsramaKeuangan::whereYear('tanggal', $tahun)
                 ->whereMonth('tanggal', $bulan)
                 ->where('tipe', 'pengeluaran')
-                ->where(function($q) {
+                ->where(function ($q) {
                     $q->where('kategori', 'Kebersihan & Keamanan')->orWhere('keterangan', 'like', '%sampah%');
                 })
                 ->exists();
