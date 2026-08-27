@@ -340,11 +340,15 @@
             </p>
 
             <div id="wrapper-nominal" class="form-group">
-                <label class="form-label">Nominal Pembayaran (Rp)</label>
-                <input type="number" id="cell-nominal" name="nominal" class="form-control" placeholder="100000" min="0">
+                <label class="form-label">Nominal Pembayaran</label>
+                <div style="display: flex; align-items: center; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); border-radius: var(--radius-md, 8px); padding: 0 0.75rem;">
+                    <span style="font-weight: 700; color: #6ee7b7; margin-right: 0.4rem; font-size: 0.95rem;">Rp</span>
+                    <input type="text" id="cell-nominal-formatted" class="form-control" style="border: none; background: transparent; padding-left: 0; font-weight: 600;" placeholder="100.000" onkeyup="formatCurrencyInput(this)">
+                    <input type="hidden" id="cell-nominal-raw" name="nominal" value="0">
+                </div>
                 
                 {{-- DYNAMIC PRESET SHORTCUT BUTTONS --}}
-                <div style="display: flex; gap: 0.4rem; margin-top: 0.6rem; flex-wrap: wrap;">
+                <div style="display: flex; gap: 0.4rem; margin-top: 0.75rem; flex-wrap: wrap;">
                     <button type="button" onclick="setNominal({{ $tarifDefault }})" class="preset-btn" style="background: rgba(16, 185, 129, 0.2); border-color: #10b981; color: #6ee7b7; font-weight: 700;">
                         ✓ Standar (Rp {{ number_format($tarifDefault, 0, ',', '.') }})
                     </button>
@@ -374,8 +378,22 @@
 
 @push('scripts')
 <script>
+    function formatNumberWithDots(val) {
+        val = val.toString().replace(/\D/g, '');
+        return val.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    }
+
+    function formatCurrencyInput(elem) {
+        let rawVal = elem.value.replace(/\D/g, '');
+        elem.value = formatNumberWithDots(rawVal);
+        let hiddenInputId = elem.id.replace('-formatted', '-raw');
+        let hiddenElem = document.getElementById(hiddenInputId);
+        if (hiddenElem) hiddenElem.value = rawVal || 0;
+    }
+
     function setNominal(val) {
-        document.getElementById('cell-nominal').value = val;
+        document.getElementById('cell-nominal-formatted').value = formatNumberWithDots(val);
+        document.getElementById('cell-nominal-raw').value = val;
         document.getElementById('cell-status-lunas').checked = val > 0;
     }
 
@@ -385,7 +403,10 @@
         document.getElementById('cell-bulan').value = bulanNum;
         document.getElementById('cell-item-name').textContent = itemName;
         document.getElementById('cell-month-name').textContent = bulanName;
-        document.getElementById('cell-nominal').value = currentNominal || 0;
+        
+        let nom = currentNominal || 0;
+        document.getElementById('cell-nominal-formatted').value = formatNumberWithDots(nom);
+        document.getElementById('cell-nominal-raw').value = nom;
         document.getElementById('cell-status-lunas').checked = isLunas == 1;
 
         if (fasilitasKey) {

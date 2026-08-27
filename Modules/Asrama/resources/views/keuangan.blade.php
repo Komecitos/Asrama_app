@@ -137,8 +137,12 @@
 
         <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
             <div class="form-group">
-                <label class="form-label">Nominal (Rp) <span class="required">*</span></label>
-                <input type="number" name="nominal" class="form-control" placeholder="500000" min="1" required>
+                <label class="form-label">Nominal Transaksi <span class="required">*</span></label>
+                <div style="display: flex; align-items: center; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); border-radius: var(--radius-md, 8px); padding: 0 0.75rem;">
+                    <span style="font-weight: 700; color: #6ee7b7; margin-right: 0.4rem; font-size: 0.95rem;">Rp</span>
+                    <input type="text" id="tx-nominal-formatted" class="form-control" style="border: none; background: transparent; padding-left: 0; font-weight: 600;" placeholder="100.000" onkeyup="formatCurrencyInput(this)" required>
+                    <input type="hidden" id="tx-nominal-raw" name="nominal" value="">
+                </div>
             </div>
             <div class="form-group">
                 <label class="form-label">Tanggal Transaksi <span class="required">*</span></label>
@@ -173,7 +177,22 @@
 
 @push('scripts')
 <script>
+    function formatNumberWithDots(val) {
+        val = val.toString().replace(/\D/g, '');
+        return val.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+    }
+
+    function formatCurrencyInput(elem) {
+        let rawVal = elem.value.replace(/\D/g, '');
+        elem.value = formatNumberWithDots(rawVal);
+        let hiddenInputId = elem.id.replace('-formatted', '-raw');
+        let hiddenElem = document.getElementById(hiddenInputId);
+        if (hiddenElem) hiddenElem.value = rawVal || 0;
+    }
+
     function openKeuanganModal() {
+        document.getElementById('tx-nominal-formatted').value = '';
+        document.getElementById('tx-nominal-raw').value = '';
         const m = document.getElementById('modal-keuangan');
         const o = document.getElementById('modal-keuangan-overlay');
         if (m) {
