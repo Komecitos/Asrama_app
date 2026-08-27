@@ -245,10 +245,11 @@
                         @php
                         $cell = $iuranMap['fasilitas_' . $key . '_' . $bNum] ?? null;
                         $isLunas = $cell ? $cell->status_lunas : false;
+                        $catName = ($key === 'wifi') ? 'Pembayaran WiFi' : 'Pembayaran Sampah';
                         @endphp
-                        <td class="{{ $isLunas ? 'cell-paid' : 'cell-empty' }}" onclick="openCellModal(null, '{{ $key }}', '{{ $label }}', {{ $bNum }}, '{{ $bName }}', {{ $cell ? $cell->nominal : 0 }}, {{ $isLunas ? 1 : 0 }})" title="Klik untuk ubah {{ $label }} {{ $bName }}">
+                        <td class="{{ $isLunas ? 'cell-paid' : 'cell-empty' }}" style="cursor: default;" title="Status {{ $label }} {{ $bName }} otomatis terisi dari Transaksi Kas (Kategori: {{ $catName }})">
                             @if($isLunas)
-                            <span style="font-size: 1.15rem; color: #fff; font-weight: bold;">☑</span>
+                            <span style="font-size: 1.15rem; color: #6ee7b7; font-weight: bold;">☑</span>
                             @else
                             <span style="font-size: 1.15rem; color: #475569;">☐</span>
                             @endif
