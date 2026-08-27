@@ -141,19 +141,10 @@
 @section('content')
 
 @php
-    $wifiSettings = \Modules\Asrama\Http\Controllers\AsramaController::getWifiSettings();
+$wifiSettings = \Modules\Asrama\Http\Controllers\AsramaController::getWifiSettings();
 @endphp
 
-@if(session('wa_success_url'))
-<div style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); color: #6ee7b7; border-radius: 8px; padding: 0.85rem 1.25rem; margin-bottom: 1.25rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.75rem;">
-    <div>
-        <strong>✅ Status Iuran Lunas Terbarui!</strong> Kirimkan password WiFi ke WhatsApp <strong>{{ session('wa_success_nama') }}</strong>.
-    </div>
-    <a href="{{ session('wa_success_url') }}" target="_blank" class="btn btn-sm" style="background: #25D366; color: #fff; font-weight: 700; display: inline-flex; align-items: center; gap: 0.35rem;">
-        <span>📲 Kirim Pass WiFi via WA</span>
-    </a>
-</div>
-@endif
+
 
 <div class="page-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
     <div class="sub-nav-tabs" id="asrama-sub-nav" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
@@ -547,16 +538,29 @@
     function openWifiModal() {
         const m = document.getElementById('modal-wifi');
         const o = document.getElementById('modal-wifi-overlay');
-        if (m) { m.classList.add('show'); m.style.display = 'block'; }
-        if (o) { o.classList.add('show'); o.style.display = 'block'; }
+        if (m) {
+            m.classList.add('show');
+            m.style.display = 'block';
+        }
+        if (o) {
+            o.classList.add('show');
+            o.style.display = 'block';
+        }
     }
 
     function closeWifiModal() {
         const m = document.getElementById('modal-wifi');
         const o = document.getElementById('modal-wifi-overlay');
-        if (m) { m.classList.remove('show'); m.style.display = 'none'; }
-        if (o) { o.classList.remove('show'); o.style.display = 'none'; }
+        if (m) {
+            m.classList.remove('show');
+            m.style.display = 'none';
+        }
+        if (o) {
+            o.classList.remove('show');
+            o.style.display = 'none';
+        }
     }
+
     function formatNumberWithDots(val) {
         val = val.toString().replace(/\D/g, '');
         return val.replace(/\B(?=(\d{3})+(?!\d))/g, '.');

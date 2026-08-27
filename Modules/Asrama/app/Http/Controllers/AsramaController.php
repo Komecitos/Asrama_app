@@ -343,20 +343,6 @@ class AsramaController extends Controller
             if ($totalPaidYear > 0) {
                 $this->allocateResidentPayment($validated['penghuni_id'], $validated['tahun'], $totalPaidYear);
             }
-
-            $penghuni = AsramaPenghuni::find($validated['penghuni_id']);
-            if ($penghuni && !empty($penghuni->telepon)) {
-                $bulanNamesFull = [
-                    1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April', 5 => 'Mei', 6 => 'Juni',
-                    7 => 'Juli', 8 => 'Agustus', 9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
-                ];
-                $bName = $bulanNamesFull[$validated['bulan']] ?? 'Bulan Ini';
-                $waUrl = self::buildWaUrl($penghuni->telepon, $penghuni->nama, $bName, $validated['tahun'], $validated['nominal']);
-                if ($waUrl) {
-                    session()->flash('wa_success_url', $waUrl);
-                    session()->flash('wa_success_nama', $penghuni->nama);
-                }
-            }
         }
 
         return redirect()->back()->with('success', 'Data matriks iuran & Transaksi Kas berhasil tersinkronisasi 100%!');
@@ -453,23 +439,7 @@ class AsramaController extends Controller
             );
         }
 
-        if (!empty($validated['penghuni_id'])) {
-            $penghuni = AsramaPenghuni::find($validated['penghuni_id']);
-            if ($penghuni && !empty($penghuni->telepon)) {
-                $txCarbon = \Carbon\Carbon::parse($validated['tanggal']);
-                $bulanNamesFull = [
-                    1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April', 5 => 'Mei', 6 => 'Juni',
-                    7 => 'Juli', 8 => 'Agustus', 9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
-                ];
-                $bName = $bulanNamesFull[(int)$txCarbon->format('n')] ?? 'Bulan Ini';
-                $tYear = $txCarbon->format('Y');
-                $waUrl = self::buildWaUrl($penghuni->telepon, $penghuni->nama, $bName, $tYear, $validated['nominal']);
-                if ($waUrl) {
-                    session()->flash('wa_success_url', $waUrl);
-                    session()->flash('wa_success_nama', $penghuni->nama);
-                }
-            }
-        }
+
 
         return redirect()->route('asrama.keuangan')->with('success', 'Catatan keuangan berhasil ditambahkan & Matriks Iuran otomatis dialokasikan!');
     }
