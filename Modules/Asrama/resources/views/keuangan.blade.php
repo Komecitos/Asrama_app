@@ -220,8 +220,10 @@
 </div>
 <div id="modal-keuangan-overlay" class="modal-overlay" onclick="closeKeuanganModal()"></div>
 
+@endsection
 
-
+@push('scripts')
+<script>
     function formatNumberWithDots(val) {
         val = val.toString().replace(/\D/g, '');
         return val.replace(/\B(?=(\d{3})+(?!\d))/g, '.');

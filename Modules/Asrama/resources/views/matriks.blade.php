@@ -488,8 +488,10 @@
 </div>
 <div id="modal-matriks-overlay" class="modal-overlay" onclick="closeCellModal()"></div>
 
+@endsection
 
-
+@push('scripts')
+<script>
     function formatNumberWithDots(val) {
         val = val.toString().replace(/\D/g, '');
         return val.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
