@@ -105,31 +105,30 @@
 </div>
 
 {{-- MODAL KONFIRMASI HAPUS TRANSAKSI --}}
-<div id="modal-delete-keuangan" class="modal" aria-hidden="true" style="display: none !important; position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important; width: 100vw !important; height: 100vh !important; background: rgba(15, 23, 42, 0.8) !important; backdrop-filter: blur(4px) !important; z-index: 99999 !important; align-items: center !important; justify-content: center !important; padding: 1rem;">
-    <div class="modal-content" style="background: #1e293b; border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 16px; padding: 1.75rem; max-width: 420px; width: 100%; margin: auto !important; position: relative !important; top: auto !important; left: auto !important; transform: none !important; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.75);">
-        <div style="text-align: center; margin-bottom: 1.25rem;">
-            <div style="width: 56px; height: 56px; border-radius: 50%; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #ef4444; font-size: 1.75rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem auto;">
-                ⚠️
-            </div>
-            <h3 style="color: #f8fafc; font-size: 1.15rem; font-weight: 700; margin: 0 0 0.5rem 0;">Konfirmasi Hapus Transaksi</h3>
-            <p style="color: #94a3b8; font-size: 0.88rem; line-height: 1.5; margin: 0;" id="delete-modal-text">
-                Apakah Anda yakin ingin menghapus catatan transaksi ini?
-            </p>
+<div id="modal-delete-keuangan" class="modal modal-sm" aria-hidden="true" style="display: none; border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 16px; padding: 1.75rem; background: #1e293b; color: #f8fafc; z-index: 10001;">
+    <div style="text-align: center; margin-bottom: 1.25rem;">
+        <div style="width: 56px; height: 56px; border-radius: 50%; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #ef4444; font-size: 1.75rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem auto;">
+            ⚠️
         </div>
-        <form id="delete-keuangan-form" action="" method="POST">
-            @csrf
-            @method('DELETE')
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 1.5rem;">
-                <button type="button" class="btn btn-secondary" onclick="closeDeleteModal()" style="background: #334155; color: #f8fafc; border: 1px solid rgba(255, 255, 255, 0.1); padding: 0.65rem 1rem; border-radius: 10px; font-weight: 600; cursor: pointer;">
-                    Batal
-                </button>
-                <button type="submit" class="btn btn-danger" style="background: #ef4444; color: #ffffff; border: none; padding: 0.65rem 1rem; border-radius: 10px; font-weight: 600; cursor: pointer;">
-                    Ya, Hapus
-                </button>
-            </div>
-        </form>
+        <h3 style="color: #f8fafc; font-size: 1.15rem; font-weight: 700; margin: 0 0 0.5rem 0;">Konfirmasi Hapus Transaksi</h3>
+        <p style="color: #94a3b8; font-size: 0.88rem; line-height: 1.5; margin: 0;" id="delete-modal-text">
+            Apakah Anda yakin ingin menghapus catatan transaksi ini?
+        </p>
     </div>
+    <form id="delete-keuangan-form" action="" method="POST">
+        @csrf
+        @method('DELETE')
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 1.5rem;">
+            <button type="button" class="btn btn-secondary" onclick="closeDeleteModal()" style="background: #334155; color: #f8fafc; border: 1px solid rgba(255, 255, 255, 0.1); padding: 0.65rem 1rem; border-radius: 10px; font-weight: 600; cursor: pointer;">
+                Batal
+            </button>
+            <button type="submit" class="btn btn-danger" style="background: #ef4444; color: #ffffff; border: none; padding: 0.65rem 1rem; border-radius: 10px; font-weight: 600; cursor: pointer;">
+                Ya, Hapus
+            </button>
+        </div>
+    </form>
 </div>
+<div id="modal-delete-keuangan-overlay" class="modal-overlay" onclick="closeDeleteModal()"></div>
 
 {{-- MODAL TAMBAH TRANSAKSI KEUANGAN --}}
 <div id="modal-keuangan" class="modal modal-create" aria-hidden="true">
@@ -250,28 +249,31 @@
     function openDeleteModal(deleteUrl, transactionInfo) {
         const form = document.getElementById('delete-keuangan-form');
         const text = document.getElementById('delete-modal-text');
-        const modal = document.getElementById('modal-delete-keuangan');
+        const m = document.getElementById('modal-delete-keuangan');
+        const o = document.getElementById('modal-delete-keuangan-overlay');
         if (form) form.action = deleteUrl;
         if (text) text.innerText = 'Apakah Anda yakin ingin menghapus transaksi "' + transactionInfo + '"? Matriks iuran terkait akan otomatis disesuaikan.';
-        if (modal) {
-            modal.style.setProperty('display', 'flex', 'important');
-            modal.style.setProperty('align-items', 'center', 'important');
-            modal.style.setProperty('justify-content', 'center', 'important');
+        if (m) {
+            m.classList.add('show');
+            m.style.display = 'block';
+        }
+        if (o) {
+            o.classList.add('show');
+            o.style.display = 'block';
         }
     }
 
     function closeDeleteModal() {
-        const modal = document.getElementById('modal-delete-keuangan');
-        if (modal) {
-            modal.style.setProperty('display', 'none', 'important');
+        const m = document.getElementById('modal-delete-keuangan');
+        const o = document.getElementById('modal-delete-keuangan-overlay');
+        if (m) {
+            m.classList.remove('show');
+            m.style.display = 'none';
+        }
+        if (o) {
+            o.classList.remove('show');
+            o.style.display = 'none';
         }
     }
-
-    window.addEventListener('click', function(e) {
-        const modal = document.getElementById('modal-delete-keuangan');
-        if (e.target === modal) {
-            closeDeleteModal();
-        }
-    });
 </script>
 @endpush
