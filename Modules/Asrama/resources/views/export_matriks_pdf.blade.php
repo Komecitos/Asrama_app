@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,6 +10,7 @@
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
+
         body {
             background-color: #ffffff;
             color: #1e293b;
@@ -16,6 +18,7 @@
             padding: 1.5rem;
             font-size: 13px;
         }
+
         .report-header {
             display: flex;
             justify-content: space-between;
@@ -24,32 +27,39 @@
             padding-bottom: 1rem;
             margin-bottom: 1.25rem;
         }
+
         .report-title h1 {
             margin: 0;
             font-size: 1.5rem;
             color: #0f172a;
         }
+
         .report-title p {
             margin: 0.25rem 0 0 0;
             color: #64748b;
             font-size: 0.85rem;
         }
+
         .meta-box {
             text-align: right;
             font-size: 0.85rem;
             color: #475569;
         }
+
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 1rem;
         }
-        th, td {
+
+        th,
+        td {
             border: 1px solid #cbd5e1;
             padding: 0.5rem 0.4rem;
             text-align: center;
             font-size: 0.8rem;
         }
+
         th {
             background-color: #0f172a;
             color: #ffffff;
@@ -57,21 +67,26 @@
             text-transform: uppercase;
             font-size: 0.72rem;
         }
+
         .col-nama {
             text-align: left;
             padding-left: 0.6rem;
             font-weight: 600;
         }
+
         tr:nth-child(even) {
             background-color: #f8fafc;
         }
+
         .badge-paid {
             color: #166534;
             font-weight: 700;
         }
+
         .badge-empty {
             color: #94a3b8;
         }
+
         .row-divider {
             background: #e2e8f0;
             font-weight: 700;
@@ -80,11 +95,13 @@
             color: #475569;
             font-size: 0.75rem;
         }
+
         .no-print {
             margin-bottom: 1.25rem;
             display: flex;
             gap: 0.5rem;
         }
+
         .btn-print {
             background: #0284c7;
             color: #fff;
@@ -94,16 +111,19 @@
             cursor: pointer;
             font-weight: 700;
         }
+
         @media print {
             .no-print {
                 display: none !important;
             }
+
             body {
                 padding: 0;
             }
         }
     </style>
 </head>
+
 <body>
 
     <div class="no-print">
@@ -223,4 +243,5 @@
         });
     </script>
 </body>
+
 </html>
