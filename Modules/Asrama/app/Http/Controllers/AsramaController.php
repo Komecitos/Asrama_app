@@ -280,4 +280,28 @@ class AsramaController extends Controller
 
         return redirect()->route('asrama.data')->with('success', 'Data Kamar berhasil dihapus!');
     }
+
+    public function storeKeuangan(Request $request)
+    {
+        $validated = $request->validate([
+            'tipe' => 'required|in:pemasukan,pengeluaran',
+            'kategori' => 'required|string|max:255',
+            'nominal' => 'required|integer|min:1',
+            'tanggal' => 'required|date',
+            'penghuni_id' => 'nullable|exists:asrama_penghunis,id',
+            'keterangan' => 'nullable|string',
+        ]);
+
+        AsramaKeuangan::create($validated);
+
+        return redirect()->route('asrama.keuangan')->with('success', 'Catatan keuangan berhasil ditambahkan!');
+    }
+
+    public function destroyKeuangan($id)
+    {
+        $keuangan = AsramaKeuangan::findOrFail($id);
+        $keuangan->delete();
+
+        return redirect()->route('asrama.keuangan')->with('success', 'Catatan keuangan berhasil dihapus!');
+    }
 }

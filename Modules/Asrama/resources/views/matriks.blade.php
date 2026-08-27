@@ -9,6 +9,7 @@
         gap: 1rem;
         margin-bottom: 1.5rem;
     }
+
     .matriks-stat-card {
         background: var(--bg-card-2, rgba(30, 41, 59, 0.6));
         border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
@@ -16,25 +17,30 @@
         padding: 1.15rem 1.25rem;
         backdrop-filter: blur(8px);
     }
+
     .matriks-table-wrapper {
         overflow-x: auto;
         border-radius: var(--radius-lg, 12px);
-        border: 1px solid var(--border-subtle, rgba(255,255,255,0.08));
+        border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
         background: #0f172a;
-        box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
     }
+
     .matriks-table {
         width: 100%;
         border-collapse: collapse;
         min-width: 1250px;
         font-size: 0.85rem;
     }
-    .matriks-table th, .matriks-table td {
+
+    .matriks-table th,
+    .matriks-table td {
         padding: 0.65rem 0.6rem;
         border: 1px solid rgba(255, 255, 255, 0.07);
         text-align: center;
         vertical-align: middle;
     }
+
     .matriks-table th {
         background: #1e293b;
         color: #f8fafc;
@@ -43,12 +49,15 @@
         letter-spacing: 0.5px;
         font-size: 0.75rem;
     }
+
     .matriks-table th.col-current-month {
         background: #334155;
         border-bottom: 2px solid #f59e0b;
         color: #fde047;
     }
-    .matriks-table th.col-nama, .matriks-table td.col-nama {
+
+    .matriks-table th.col-nama,
+    .matriks-table td.col-nama {
         text-align: left;
         font-weight: 600;
         position: sticky;
@@ -56,11 +65,13 @@
         background: #1e293b;
         z-index: 2;
         min-width: 190px;
-        box-shadow: 2px 0 5px rgba(0,0,0,0.3);
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
     }
+
     .matriks-table td.col-nama {
         background: #0f172a;
     }
+
     .cell-paid {
         background: #15803d !important;
         color: #ffffff !important;
@@ -68,26 +79,31 @@
         cursor: pointer;
         transition: transform 0.15s ease, filter 0.15s ease;
     }
+
     .cell-paid:hover {
         filter: brightness(1.2);
         transform: scale(1.02);
     }
+
     .cell-empty {
         background: #0f172a;
         color: #64748b;
         cursor: pointer;
         transition: background 0.15s ease;
     }
+
     .cell-empty:hover {
         background: #1e293b;
         color: #cbd5e1;
     }
+
     .cell-not-joined {
         background: #1e293b !important;
         color: #94a3b8 !important;
         font-style: italic;
         font-size: 0.72rem;
     }
+
     .row-divider {
         background: #334155 !important;
         color: #cbd5e1;
@@ -97,9 +113,10 @@
         letter-spacing: 1px;
         padding-left: 1rem !important;
     }
+
     .preset-btn {
-        background: rgba(255,255,255,0.06);
-        border: 1px solid rgba(255,255,255,0.15);
+        background: rgba(255, 255, 255, 0.06);
+        border: 1px solid rgba(255, 255, 255, 0.15);
         color: #f8fafc;
         border-radius: 6px;
         padding: 0.35rem 0.65rem;
@@ -107,6 +124,7 @@
         cursor: pointer;
         transition: all 0.2s ease;
     }
+
     .preset-btn:hover {
         background: var(--accent-primary, #6366f1);
         border-color: var(--accent-primary, #6366f1);
@@ -174,7 +192,7 @@
                 <h3 class="widget-title" style="margin: 0;">📅 Matriks Pembayaran Iuran & Fasilitas (Tahun {{ $tahun }})</h3>
                 <p class="task-meta" style="margin: 0.2rem 0 0 0;">Klik sel manapun pada tabel untuk memperbarui status & nominal iuran</p>
             </div>
-            
+
             <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
                 {{-- QUICK SEARCH INPUT --}}
                 <div style="position: relative;">
@@ -193,7 +211,7 @@
 
                     <select name="tahun" class="form-control" style="width: auto; padding: 0.35rem 0.75rem; font-size: 0.85rem;" onchange="document.getElementById('form-filter-matriks').submit()">
                         @foreach($availableYears as $y)
-                            <option value="{{ $y }}" {{ $tahun == $y ? 'selected' : '' }}>Tahun {{ $y }}</option>
+                        <option value="{{ $y }}" {{ $tahun == $y ? 'selected' : '' }}>Tahun {{ $y }}</option>
                         @endforeach
                     </select>
                 </form>
@@ -207,12 +225,12 @@
                     <tr>
                         <th class="col-nama">Nama</th>
                         @foreach($bulanNames as $blnNum => $blnName)
-                            <th class="{{ ($tahun == date('Y') && $blnNum == $currentMonth) ? 'col-current-month' : '' }}">
-                                {{ $blnName }}
-                                @if($tahun == date('Y') && $blnNum == $currentMonth)
-                                    <div style="font-size: 0.65rem; color: #f59e0b; font-weight: 800; text-transform: uppercase; margin-top: 1px;">• Bulan Ini •</div>
-                                @endif
-                            </th>
+                        <th class="{{ ($tahun == date('Y') && $blnNum == $currentMonth) ? 'col-current-month' : '' }}">
+                            {{ $blnName }}
+                            @if($tahun == date('Y') && $blnNum == $currentMonth)
+                            <div style="font-size: 0.65rem; color: #f59e0b; font-weight: 800; text-transform: uppercase; margin-top: 1px;">• Bulan Ini •</div>
+                            @endif
+                        </th>
                         @endforeach
                     </tr>
                 </thead>
@@ -224,17 +242,17 @@
                             <span style="font-size: 0.95rem;">{{ $key === 'wifi' ? '📶' : '🧹' }}</span> {{ $label }}
                         </td>
                         @foreach($bulanNames as $bNum => $bName)
-                            @php
-                                $cell = $iuranMap['fasilitas_' . $key . '_' . $bNum] ?? null;
-                                $isLunas = $cell ? $cell->status_lunas : false;
-                            @endphp
-                            <td class="{{ $isLunas ? 'cell-paid' : 'cell-empty' }}" onclick="openCellModal(null, '{{ $key }}', '{{ $label }}', {{ $bNum }}, '{{ $bName }}', {{ $cell ? $cell->nominal : 0 }}, {{ $isLunas ? 1 : 0 }})" title="Klik untuk ubah {{ $label }} {{ $bName }}">
-                                @if($isLunas)
-                                    <span style="font-size: 1.15rem; color: #fff; font-weight: bold;">☑</span>
-                                @else
-                                    <span style="font-size: 1.15rem; color: #475569;">☐</span>
-                                @endif
-                            </td>
+                        @php
+                        $cell = $iuranMap['fasilitas_' . $key . '_' . $bNum] ?? null;
+                        $isLunas = $cell ? $cell->status_lunas : false;
+                        @endphp
+                        <td class="{{ $isLunas ? 'cell-paid' : 'cell-empty' }}" onclick="openCellModal(null, '{{ $key }}', '{{ $label }}', {{ $bNum }}, '{{ $bName }}', {{ $cell ? $cell->nominal : 0 }}, {{ $isLunas ? 1 : 0 }})" title="Klik untuk ubah {{ $label }} {{ $bName }}">
+                            @if($isLunas)
+                            <span style="font-size: 1.15rem; color: #fff; font-weight: bold;">☑</span>
+                            @else
+                            <span style="font-size: 1.15rem; color: #475569;">☐</span>
+                            @endif
+                        </td>
                         @endforeach
                     </tr>
                     @endforeach
@@ -246,40 +264,40 @@
                             <div style="display: flex; flex-direction: column;">
                                 <span style="font-weight: 600; color: #f8fafc;">{{ $p->nama }}</span>
                                 @if($p->kamar)
-                                    <span style="font-size: 0.72rem; color: #94a3b8; margin-top: 1px;">Kamar {{ $p->kamar->nomor_kamar }}</span>
+                                <span style="font-size: 0.72rem; color: #94a3b8; margin-top: 1px;">Kamar {{ $p->kamar->nomor_kamar }}</span>
                                 @endif
                             </div>
                         </td>
                         @foreach($bulanNames as $bNum => $bName)
-                            @php
-                                $cell = $iuranMap['penghuni_' . $p->id . '_' . $bNum] ?? null;
-                                $nominal = $cell ? $cell->nominal : 0;
-                                
-                                // Check if month is prior to joining date
-                                $isPriorToJoin = false;
-                                if ($p->tanggal_masuk) {
-                                    $joinYear = (int)\Carbon\Carbon::parse($p->tanggal_masuk)->format('Y');
-                                    $joinMonth = (int)\Carbon\Carbon::parse($p->tanggal_masuk)->format('m');
-                                    if ($tahun < $joinYear || ($tahun == $joinYear && $bNum < $joinMonth)) {
-                                        $isPriorToJoin = true;
-                                    }
-                                }
+                        @php
+                        $cell = $iuranMap['penghuni_' . $p->id . '_' . $bNum] ?? null;
+                        $nominal = $cell ? $cell->nominal : 0;
+
+                        // Check if month is prior to joining date
+                        $isPriorToJoin = false;
+                        if ($p->tanggal_masuk) {
+                        $joinYear = (int)\Carbon\Carbon::parse($p->tanggal_masuk)->format('Y');
+                        $joinMonth = (int)\Carbon\Carbon::parse($p->tanggal_masuk)->format('m');
+                        if ($tahun < $joinYear || ($tahun==$joinYear && $bNum < $joinMonth)) {
+                            $isPriorToJoin=true;
+                            }
+                            }
                             @endphp
 
-                            @if($isPriorToJoin && $nominal == 0)
-                                <td class="cell-not-joined" title="Masuk: {{ \Carbon\Carbon::parse($p->tanggal_masuk)->format('d/m/Y') }}">
-                                    masuk : {{ \Carbon\Carbon::parse($p->tanggal_masuk)->format('d/m/Y') }}
-                                </td>
+                            @if($isPriorToJoin && $nominal==0)
+                            <td class="cell-not-joined" title="Masuk: {{ \Carbon\Carbon::parse($p->tanggal_masuk)->format('d/m/Y') }}">
+                            masuk : {{ \Carbon\Carbon::parse($p->tanggal_masuk)->format('d/m/Y') }}
+                            </td>
                             @else
-                                <td class="{{ $nominal > 0 ? 'cell-paid' : 'cell-empty' }}" onclick="openCellModal({{ $p->id }}, null, '{{ addslashes($p->nama) }}', {{ $bNum }}, '{{ $bName }}', {{ $nominal }}, {{ $nominal > 0 ? 1 : 0 }})" title="Klik untuk ubah iuran {{ $p->nama }} ({{ $bName }})">
-                                    @if($nominal > 0)
-                                        Rp {{ number_format($nominal, 0, ',', '.') }}
-                                    @else
-                                        <span style="opacity: 0.3;">Rp 0</span>
-                                    @endif
-                                </td>
+                            <td class="{{ $nominal > 0 ? 'cell-paid' : 'cell-empty' }}" onclick="openCellModal({{ $p->id }}, null, '{{ addslashes($p->nama) }}', {{ $bNum }}, '{{ $bName }}', {{ $nominal }}, {{ $nominal > 0 ? 1 : 0 }})" title="Klik untuk ubah iuran {{ $p->nama }} ({{ $bName }})">
+                                @if($nominal > 0)
+                                Rp {{ number_format($nominal, 0, ',', '.') }}
+                                @else
+                                <span style="opacity: 0.3;">Rp 0</span>
+                                @endif
+                            </td>
                             @endif
-                        @endforeach
+                            @endforeach
                     </tr>
                     @endforeach
 
@@ -300,17 +318,17 @@
                             </div>
                         </td>
                         @foreach($bulanNames as $bNum => $bName)
-                            @php
-                                $cell = $iuranMap['penghuni_' . $p->id . '_' . $bNum] ?? null;
-                                $nominal = $cell ? $cell->nominal : 0;
-                            @endphp
-                            <td class="{{ $nominal > 0 ? 'cell-paid' : 'cell-empty' }}" onclick="openCellModal({{ $p->id }}, null, '{{ addslashes($p->nama) }}', {{ $bNum }}, '{{ $bName }}', {{ $nominal }}, {{ $nominal > 0 ? 1 : 0 }})" title="Klik untuk ubah iuran {{ $p->nama }} ({{ $bName }})">
-                                @if($nominal > 0)
-                                    Rp {{ number_format($nominal, 0, ',', '.') }}
-                                @else
-                                    <span style="opacity: 0.25;">Rp 0</span>
-                                @endif
-                            </td>
+                        @php
+                        $cell = $iuranMap['penghuni_' . $p->id . '_' . $bNum] ?? null;
+                        $nominal = $cell ? $cell->nominal : 0;
+                        @endphp
+                        <td class="{{ $nominal > 0 ? 'cell-paid' : 'cell-empty' }}" onclick="openCellModal({{ $p->id }}, null, '{{ addslashes($p->nama) }}', {{ $bNum }}, '{{ $bName }}', {{ $nominal }}, {{ $nominal > 0 ? 1 : 0 }})" title="Klik untuk ubah iuran {{ $p->nama }} ({{ $bName }})">
+                            @if($nominal > 0)
+                            Rp {{ number_format($nominal, 0, ',', '.') }}
+                            @else
+                            <span style="opacity: 0.25;">Rp 0</span>
+                            @endif
+                        </td>
                         @endforeach
                     </tr>
                     @endforeach
@@ -346,7 +364,7 @@
                     <input type="text" id="cell-nominal-formatted" class="form-control" style="border: none; background: transparent; padding-left: 0; font-weight: 600;" placeholder="100.000" onkeyup="formatCurrencyInput(this)">
                     <input type="hidden" id="cell-nominal-raw" name="nominal" value="0">
                 </div>
-                
+
                 {{-- DYNAMIC PRESET SHORTCUT BUTTONS --}}
                 <div style="display: flex; gap: 0.4rem; margin-top: 0.75rem; flex-wrap: wrap;">
                     <button type="button" onclick="setNominal({{ $tarifDefault }})" class="preset-btn" style="background: rgba(16, 185, 129, 0.2); border-color: #10b981; color: #6ee7b7; font-weight: 700;">
@@ -403,7 +421,7 @@
         document.getElementById('cell-bulan').value = bulanNum;
         document.getElementById('cell-item-name').textContent = itemName;
         document.getElementById('cell-month-name').textContent = bulanName;
-        
+
         let nom = currentNominal || 0;
         document.getElementById('cell-nominal-formatted').value = formatNumberWithDots(nom);
         document.getElementById('cell-nominal-raw').value = nom;
@@ -417,15 +435,27 @@
 
         const m = document.getElementById('modal-matriks-cell');
         const o = document.getElementById('modal-matriks-overlay');
-        if (m) { m.classList.add('show'); m.style.display = 'block'; }
-        if (o) { o.classList.add('show'); o.style.display = 'block'; }
+        if (m) {
+            m.classList.add('show');
+            m.style.display = 'block';
+        }
+        if (o) {
+            o.classList.add('show');
+            o.style.display = 'block';
+        }
     }
 
     function closeCellModal() {
         const m = document.getElementById('modal-matriks-cell');
         const o = document.getElementById('modal-matriks-overlay');
-        if (m) { m.classList.remove('show'); m.style.display = 'none'; }
-        if (o) { o.classList.remove('show'); o.style.display = 'none'; }
+        if (m) {
+            m.classList.remove('show');
+            m.style.display = 'none';
+        }
+        if (o) {
+            o.classList.remove('show');
+            o.style.display = 'none';
+        }
     }
 
     function filterMatriksTable() {
