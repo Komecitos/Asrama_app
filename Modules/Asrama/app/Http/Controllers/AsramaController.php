@@ -456,12 +456,13 @@ class AsramaController extends Controller
         }
 
         // 2. RE-SYNC WIFI OR SAMPAH EXPENSES IF OPERATIONAL EXPENSE DELETED
-        if (str_contains($keterangan, 'wifi') || $kategori === 'Listrik & Air') {
+        if ($kategori === 'Pembayaran WiFi' || str_contains($keterangan, 'wifi') || $kategori === 'Listrik & Air') {
             $otherWifi = AsramaKeuangan::whereYear('tanggal', $tahun)
                 ->whereMonth('tanggal', $bulan)
-                ->where('tipe', 'pengeluaran')
                 ->where(function ($q) {
-                    $q->where('kategori', 'Listrik & Air')->orWhere('keterangan', 'like', '%wifi%');
+                    $q->where('kategori', 'Pembayaran WiFi')
+                        ->orWhere('kategori', 'Listrik & Air')
+                        ->orWhere('keterangan', 'like', '%wifi%');
                 })
                 ->exists();
 
@@ -470,12 +471,13 @@ class AsramaController extends Controller
             }
         }
 
-        if (str_contains($keterangan, 'sampah') || $kategori === 'Kebersihan & Keamanan') {
+        if ($kategori === 'Pembayaran Sampah' || str_contains($keterangan, 'sampah') || $kategori === 'Kebersihan & Keamanan') {
             $otherSampah = AsramaKeuangan::whereYear('tanggal', $tahun)
                 ->whereMonth('tanggal', $bulan)
-                ->where('tipe', 'pengeluaran')
                 ->where(function ($q) {
-                    $q->where('kategori', 'Kebersihan & Keamanan')->orWhere('keterangan', 'like', '%sampah%');
+                    $q->where('kategori', 'Pembayaran Sampah')
+                        ->orWhere('kategori', 'Kebersihan & Keamanan')
+                        ->orWhere('keterangan', 'like', '%sampah%');
                 })
                 ->exists();
 
