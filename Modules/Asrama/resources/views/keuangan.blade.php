@@ -15,10 +15,10 @@
     <h2 class="title" style="margin: 0;">Keuangan Asrama</h2>
     <div class="sub-nav-tabs" style="display: flex; gap: 0.5rem;">
         <a href="{{ route('asrama.keuangan') }}" class="btn btn-sm {{ request()->routeIs('asrama.keuangan') ? 'btn-primary' : 'btn-secondary' }}">
-            📊 Riwayat Transaksi Kas
+            Riwayat Transaksi Kas
         </a>
         <a href="{{ route('asrama.keuangan.matriks') }}" class="btn btn-sm {{ request()->routeIs('asrama.keuangan.matriks') ? 'btn-primary' : 'btn-secondary' }}">
-            📅 Matriks Iuran Bulanan
+            Matriks Iuran Bulanan
         </a>
     </div>
 </div>
@@ -46,7 +46,7 @@
     <div class="widget-card">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
             <div>
-                <h3 class="widget-title" style="margin: 0;">💰 Riwayat Transaksi Keuangan</h3>
+                <h3 class="widget-title" style="margin: 0;">Riwayat Transaksi Keuangan</h3>
             </div>
             <button type="button" onclick="openKeuanganModal()" class="btn btn-primary btn-sm">+ Catat Transaksi</button>
         </div>

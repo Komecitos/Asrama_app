@@ -144,10 +144,10 @@
     <h2 class="title" style="margin: 0;">Keuangan Asrama</h2>
     <div class="sub-nav-tabs" style="display: flex; gap: 0.5rem;">
         <a href="{{ route('asrama.keuangan') }}" class="btn btn-sm {{ request()->routeIs('asrama.keuangan') ? 'btn-primary' : 'btn-secondary' }}">
-            📊 Riwayat Transaksi Kas
+            Riwayat Transaksi Kas
         </a>
         <a href="{{ route('asrama.keuangan.matriks') }}" class="btn btn-sm {{ request()->routeIs('asrama.keuangan.matriks') ? 'btn-primary' : 'btn-secondary' }}">
-            📅 Matriks Iuran Bulanan
+            Matriks Iuran Bulanan
         </a>
     </div>
 </div>
@@ -185,13 +185,13 @@
     <div class="widget-card">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
             <div>
-                <h3 class="widget-title" style="margin: 0;">📅 Matriks Pembayaran Iuran & Fasilitas (Tahun {{ $tahun }})</h3>
+                <h3 class="widget-title" style="margin: 0;">Matriks Pembayaran Iuran & Fasilitas (Tahun {{ $tahun }})</h3>
             </div>
 
             <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
                 {{-- QUICK SEARCH INPUT --}}
                 <div style="position: relative;">
-                    <input type="text" id="search-matriks" class="form-control" placeholder="🔍 Cari nama..." onkeyup="filterMatriksTable()" style="padding: 0.35rem 0.75rem 0.35rem 2rem; font-size: 0.85rem; width: 150px;">
+                    <input type="text" id="search-matriks" class="form-control" placeholder="Cari nama..." onkeyup="filterMatriksTable()" style="padding: 0.35rem 0.75rem; font-size: 0.85rem; width: 150px;">
                 </div>
 
                 {{-- FORM FILTER & TARIF DEFAULT --}}
@@ -234,7 +234,7 @@
                     @foreach(['wifi' => 'WIFI', 'sampah' => 'Iuran Sampah'] as $key => $label)
                     <tr class="matriks-row">
                         <td class="col-nama" style="font-weight: 700; color: #f8fafc;">
-                            <span style="font-size: 0.95rem;">{{ $key === 'wifi' ? '📶' : '🧹' }}</span> {{ $label }}
+                            {{ $label }}
                         </td>
                         @foreach($bulanNames as $bNum => $bName)
                         @php
@@ -374,7 +374,7 @@
                         {{-- KELUAR DIVIDER ROW --}}
                         <tr>
                             <td colspan="13" class="row-divider">
-                                🚪 Keluar (Penghuni Non-Aktif)
+                                Keluar (Penghuni Non-Aktif)
                             </td>
                         </tr>
 
@@ -439,7 +439,7 @@
                 <div style="display: flex; gap: 0.4rem; margin-top: 0.75rem; flex-wrap: wrap;">
                     <button type="button" id="btn-prorata-preset" class="preset-btn" style="display: none; background: rgba(245, 158, 11, 0.2); border-color: #f59e0b; color: #fde047; font-weight: 700;"></button>
                     <button type="button" onclick="setNominal({{ $tarifDefault }})" class="preset-btn" style="background: rgba(16, 185, 129, 0.2); border-color: #10b981; color: #6ee7b7; font-weight: 700;">
-                        ✓ Standar (Rp {{ number_format($tarifDefault, 0, ',', '.') }})
+                        Standar (Rp {{ number_format($tarifDefault, 0, ',', '.') }})
                     </button>
                     @if($tarifDefault != 100000)
                     <button type="button" onclick="setNominal(100000)" class="preset-btn">Rp 100.000</button>
@@ -451,7 +451,7 @@
 
             <div id="wrapper-status" class="form-group" style="display: flex; align-items: center; gap: 0.6rem; margin-top: 1rem; background: rgba(255,255,255,0.03); padding: 0.75rem; border-radius: 8px;">
                 <input type="checkbox" id="cell-status-lunas" name="status_lunas" value="1" style="width: 20px; height: 20px; cursor: pointer;">
-                <label for="cell-status-lunas" class="form-label" style="margin: 0; cursor: pointer; font-weight: 600; color: #f8fafc;">Tandai Lunas / Centang ☑</label>
+                <label for="cell-status-lunas" class="form-label" style="margin: 0; cursor: pointer; font-weight: 600; color: #f8fafc;">Tandai Lunas</label>
             </div>
         </div>
 

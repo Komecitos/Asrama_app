@@ -16,7 +16,10 @@
 
     {{-- TOGGLE SHOW/HIDE AKSI COLUMN BUTTON --}}
     <div style="display: flex; align-items: center; background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255, 255, 255, 0.12); padding: 0.35rem 0.85rem; border-radius: 30px; gap: 0.6rem;">
-        <span style="font-size: 0.85rem; font-weight: 700; color: #cbd5e1;">⚙️ Tombol Aksi:</span>
+        <span style="font-size: 0.85rem; font-weight: 700; color: #cbd5e1; display: inline-flex; align-items: center; gap: 0.35rem;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #94a3b8;"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            Tombol Aksi:
+        </span>
         <button type="button" id="btn-toggle-aksi" onclick="toggleAksiColumn()" style="display: flex; align-items: center; gap: 0.4rem; padding: 0.35rem 0.85rem; border-radius: 20px; font-weight: 800; font-size: 0.8rem; border: none; cursor: pointer; transition: all 0.2s ease;">
             <span id="aksi-status-dot" style="width: 8px; height: 8px; border-radius: 50%; display: inline-block;"></span>
             <span id="aksi-status-text">OFF</span>
@@ -45,7 +48,7 @@
     <div class="widget-card" style="margin-bottom: 2rem;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
             <div>
-                <h3 class="widget-title" style="margin: 0;">👤 Data Penghuni Asrama</h3>
+                <h3 class="widget-title" style="margin: 0;">Data Penghuni Asrama</h3>
             </div>
             <button type="button" onclick="openPenghuniModal()" class="btn btn-primary btn-sm">+ Tambah Penghuni</button>
         </div>
@@ -126,7 +129,7 @@
     <div class="widget-card" style="margin-bottom: 2rem;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
             <div>
-                <h3 class="widget-title" style="margin: 0;">🚪 Daftar Kamar Asrama</h3>
+                <h3 class="widget-title" style="margin: 0;">Daftar Kamar Asrama</h3>
             </div>
             <button type="button" onclick="openKamarModal()" class="btn btn-primary btn-sm">+ Tambah Kamar</button>
         </div>
@@ -191,7 +194,7 @@
     <div class="widget-card">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
             <div>
-                <h3 class="widget-title" style="margin: 0;">📜 Log Aktivitas & Penghuni Keluar</h3>
+                <h3 class="widget-title" style="margin: 0;">Log Aktivitas & Penghuni Keluar</h3>
             </div>
         </div>
 
@@ -219,8 +222,8 @@
                 <tbody>
                     @foreach($penghuniKeluarList as $pk)
                     <tr>
-                        <td style="font-weight: 700; color: #f59e0b;">
-                            📅 {{ $pk->tanggal_keluar ? \Carbon\Carbon::parse($pk->tanggal_keluar)->format('d M Y') : '-' }}
+                        <td style="font-weight: 700; color: #cbd5e1;">
+                            {{ $pk->tanggal_keluar ? \Carbon\Carbon::parse($pk->tanggal_keluar)->format('d M Y') : '-' }}
                         </td>
                         <td class="task-title" style="font-weight: 600; color: #cbd5e1;">{{ $pk->nama }}</td>
                         <td class="task-meta">{{ $pk->nomor_hp ?: '-' }}</td>
@@ -234,7 +237,7 @@
                             @endif
                         </td>
                         <td>
-                            <span class="badge badge-warning" style="background: rgba(245, 158, 11, 0.18); color: #fde047; border: 1px solid rgba(245, 158, 11, 0.35); font-weight: 600;">🚪 Resmi Keluar Asrama</span>
+                            <span class="badge badge-warning" style="background: rgba(245, 158, 11, 0.18); color: #fde047; border: 1px solid rgba(245, 158, 11, 0.35); font-weight: 600;">Resmi Keluar Asrama</span>
                         </td>
                         <td class="col-aksi-cell">
                             <div style="display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap;">
