@@ -160,28 +160,24 @@
             <h3 style="color: #6ee7b7; margin: 0.35rem 0 0 0; font-size: 1.4rem; font-weight: 700;">
                 Rp {{ number_format($statsMatriks['total_terbayar'], 0, ',', '.') }}
             </h3>
-            <p class="task-meta" style="font-size: 0.75rem; margin-top: 0.2rem;">Total iuran terkumpul</p>
         </div>
         <div class="matriks-stat-card">
             <p class="task-meta" style="margin: 0;">Lunas Bulan Ini ({{ \Carbon\Carbon::now()->format('F') }})</p>
             <h3 style="color: #fde047; margin: 0.35rem 0 0 0; font-size: 1.4rem; font-weight: 700;">
                 {{ $statsMatriks['lunas_bulan_ini'] }} / {{ $statsMatriks['total_aktif'] }} Penghuni
             </h3>
-            <p class="task-meta" style="font-size: 0.75rem; margin-top: 0.2rem;">Penghuni yang telah bayar</p>
         </div>
         <div class="matriks-stat-card">
             <p class="task-meta" style="margin: 0;">Tarif Standar / Bulan</p>
             <h3 style="color: #6ee7b7; margin: 0.35rem 0 0 0; font-size: 1.4rem; font-weight: 700;">
                 Rp {{ number_format($tarifDefault, 0, ',', '.') }}
             </h3>
-            <p class="task-meta" style="font-size: 0.75rem; margin-top: 0.2rem;">Konfigurasi iuran bulanan</p>
         </div>
         <div class="matriks-stat-card">
             <p class="task-meta" style="margin: 0;">Penghuni Aktif</p>
             <h3 style="color: #93c5fd; margin: 0.35rem 0 0 0; font-size: 1.4rem; font-weight: 700;">
                 {{ $statsMatriks['total_aktif'] }} Orang
             </h3>
-            <p class="task-meta" style="font-size: 0.75rem; margin-top: 0.2rem;">Penghuni aktif saat ini</p>
         </div>
     </div>
 
@@ -190,7 +186,6 @@
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.75rem;">
             <div>
                 <h3 class="widget-title" style="margin: 0;">📅 Matriks Pembayaran Iuran & Fasilitas (Tahun {{ $tahun }})</h3>
-                <p class="task-meta" style="margin: 0.2rem 0 0 0;">Klik sel manapun pada tabel untuk memperbarui status & nominal iuran (Mendukung perhitungan prorata otomatis)</p>
             </div>
 
             <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">

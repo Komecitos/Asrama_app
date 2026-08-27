@@ -28,20 +28,17 @@
     <div class="asrama-stats-grid">
         <div class="asrama-stat-card">
             <p class="task-meta">Total Pemasukan</p>
-            <h3 style="color: #6ee7b7; margin: 0.25rem 0; font-size: 1.6rem;">Rp {{ number_format($summary['total_pemasukan'], 0, ',', '.') }}</h3>
-            <p class="task-meta" style="font-size: 0.75rem;">Iuran & pemasukan lain</p>
+            <h3 style="color: #6ee7b7; margin: 0.25rem 0 0 0; font-size: 1.6rem;">Rp {{ number_format($summary['total_pemasukan'], 0, ',', '.') }}</h3>
         </div>
         <div class="asrama-stat-card">
             <p class="task-meta">Total Pengeluaran</p>
-            <h3 style="color: #f87171; margin: 0.25rem 0; font-size: 1.6rem;">Rp {{ number_format($summary['total_pengeluaran'], 0, ',', '.') }}</h3>
-            <p class="task-meta" style="font-size: 0.75rem;">Biaya operasional & perbaikan</p>
+            <h3 style="color: #f87171; margin: 0.25rem 0 0 0; font-size: 1.6rem;">Rp {{ number_format($summary['total_pengeluaran'], 0, ',', '.') }}</h3>
         </div>
         <div class="asrama-stat-card">
             <p class="task-meta">Saldo Kas Saat Ini</p>
-            <h3 style="color: {{ $summary['saldo_kas'] >= 0 ? '#fde047' : '#f87171' }}; margin: 0.25rem 0; font-size: 1.6rem;">
+            <h3 style="color: {{ $summary['saldo_kas'] >= 0 ? '#fde047' : '#f87171' }}; margin: 0.25rem 0 0 0; font-size: 1.6rem;">
                 Rp {{ number_format($summary['saldo_kas'], 0, ',', '.') }}
             </h3>
-            <p class="task-meta" style="font-size: 0.75rem;">Sisa kas bersih asrama</p>
         </div>
     </div>
 
@@ -50,7 +47,6 @@
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
             <div>
                 <h3 class="widget-title" style="margin: 0;">💰 Riwayat Transaksi Keuangan</h3>
-                <p class="task-meta" style="margin: 0.2rem 0 0 0;">Catatan arus kas pemasukan iuran & pengeluaran operasional</p>
             </div>
             <button type="button" onclick="openKeuanganModal()" class="btn btn-primary btn-sm">+ Catat Transaksi</button>
         </div>
