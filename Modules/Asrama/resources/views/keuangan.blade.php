@@ -127,6 +127,7 @@
                 <select name="kategori" class="form-control" required>
                     <option value="Iuran Bulanan">Iuran Bulanan</option>
                     <option value="Pembayaran WiFi">Pembayaran WiFi</option>
+                    <option value="Pembayaran Sampah">Pembayaran Sampah</option>
                     <option value="Listrik & Air">Listrik & Air</option>
                     <option value="Kebersihan & Keamanan">Kebersihan & Keamanan</option>
                     <option value="Perbaikan & Maintenance">Perbaikan & Maintenance</option>
