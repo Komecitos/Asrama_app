@@ -163,11 +163,14 @@ class AsramaController extends Controller
 
     public function matriksKeuangan(Request $request)
     {
-        $tahun = (int) ($request->get('tahun', date('Y')));
+        $startYear = 2026;
+        $currentYear = (int) date('Y');
+        $tahun = max($startYear, (int) ($request->get('tahun', $currentYear)));
         $tarifDefault = (int) ($request->get('tarif_default', session('asrama_tarif_default', 100000)));
         session(['asrama_tarif_default' => $tarifDefault]);
 
-        $availableYears = range(date('Y') - 2, date('Y') + 2);
+        $endYear = max($startYear, $currentYear) + 2;
+        $availableYears = range($startYear, $endYear);
 
         $penghunis = AsramaPenghuni::orderBy('status_penghuni', 'asc')->orderBy('nama', 'asc')->get();
         $penghuniAktif = $penghunis->where('status_penghuni', 'Aktif');
