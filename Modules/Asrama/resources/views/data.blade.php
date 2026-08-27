@@ -11,8 +11,17 @@
 
 @section('content')
 
-<div class="page-header">
-    <h2 class="title">Data Asrama</h2>
+<div class="page-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+    <h2 class="title" style="margin: 0;">Data Asrama</h2>
+
+    {{-- TOGGLE SHOW/HIDE AKSI COLUMN BUTTON --}}
+    <div style="display: flex; align-items: center; background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255, 255, 255, 0.12); padding: 0.35rem 0.85rem; border-radius: 30px; gap: 0.6rem;">
+        <span style="font-size: 0.85rem; font-weight: 700; color: #cbd5e1;">⚙️ Tombol Aksi:</span>
+        <button type="button" id="btn-toggle-aksi" onclick="toggleAksiColumn()" style="display: flex; align-items: center; gap: 0.4rem; padding: 0.35rem 0.85rem; border-radius: 20px; font-weight: 800; font-size: 0.8rem; border: none; cursor: pointer; transition: all 0.2s ease;">
+            <span id="aksi-status-dot" style="width: 8px; height: 8px; border-radius: 50%; display: inline-block;"></span>
+            <span id="aksi-status-text">OFF</span>
+        </button>
+    </div>
 </div>
 
 <div class="asrama-wrapper">
@@ -65,7 +74,7 @@
                         <th>Status</th>
                         <th>Tgl Masuk</th>
                         <th>Tgl Keluar</th>
-                        <th>Aksi</th>
+                        <th class="col-aksi-header">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -91,7 +100,7 @@
                         </td>
                         <td class="task-meta">{{ $penghuni->tanggal_masuk ? \Carbon\Carbon::parse($penghuni->tanggal_masuk)->format('d M Y') : '-' }}</td>
                         <td class="task-meta">{{ $penghuni->tanggal_keluar ? \Carbon\Carbon::parse($penghuni->tanggal_keluar)->format('d M Y') : '-' }}</td>
-                        <td>
+                        <td class="col-aksi-cell">
                             <div style="display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap;">
                                 {{-- EDIT BUTTON --}}
                                 <button type="button" onclick="openEditPenghuniModal({{ $penghuni->id }}, '{{ addslashes($penghuni->nama) }}', '{{ addslashes($penghuni->nomor_hp ?: '') }}', '{{ addslashes($penghuni->kampus ?: '') }}', '{{ addslashes($penghuni->asal_kampung ?: '') }}', '{{ $penghuni->kamar_id ?: '' }}', '{{ $penghuni->tanggal_masuk ?: '' }}', '{{ addslashes($penghuni->catatan ?: '') }}')" class="btn btn-secondary btn-sm" title="Edit data penghuni">Edit</button>
@@ -143,7 +152,7 @@
                         <th>Slot Kosong</th>
                         <th>Status</th>
                         <th>Fasilitas</th>
-                        <th>Aksi</th>
+                        <th class="col-aksi-header">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -177,7 +186,7 @@
                             @endif
                         </td>
                         <td class="task-meta">{{ $kamar->fasilitas ?: '-' }}</td>
-                        <td>
+                        <td class="col-aksi-cell">
                             <div style="display: flex; gap: 0.4rem;">
                                 <button type="button" onclick="openEditKamarModal({{ $kamar->id }}, '{{ addslashes($kamar->nomor_kamar) }}', {{ $kamar->lantai }}, {{ $kamar->kapasitas }}, '{{ $kamar->status }}', '{{ addslashes($kamar->fasilitas ?: '') }}', '{{ addslashes($kamar->catatan ?: '') }}')" class="btn btn-secondary btn-sm">Edit</button>
                                 <form action="{{ route('asrama.kamar.destroy', $kamar->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Hapus kamar {{ $kamar->nomor_kamar }}?');">
@@ -560,5 +569,47 @@
             o.style.display = 'none';
         }
     }
+
+    function updateAksiToggleUI(isOn) {
+        const btn = document.getElementById('btn-toggle-aksi');
+        const dot = document.getElementById('aksi-status-dot');
+        const text = document.getElementById('aksi-status-text');
+        const headers = document.querySelectorAll('.col-aksi-header');
+        const cells = document.querySelectorAll('.col-aksi-cell');
+
+        if (isOn) {
+            if (btn) {
+                btn.style.background = '#10b981';
+                btn.style.color = '#ffffff';
+                btn.style.boxShadow = '0 0 10px rgba(16, 185, 129, 0.4)';
+            }
+            if (dot) dot.style.background = '#6ee7b7';
+            if (text) text.innerText = 'ON (Aktif)';
+            headers.forEach(el => el.style.display = '');
+            cells.forEach(el => el.style.display = '');
+        } else {
+            if (btn) {
+                btn.style.background = '#334155';
+                btn.style.color = '#cbd5e1';
+                btn.style.boxShadow = 'none';
+            }
+            if (dot) dot.style.background = '#ef4444';
+            if (text) text.innerText = 'OFF (Sembunyi)';
+            headers.forEach(el => el.style.display = 'none');
+            cells.forEach(el => el.style.display = 'none');
+        }
+    }
+
+    function toggleAksiColumn() {
+        let current = localStorage.getItem('asrama_aksi_toggle') || 'OFF';
+        let next = (current === 'ON') ? 'OFF' : 'ON';
+        localStorage.setItem('asrama_aksi_toggle', next);
+        updateAksiToggleUI(next === 'ON');
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        let saved = localStorage.getItem('asrama_aksi_toggle') || 'OFF';
+        updateAksiToggleUI(saved === 'ON');
+    });
 </script>
 @endpush
