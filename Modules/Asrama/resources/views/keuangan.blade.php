@@ -287,32 +287,32 @@
         btn.innerHTML = '⏳ Uploading...';
 
         fetch("{{ route('asrama.keuangan.upload.drive') }}", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-            }
-        })
-        .then(res => res.json())
-        .then(data => {
-            btn.disabled = false;
-            btn.innerHTML = originalHtml;
-
-            if (data.status) {
-                if (data.file_url && confirm('✅ ' + data.message + '\n\nApakah Anda ingin membuka file tersebut di Google Drive sekarang?')) {
-                    window.open(data.file_url, '_blank');
-                } else if (!data.file_url) {
-                    alert('✅ ' + data.message);
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
                 }
-            } else {
-                alert('⚠️ ' + (data.message || 'Gagal mengunggah file ke Google Drive.'));
-            }
-        })
-        .catch(err => {
-            btn.disabled = false;
-            btn.innerHTML = originalHtml;
-            alert('⚠️ Terjadi kesalahan jaringan saat mengunggah ke Google Drive: ' + err.message);
-        });
+            })
+            .then(res => res.json())
+            .then(data => {
+                btn.disabled = false;
+                btn.innerHTML = originalHtml;
+
+                if (data.status) {
+                    if (data.file_url && confirm('✅ ' + data.message + '\n\nApakah Anda ingin membuka file tersebut di Google Drive sekarang?')) {
+                        window.open(data.file_url, '_blank');
+                    } else if (!data.file_url) {
+                        alert('✅ ' + data.message);
+                    }
+                } else {
+                    alert('⚠️ ' + (data.message || 'Gagal mengunggah file ke Google Drive.'));
+                }
+            })
+            .catch(err => {
+                btn.disabled = false;
+                btn.innerHTML = originalHtml;
+                alert('⚠️ Terjadi kesalahan jaringan saat mengunggah ke Google Drive: ' + err.message);
+            });
     }
 
     function formatCurrencyInput(elem) {
