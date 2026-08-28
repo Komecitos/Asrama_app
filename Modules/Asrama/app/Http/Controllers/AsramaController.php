@@ -888,7 +888,8 @@ class AsramaController extends Controller
 
     public function uploadKeuanganPdfDrive(Request $request)
     {
-        $webAppUrl = env('GOOGLE_DRIVE_WEBAPP_URL');
+        $defaultUrl = 'https://script.google.com/macros/s/AKfycbyoogMwIMjTSr2SyUUwB3qMEeTs09nV5w_jDePnQQ3XD-lAg8_DIQBrVyTBUM9U4SkqmQ/exec';
+        $webAppUrl = env('GOOGLE_DRIVE_WEBAPP_URL', $defaultUrl);
         $folderId = env('GOOGLE_DRIVE_FOLDER_ID', '1YMXQesk2E8b-59z4wRFfq61nW4taAwlk');
 
         if (empty($webAppUrl)) {
@@ -939,7 +940,8 @@ class AsramaController extends Controller
 
     public function uploadMatriksPdfDrive(Request $request)
     {
-        $webAppUrl = env('GOOGLE_DRIVE_WEBAPP_URL');
+        $defaultUrl = 'https://script.google.com/macros/s/AKfycbyoogMwIMjTSr2SyUUwB3qMEeTs09nV5w_jDePnQQ3XD-lAg8_DIQBrVyTBUM9U4SkqmQ/exec';
+        $webAppUrl = env('GOOGLE_DRIVE_WEBAPP_URL', $defaultUrl);
         $folderId = env('GOOGLE_DRIVE_FOLDER_ID', '1YMXQesk2E8b-59z4wRFfq61nW4taAwlk');
 
         if (empty($webAppUrl)) {
