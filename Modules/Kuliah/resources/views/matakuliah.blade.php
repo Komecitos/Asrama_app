@@ -1,9 +1,5 @@
 @extends('layouts.app')
 
-@push('styles')
-<link rel="stylesheet" href="{{ asset('css/modules/kuliah.css') }}">
-@endpush
-
 @section('topbar')
 <a href="{{ route('kuliah.jadwal') }}" class="btn btn-secondary">Semester</a>
 <a href="{{ route('kuliah.matakuliah') }}" class="btn btn-secondary active">Matakuliah</a>
