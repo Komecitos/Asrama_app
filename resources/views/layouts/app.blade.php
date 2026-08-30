@@ -131,6 +131,8 @@
         <div class="bottom-bar-inner" onclick="openDocsModal()" style="cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem; font-size: 0.82rem;">
             <span>🏢 AsramaApp &middot; Sistem Informasi Asrama &copy; {{ date('Y') }}</span>
             <span style="opacity: 0.4;">|</span>
+            <span style="background: rgba(14, 165, 233, 0.15); border: 1px solid rgba(14, 165, 233, 0.35); color: #38bdf8; font-size: 0.72rem; padding: 1px 7px; border-radius: 4px; font-weight: 700; letter-spacing: 0.4px;">v{{ config('nativephp.version', '1.0.0') }}</span>
+            <span style="opacity: 0.4;">|</span>
             <span style="color: var(--accent-primary); text-decoration: underline; font-weight: 600;">Tentang Aplikasi</span>
         </div>
     </footer>
@@ -147,15 +149,22 @@
             <div style="text-align: center; margin: 10px 0 20px;">
                 <img src="{{ asset('assets/images/logo_MyHub.png') }}" alt="AsramaApp Logo" style="height: 64px; width: auto; object-fit: contain; margin-bottom: 8px; border-radius: 12px;">
                 <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary); margin: 0;">AsramaApp Desktop</h2>
-                <p style="color: #94a3b8; font-size: 0.85rem; margin-top: 4px;">Sistem Informasi & Manajemen Penghuni, Kamar, dan Keuangan Asrama</p>
+                <div style="margin-top: 4px; display: inline-flex; align-items: center; gap: 0.4rem;">
+                    <span style="background: rgba(14, 165, 233, 0.15); border: 1px solid rgba(14, 165, 233, 0.4); color: #38bdf8; font-size: 0.75rem; padding: 2px 8px; border-radius: 6px; font-weight: 700;">Versi {{ config('nativephp.version', '1.0.0') }}</span>
+                </div>
+                <p style="color: #94a3b8; font-size: 0.85rem; margin-top: 6px;">Sistem Informasi & Manajemen Penghuni, Kamar, dan Keuangan Asrama</p>
             </div>
             <div class="docs-info-row">
                 <span class="task-meta">Nama Aplikasi</span>
                 <span class="task-title">AsramaApp (Aplikasi Desktop)</span>
             </div>
             <div class="docs-info-row">
+                <span class="task-meta">Versi Sistem</span>
+                <span class="task-title" style="color: #38bdf8; font-weight: 700;">v{{ config('nativephp.version', '1.0.0') }} (Desktop Build)</span>
+            </div>
+            <div class="docs-info-row">
                 <span class="task-meta">Tujuan & Fungsi</span>
-                <span class="task-title">Aplikasi desktop mandiri untuk manajemen data kamar, pencatatan biodata penghuni asrama Kabupaten Mahakam Ulu, pembukuan kas masuk/keluar, visualisasi matriks iuran bulanan, serta ekspor laporan PDF & Excel.</span>
+                <span class="task-title">Aplikasi desktop mandiri untuk manajemen data kamar, pencatatan biodata penghuni asrama Kabupaten Mahakam Ulu, pembukuan kas masuk/keluar, visualisasi matriks iuran bulanan, distribusi akses WiFi via WhatsApp, serta ekspor laporan PDF & Excel.</span>
             </div>
             <div class="docs-info-row">
                 <span class="task-meta">Developer</span>
