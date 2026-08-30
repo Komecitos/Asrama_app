@@ -1,4 +1,4 @@
-:root {
+:root, [data-theme="dark"] {
     /* Shadow */
     --shadow-sm:  0 2px 8px rgba(0, 0, 0, 0.2);
     --shadow-md:  0 18px 48px -28px rgba(15, 23, 42, 0.8);
@@ -20,4 +20,17 @@
     --z-overlay: 999;
     --z-modal:   1000;
     --z-topbar:  100;
+}
+
+[data-theme="light"] {
+    /* Shadow */
+    --shadow-sm:  0 1px 3px rgba(0, 0, 0, 0.08);
+    --shadow-md:  0 4px 14px -2px rgba(15, 23, 42, 0.08);
+    --shadow-lg:  0 10px 25px -4px rgba(15, 23, 42, 0.1);
+
+    /* Background gradient */
+    --bg-gradient: 
+        radial-gradient(circle at top, rgba(99, 102, 241, 0.06), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(236, 72, 153, 0.05), transparent 25%),
+        #f1f5f9;
 }
