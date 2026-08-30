@@ -121,12 +121,6 @@
         </nav>
     </header>
 
-    @if(!Request::is('/'))
-    <div class="top-bar">
-        @yield('topbar')
-    </div>
-    @endif
-
     {{-- Main Content --}}
     <main class="main-content">
         @yield('content')
@@ -134,8 +128,10 @@
 
     {{-- Bottom Bar --}}
     <footer class="bottom-bar">
-        <div class="bottom-bar-inner" onclick="openDocsModal()" style="cursor: pointer;">
-            MyHub &middot; © {{ date('Y') }}
+        <div class="bottom-bar-inner" onclick="openDocsModal()" style="cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem; font-size: 0.82rem;">
+            <span>🏢 AsramaApp &middot; Sistem Informasi Asrama &copy; {{ date('Y') }}</span>
+            <span style="opacity: 0.4;">|</span>
+            <span style="color: var(--accent-primary); text-decoration: underline; font-weight: 600;">Tentang Aplikasi</span>
         </div>
     </footer>
 
@@ -143,38 +139,39 @@
     <div id="modal-docs-overlay" class="modal-overlay" onclick="closeDocsModal()"></div>
     <div id="modal-docs" class="modal modal-create" aria-hidden="true">
         <div class="modal-header">
-            <h3>Tentang MyHub</h3>
+            <h3>Tentang AsramaApp</h3>
             <button onclick="closeDocsModal()" class="modal-close">&times;</button>
         </div>
 
         <div style="max-height: 65vh; overflow-y: auto;">
             <div style="text-align: center; margin: 10px 0 20px;">
-                <img src="{{ asset('assets/images/logo_MyHub.png') }}" alt="MyHub Logo" style="height: 64px; width: auto; object-fit: contain; margin-bottom: 8px;">
-                <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary); margin: 0;">MyHub Portal</h2>
+                <img src="{{ asset('assets/images/logo_MyHub.png') }}" alt="AsramaApp Logo" style="height: 64px; width: auto; object-fit: contain; margin-bottom: 8px; border-radius: 12px;">
+                <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary); margin: 0;">AsramaApp Desktop</h2>
+                <p style="color: #94a3b8; font-size: 0.85rem; margin-top: 4px;">Sistem Informasi & Manajemen Penghuni, Kamar, dan Keuangan Asrama</p>
             </div>
             <div class="docs-info-row">
-                <span class="task-meta">Nama Project</span>
-                <span class="task-title">MyHub</span>
+                <span class="task-meta">Nama Aplikasi</span>
+                <span class="task-title">AsramaApp (Aplikasi Desktop)</span>
             </div>
             <div class="docs-info-row">
-                <span class="task-meta">Tujuan</span>
-                <span class="task-title">Personal multi-portal web app untuk manajemen tugas, game tracker, catatan, dan kebutuhan pribadi lainnya dalam satu aplikasi.</span>
+                <span class="task-meta">Tujuan & Fungsi</span>
+                <span class="task-title">Aplikasi desktop mandiri untuk manajemen data kamar, pencatatan biodata penghuni asrama Kabupaten Mahakam Ulu, pembukuan kas masuk/keluar, visualisasi matriks iuran bulanan, serta ekspor laporan PDF & Excel.</span>
             </div>
             <div class="docs-info-row">
                 <span class="task-meta">Developer</span>
                 <span class="task-title">Irga Prayoga</span>
             </div>
             <div class="docs-info-row">
-                <span class="task-meta">Mulai Dibuat</span>
-                <span class="task-title">Juni 2026</span>
+                <span class="task-meta">Tahun Rilis</span>
+                <span class="task-title">2026</span>
             </div>
             <div class="docs-info-row">
                 <span class="task-meta">Tech Stack</span>
-                <span class="task-title">Laravel (PHP 8.3), nwidart/laravel-modules, MySQL</span>
+                <span class="task-title">Laravel 12 (PHP 8.3), NativePHP (Electron), SQLite Database, DomPDF</span>
             </div>
             <div class="docs-info-row">
                 <span class="task-meta">Repository</span>
-                <span class="task-title"><a href="https://github.com/Komecitos/MyHub" target="_blank" style="color: var(--accent-primary);">github.com/Komecitos/MyHub</a></span>
+                <span class="task-title"><a href="https://github.com/Komecitos/Asrama_app" target="_blank" style="color: var(--accent-primary);">github.com/Komecitos/Asrama_app</a></span>
             </div>
         </div>
 

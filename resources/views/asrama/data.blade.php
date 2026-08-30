@@ -4,24 +4,14 @@
 <link rel="stylesheet" href="{{ asset('css/modules/asrama.css') }}">
 @endpush
 
-@section('topbar')
-<a href="{{ route('asrama.data') }}" class="topbar-menu-btn btn btn-secondary {{ request()->routeIs('asrama.data') ? 'active' : '' }}" data-menu="data_asrama">Data Asrama</a>
-<a href="{{ route('asrama.keuangan') }}" class="topbar-menu-btn btn btn-secondary {{ request()->routeIs('asrama.keuangan*') ? 'active' : '' }}" data-menu="keuangan">Keuangan</a>
-@endsection
+
 
 @section('content')
 
-<div class="page-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
-    <div class="sub-nav-tabs" id="asrama-sub-nav" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-        <a href="{{ route('asrama.data') }}" class="sub-nav-btn btn btn-sm {{ request()->routeIs('asrama.data') ? 'btn-primary' : 'btn-secondary' }}" data-nav="data">
-            Data Penghuni & Kamar
-        </a>
-        <a href="{{ route('asrama.keuangan') }}" class="sub-nav-btn btn btn-sm {{ request()->routeIs('asrama.keuangan') ? 'btn-primary' : 'btn-secondary' }}" data-nav="keuangan">
-            Riwayat Transaksi Kas
-        </a>
-        <a href="{{ route('asrama.keuangan.matriks') }}" class="sub-nav-btn btn btn-sm {{ request()->routeIs('asrama.keuangan.matriks') ? 'btn-primary' : 'btn-secondary' }}" data-nav="matriks">
-            Matriks Iuran Bulanan
-        </a>
+<div class="page-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+    <div>
+        <h2 style="font-size: 1.4rem; font-weight: 800; color: #f8fafc; margin: 0 0 0.25rem 0;">Data Penghuni & Kamar</h2>
+        <p style="font-size: 0.85rem; color: #94a3b8; margin: 0;">Pengelolaan kamar dan data induk penghuni asrama.</p>
     </div>
 
     <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
@@ -366,7 +356,72 @@
             </div>
             <div class="form-group">
                 <label class="form-label">Asal Kampung / Daerah</label>
-                <input type="text" id="penghuni-asal-kampung" name="asal_kampung" class="form-control" placeholder="cth: Bandung, Jawa Barat">
+                <select id="penghuni-asal-kampung" name="asal_kampung" class="form-control" style="cursor: pointer;">
+                    <option value="">-- Pilih Asal Kampung / Daerah --</option>
+                    <optgroup label="📍 Kecamatan Long Bagun (11 Kampung)">
+                        <option value="Batoq Kelo">Batoq Kelo</option>
+                        <option value="Batu Majang">Batu Majang</option>
+                        <option value="Long Bagun Ilir">Long Bagun Ilir</option>
+                        <option value="Long Bagun Ulu">Long Bagun Ulu</option>
+                        <option value="Long Hurai">Long Hurai</option>
+                        <option value="Long Melaham">Long Melaham</option>
+                        <option value="Long Merah">Long Merah</option>
+                        <option value="Memahak Ilir">Memahak Ilir</option>
+                        <option value="Memahak Ulu">Memahak Ulu</option>
+                        <option value="Rukun Damai">Rukun Damai</option>
+                        <option value="Ujoh Bilang">Ujoh Bilang</option>
+                    </optgroup>
+                    <optgroup label="📍 Kecamatan Long Hubung (11 Kampung)">
+                        <option value="Datah Bilang Baru">Datah Bilang Baru</option>
+                        <option value="Datah Bilang Ilir">Datah Bilang Ilir</option>
+                        <option value="Datah Bilang Ulu">Datah Bilang Ulu</option>
+                        <option value="Long Hubung">Long Hubung</option>
+                        <option value="Long Hubung Ulu">Long Hubung Ulu</option>
+                        <option value="Lutan">Lutan</option>
+                        <option value="Matalibaq">Matalibaq</option>
+                        <option value="Memahak Teboq">Memahak Teboq</option>
+                        <option value="Sirau">Sirau</option>
+                        <option value="Tri Pariq Makmur">Tri Pariq Makmur</option>
+                        <option value="Wana Pariq">Wana Pariq</option>
+                    </optgroup>
+                    <optgroup label="📍 Kecamatan Laham (5 Kampung)">
+                        <option value="Danum Paroy">Danum Paroy</option>
+                        <option value="Laham">Laham</option>
+                        <option value="Long Gelawang">Long Gelawang</option>
+                        <option value="Muara Ratah">Muara Ratah</option>
+                        <option value="Nyaribungan">Nyaribungan</option>
+                    </optgroup>
+                    <optgroup label="📍 Kecamatan Long Apari (10 Kampung)">
+                        <option value="Cihan">Cihan</option>
+                        <option value="Long Apari">Long Apari</option>
+                        <option value="Long Kerioq">Long Kerioq</option>
+                        <option value="Long Pananeh I">Long Pananeh I</option>
+                        <option value="Long Pananeh II">Long Pananeh II</option>
+                        <option value="Long Pananeh III">Long Pananeh III</option>
+                        <option value="Long Penaneh">Long Penaneh</option>
+                        <option value="Naha Buan">Naha Buan</option>
+                        <option value="Naha Silat">Naha Silat</option>
+                        <option value="Tiong Bu'u">Tiong Bu'u</option>
+                    </optgroup>
+                    <optgroup label="📍 Kecamatan Long Pahangai (13 Kampung)">
+                        <option value="Datah Naha">Datah Naha</option>
+                        <option value="Delang Kerohong">Delang Kerohong</option>
+                        <option value="Lirung Ubing">Lirung Ubing</option>
+                        <option value="Liu Mulang">Liu Mulang</option>
+                        <option value="Long Daliq">Long Daliq</option>
+                        <option value="Long Isun">Long Isun</option>
+                        <option value="Long Lunuk">Long Lunuk</option>
+                        <option value="Long Lunuk Baru">Long Lunuk Baru</option>
+                        <option value="Long Pahangai I">Long Pahangai I</option>
+                        <option value="Long Pahangai II">Long Pahangai II</option>
+                        <option value="Long Pakaq">Long Pakaq</option>
+                        <option value="Long Pakaq Baru">Long Pakaq Baru</option>
+                        <option value="Naha Aruq">Naha Aruq</option>
+                    </optgroup>
+                    <optgroup label="🌐 Lainnya">
+                        <option value="Luar Daerah / Lainnya">Luar Daerah / Lainnya</option>
+                    </optgroup>
+                </select>
             </div>
         </div>
         <div class="form-group">
@@ -556,8 +611,17 @@
         document.getElementById('method-penghuni-field').innerHTML = '@method("PUT")';
         document.getElementById('penghuni-nama').value = nama;
         document.getElementById('penghuni-hp').value = hp;
-        document.getElementById('penghuni-kampus').value = kampus;
-        document.getElementById('penghuni-asal-kampung').value = asalKampung;
+        const asalSelect = document.getElementById('penghuni-asal-kampung');
+        if (asalSelect) {
+            asalSelect.value = asalKampung;
+            if (asalKampung && (asalSelect.selectedIndex === -1 || asalSelect.value !== asalKampung)) {
+                let opt = document.createElement('option');
+                opt.value = asalKampung;
+                opt.textContent = asalKampung;
+                opt.selected = true;
+                asalSelect.appendChild(opt);
+            }
+        }
         document.getElementById('penghuni-kamar').value = kamarId;
         document.getElementById('penghuni-tgl-masuk').value = tglMasuk;
         document.getElementById('penghuni-catatan').value = catatan;
@@ -687,28 +751,6 @@
     document.addEventListener('DOMContentLoaded', function() {
         let saved = localStorage.getItem('asrama_aksi_toggle') || 'OFF';
         updateAksiToggleUI(saved === 'ON');
-
-        // Header Topbar Menu Event Listeners (Data Asrama & Keuangan)
-        const topbarMenuBtns = document.querySelectorAll('.topbar-menu-btn');
-        topbarMenuBtns.forEach(function(btn) {
-            btn.addEventListener('click', function(e) {
-                topbarMenuBtns.forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-            });
-        });
-
-        // Sub-nav buttons Event Listeners
-        const subNavBtns = document.querySelectorAll('.sub-nav-btn');
-        subNavBtns.forEach(function(btn) {
-            btn.addEventListener('click', function() {
-                subNavBtns.forEach(b => {
-                    b.classList.remove('btn-primary');
-                    b.classList.add('btn-secondary');
-                });
-                this.classList.remove('btn-secondary');
-                this.classList.add('btn-primary');
-            });
-        });
     });
 </script>
 @endpush

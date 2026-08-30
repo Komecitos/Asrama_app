@@ -4,24 +4,23 @@
 <link rel="stylesheet" href="{{ asset('css/modules/asrama.css') }}">
 @endpush
 
-@section('topbar')
-<a href="{{ route('asrama.data') }}" class="topbar-menu-btn btn btn-secondary {{ request()->routeIs('asrama.data') ? 'active' : '' }}" data-menu="data_asrama">Data Asrama</a>
-<a href="{{ route('asrama.keuangan') }}" class="topbar-menu-btn btn btn-secondary {{ request()->routeIs('asrama.keuangan*') ? 'active' : '' }}" data-menu="keuangan">Keuangan</a>
-@endsection
+
 
 @section('content')
 
-<div class="page-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
-    <div class="sub-nav-tabs" id="asrama-sub-nav" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-        <a href="{{ route('asrama.data') }}" class="sub-nav-btn btn btn-sm {{ request()->routeIs('asrama.data') ? 'btn-primary' : 'btn-secondary' }}" data-nav="data">
-            Data Penghuni & Kamar
-        </a>
-        <a href="{{ route('asrama.keuangan') }}" class="sub-nav-btn btn btn-sm {{ request()->routeIs('asrama.keuangan') ? 'btn-primary' : 'btn-secondary' }}" data-nav="keuangan">
-            Riwayat Transaksi Kas
-        </a>
-        <a href="{{ route('asrama.keuangan.matriks') }}" class="sub-nav-btn btn btn-sm {{ request()->routeIs('asrama.keuangan.matriks') ? 'btn-primary' : 'btn-secondary' }}" data-nav="matriks">
-            Matriks Iuran Bulanan
-        </a>
+<div class="page-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+    <div>
+        <h2 style="font-size: 1.4rem; font-weight: 800; color: #f8fafc; margin: 0 0 0.25rem 0;">Transaksi Kas Asrama</h2>
+        <p style="font-size: 0.85rem; color: #94a3b8; margin: 0;">Pencatatan kas masuk, kas keluar, dan rekapitulasi keuangan asrama.</p>
+    </div>
+    <div>
+        <button type="button" onclick="openKeuanganModal()" class="btn btn-primary" style="font-weight: 700; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.55rem 1.1rem; border-radius: 10px; font-size: 0.9rem;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>+ Catat Transaksi</span>
+        </button>
     </div>
 </div>
 
@@ -46,12 +45,12 @@
 
     {{-- KEUANGAN SECTION --}}
     <div class="widget-card">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.75rem;">
             <div>
                 <h3 class="widget-title" style="margin: 0;">Riwayat Transaksi Keuangan</h3>
             </div>
             <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
-                <input type="text" id="search-keuangan" onkeyup="filterKeuanganTable()" placeholder="🔍 Cari transaksi (nama, kategori, keterangan...)" class="form-control" style="width: 250px; font-size: 0.85rem; padding: 0.35rem 0.75rem;">
+                <input type="text" id="search-keuangan" onkeyup="filterKeuanganTable()" placeholder="🔍 Cari transaksi..." class="form-control" style="width: 220px; font-size: 0.85rem; padding: 0.35rem 0.75rem;">
                 <select id="filter-tipe" onchange="filterKeuanganTable()" class="form-control" style="width: 135px; font-size: 0.85rem; padding: 0.35rem 0.75rem; cursor: pointer;">
                     <option value="">Semua Tipe</option>
                     <option value="pemasukan">Pemasukan</option>
@@ -76,20 +75,11 @@
                     </svg>
                     <span>Export PDF</span>
                 </a>
-                <button type="button" onclick="uploadKeuanganToDrive(this)" class="btn btn-secondary btn-sm" style="background: rgba(56, 189, 248, 0.15); border-color: rgba(56, 189, 248, 0.4); color: #38bdf8; font-weight: 600; display: inline-flex; align-items: center; gap: 0.35rem;" title="Unggah Laporan PDF Transaksi Kas ke Google Drive">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                        <polyline points="17 8 12 3 7 8"></polyline>
-                        <line x1="12" y1="3" x2="12" y2="15"></line>
-                    </svg>
-                    <span>Upload ke Drive</span>
-                </button>
-                <button type="button" onclick="openKeuanganModal()" class="btn btn-primary btn-sm">+ Catat Transaksi</button>
             </div>
         </div>
 
         @if($keuangans->isEmpty())
-        <p class="empty-state">Belum ada catatan keuangan. Klik <strong>+ Catat Transaksi</strong> untuk menambahkan transaksi baru.</p>
+        <p class="empty-state">Belum ada catatan keuangan. Klik <strong>+ Catat Transaksi</strong> di atas untuk menambahkan transaksi baru.</p>
         @else
         <div class="table-wrapper">
             <table class="table">
@@ -100,7 +90,7 @@
                         <th>Kategori</th>
                         <th>Nominal</th>
                         <th>Penghuni (Jika Iuran)</th>
-                        <th>Keterangan</th>
+                        <th style="min-width: 150px;">Keterangan</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -122,7 +112,9 @@
                         <td class="task-meta">
                             {{ $k->penghuni ? $k->penghuni->nama : '-' }}
                         </td>
-                        <td class="task-meta">{{ $k->keterangan ?: '-' }}</td>
+                        <td style="font-size: 0.78rem; color: #94a3b8; opacity: 0.75; line-height: 1.35; max-width: 220px; word-break: break-word;">
+                            {{ $k->keterangan ?: '-' }}
+                        </td>
                         <td>
                             <div style="display: flex; gap: 0.35rem; align-items: center;">
                                 <button type="button" onclick="openEditKeuanganModal({{ $k->id }}, '{{ $k->tanggal }}', '{{ $k->tipe }}', '{{ addslashes($k->kategori) }}', {{ $k->nominal }}, '{{ $k->penghuni_id ?: '' }}', '{{ addslashes($k->keterangan ?: '') }}')" class="btn btn-secondary btn-sm" title="Edit catatan transaksi">
@@ -182,7 +174,7 @@
             <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
                 <div class="form-group">
                     <label class="form-label">Tipe Transaksi <span class="required">*</span></label>
-                    <select name="tipe" id="tx-tipe-select" class="form-control" required>
+                    <select name="tipe" id="tx-tipe-select" class="form-control" required onchange="updateKategoriByTipe()">
                         <option value="pemasukan">🟢 Pemasukan (+)</option>
                         <option value="pengeluaran">🔴 Pengeluaran (-)</option>
                     </select>
@@ -191,13 +183,9 @@
                     <label class="form-label">Kategori <span class="required">*</span></label>
                     <select name="kategori" id="tx-kategori-select" class="form-control" required onchange="togglePenghuniField()">
                         <option value="Iuran Bulanan">Iuran Bulanan</option>
-                        <option value="Pembayaran WiFi">Pembayaran WiFi</option>
-                        <option value="Pembayaran Sampah">Pembayaran Sampah</option>
-                        <option value="Listrik & Air">Listrik & Air</option>
-                        <option value="Kebersihan & Keamanan">Kebersihan & Keamanan</option>
-                        <option value="Perbaikan & Maintenance">Perbaikan & Maintenance</option>
-                        <option value="Pembelian Peralatan">Pembelian Peralatan</option>
-                        <option value="Lain-lain">Lain-lain</option>
+                        <option value="Sumbangan / Donasi">Sumbangan / Donasi</option>
+                        <option value="Denda / Uang Jaminan">Denda / Uang Jaminan</option>
+                        <option value="Pemasukan Lain-lain">Pemasukan Lain-lain</option>
                     </select>
                 </div>
             </div>
@@ -281,40 +269,6 @@
         }
     }
 
-    function uploadKeuanganToDrive(btn) {
-        const originalHtml = btn.innerHTML;
-        btn.disabled = true;
-        btn.innerHTML = '⏳ Uploading...';
-
-        fetch("{{ route('asrama.keuangan.upload.drive') }}", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                }
-            })
-            .then(res => res.json())
-            .then(data => {
-                btn.disabled = false;
-                btn.innerHTML = originalHtml;
-
-                if (data.status) {
-                    if (data.file_url && confirm('✅ ' + data.message + '\n\nApakah Anda ingin membuka file tersebut di Google Drive sekarang?')) {
-                        window.open(data.file_url, '_blank');
-                    } else if (!data.file_url) {
-                        alert('✅ ' + data.message);
-                    }
-                } else {
-                    alert('⚠️ ' + (data.message || 'Gagal mengunggah file ke Google Drive.'));
-                }
-            })
-            .catch(err => {
-                btn.disabled = false;
-                btn.innerHTML = originalHtml;
-                alert('⚠️ Terjadi kesalahan jaringan saat mengunggah ke Google Drive: ' + err.message);
-            });
-    }
-
     function formatCurrencyInput(elem) {
         let rawVal = elem.value.replace(/\D/g, '');
         elem.value = formatNumberWithDots(rawVal);
@@ -323,15 +277,96 @@
         if (hiddenElem) hiddenElem.value = rawVal || 0;
     }
 
+    const kategoriOptions = {
+        pemasukan: [{
+                value: 'Iuran Bulanan',
+                label: 'Iuran Bulanan'
+            },
+            {
+                value: 'Sumbangan / Donasi',
+                label: 'Sumbangan / Donasi'
+            },
+            {
+                value: 'Denda / Uang Jaminan',
+                label: 'Denda / Uang Jaminan'
+            },
+            {
+                value: 'Pemasukan Lain-lain',
+                label: 'Pemasukan Lain-lain'
+            }
+        ],
+        pengeluaran: [{
+                value: 'Listrik & Air',
+                label: 'Listrik & Air'
+            },
+            {
+                value: 'Pembayaran WiFi',
+                label: 'Pembayaran WiFi'
+            },
+            {
+                value: 'Pembayaran Sampah',
+                label: 'Pembayaran Sampah'
+            },
+            {
+                value: 'Kebersihan & Keamanan',
+                label: 'Kebersihan & Keamanan'
+            },
+            {
+                value: 'Perbaikan & Maintenance',
+                label: 'Perbaikan & Maintenance'
+            },
+            {
+                value: 'Pembelian Peralatan',
+                label: 'Pembelian Peralatan'
+            },
+            {
+                value: 'Pengeluaran Lain-lain',
+                label: 'Pengeluaran Lain-lain'
+            }
+        ]
+    };
+
+    function updateKategoriByTipe(selectedKategori = '') {
+        const tipeSelect = document.getElementById('tx-tipe-select');
+        const kategoriSelect = document.getElementById('tx-kategori-select');
+        if (!tipeSelect || !kategoriSelect) return;
+
+        const tipe = tipeSelect.value || 'pemasukan';
+        const options = kategoriOptions[tipe] || [];
+
+        kategoriSelect.innerHTML = '';
+        options.forEach(opt => {
+            const optionElem = document.createElement('option');
+            optionElem.value = opt.value;
+            optionElem.textContent = opt.label;
+            if (selectedKategori && selectedKategori === opt.value) {
+                optionElem.selected = true;
+            }
+            kategoriSelect.appendChild(optionElem);
+        });
+
+        if (selectedKategori && !options.some(o => o.value === selectedKategori)) {
+            const customOpt = document.createElement('option');
+            customOpt.value = selectedKategori;
+            customOpt.textContent = selectedKategori;
+            customOpt.selected = true;
+            kategoriSelect.appendChild(customOpt);
+        }
+
+        togglePenghuniField();
+    }
+
     function togglePenghuniField() {
+        const tipeSelect = document.getElementById('tx-tipe-select');
         const kategoriSelect = document.getElementById('tx-kategori-select');
         const groupPenghuni = document.getElementById('form-group-penghuni');
         const penghuniSelect = document.getElementById('tx-penghuni-select');
 
         if (!kategoriSelect || !groupPenghuni) return;
 
+        const tipe = tipeSelect ? tipeSelect.value : 'pemasukan';
         const val = kategoriSelect.value;
-        if (val === 'Iuran Bulanan' || val.toLowerCase().includes('iuran')) {
+        if (tipe === 'pemasukan' && (val === 'Iuran Bulanan' || val.toLowerCase().includes('iuran'))) {
             groupPenghuni.style.display = 'block';
             if (penghuniSelect) penghuniSelect.disabled = false;
         } else {
@@ -353,14 +388,13 @@
         if (methodField) methodField.innerHTML = '';
 
         if (document.getElementById('tx-tipe-select')) document.getElementById('tx-tipe-select').value = 'pemasukan';
-        if (document.getElementById('tx-kategori-select')) document.getElementById('tx-kategori-select').value = 'Iuran Bulanan';
+        updateKategoriByTipe('Iuran Bulanan');
+
         if (document.getElementById('tx-nominal-formatted')) document.getElementById('tx-nominal-formatted').value = '';
         if (document.getElementById('tx-nominal-raw')) document.getElementById('tx-nominal-raw').value = '0';
         if (document.getElementById('tx-tanggal-input')) document.getElementById('tx-tanggal-input').value = '{{ date("Y-m-d") }}';
         if (document.getElementById('tx-penghuni-select')) document.getElementById('tx-penghuni-select').value = '';
         if (document.getElementById('tx-keterangan-input')) document.getElementById('tx-keterangan-input').value = '';
-
-        togglePenghuniField();
 
         const m = document.getElementById('modal-keuangan');
         const o = document.getElementById('modal-keuangan-overlay');
@@ -384,14 +418,13 @@
         if (methodField) methodField.innerHTML = '<input type="hidden" name="_method" value="PUT">';
 
         if (document.getElementById('tx-tipe-select')) document.getElementById('tx-tipe-select').value = tipe;
-        if (document.getElementById('tx-kategori-select')) document.getElementById('tx-kategori-select').value = kategori;
+        updateKategoriByTipe(kategori);
+
         if (document.getElementById('tx-nominal-formatted')) document.getElementById('tx-nominal-formatted').value = formatNumberWithDots(nominal);
         if (document.getElementById('tx-nominal-raw')) document.getElementById('tx-nominal-raw').value = nominal;
         if (document.getElementById('tx-tanggal-input')) document.getElementById('tx-tanggal-input').value = tanggal;
         if (document.getElementById('tx-penghuni-select')) document.getElementById('tx-penghuni-select').value = penghuniId;
         if (document.getElementById('tx-keterangan-input')) document.getElementById('tx-keterangan-input').value = keterangan;
-
-        togglePenghuniField();
 
         const m = document.getElementById('modal-keuangan');
         const o = document.getElementById('modal-keuangan-overlay');
@@ -449,29 +482,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', function() {
-        togglePenghuniField();
-
-        // Header Topbar Menu Event Listeners (Data Asrama & Keuangan)
-        const topbarMenuBtns = document.querySelectorAll('.topbar-menu-btn');
-        topbarMenuBtns.forEach(function(btn) {
-            btn.addEventListener('click', function(e) {
-                topbarMenuBtns.forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-            });
-        });
-
-        // Sub-nav buttons Event Listeners
-        const subNavBtns = document.querySelectorAll('.sub-nav-btn');
-        subNavBtns.forEach(function(btn) {
-            btn.addEventListener('click', function() {
-                subNavBtns.forEach(b => {
-                    b.classList.remove('btn-primary');
-                    b.classList.add('btn-secondary');
-                });
-                this.classList.remove('btn-secondary');
-                this.classList.add('btn-primary');
-            });
-        });
+        updateKategoriByTipe('Iuran Bulanan');
     });
 </script>
 @endpush

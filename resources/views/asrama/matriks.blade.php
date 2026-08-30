@@ -133,24 +133,14 @@
 </style>
 @endpush
 
-@section('topbar')
-<a href="{{ route('asrama.data') }}" class="topbar-menu-btn btn btn-secondary {{ request()->routeIs('asrama.data') ? 'active' : '' }}" data-menu="data_asrama">Data Asrama</a>
-<a href="{{ route('asrama.keuangan') }}" class="topbar-menu-btn btn btn-secondary {{ request()->routeIs('asrama.keuangan*') ? 'active' : '' }}" data-menu="keuangan">Keuangan</a>
-@endsection
+
 
 @section('content')
 
-<div class="page-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
-    <div class="sub-nav-tabs" id="asrama-sub-nav" style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
-        <a href="{{ route('asrama.data') }}" class="sub-nav-btn btn btn-sm {{ request()->routeIs('asrama.data') ? 'btn-primary' : 'btn-secondary' }}" data-nav="data">
-            Data Penghuni & Kamar
-        </a>
-        <a href="{{ route('asrama.keuangan') }}" class="sub-nav-btn btn btn-sm {{ request()->routeIs('asrama.keuangan') ? 'btn-primary' : 'btn-secondary' }}" data-nav="keuangan">
-            Riwayat Transaksi Kas
-        </a>
-        <a href="{{ route('asrama.keuangan.matriks') }}" class="sub-nav-btn btn btn-sm {{ request()->routeIs('asrama.keuangan.matriks') ? 'btn-primary' : 'btn-secondary' }}" data-nav="matriks">
-            Matriks Iuran Bulanan
-        </a>
+<div class="page-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
+    <div>
+        <h2 style="font-size: 1.4rem; font-weight: 800; color: #f8fafc; margin: 0 0 0.25rem 0;">Matriks Iuran Bulanan</h2>
+        <p style="font-size: 0.85rem; color: #94a3b8; margin: 0;">Tabel kontrol kelunasan iuran bulanan penghuni dan biaya operasional asrama.</p>
     </div>
 </div>
 
@@ -212,14 +202,6 @@
                         </svg>
                         <span>Export PDF</span>
                     </a>
-                    <button type="button" onclick="uploadMatriksToDrive(this)" class="btn btn-secondary btn-sm" style="background: rgba(56, 189, 248, 0.15); border-color: rgba(56, 189, 248, 0.4); color: #38bdf8; font-weight: 600; display: inline-flex; align-items: center; gap: 0.35rem;" title="Unggah Laporan PDF Matriks Iuran ke Google Drive">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                            <polyline points="17 8 12 3 7 8"></polyline>
-                            <line x1="12" y1="3" x2="12" y2="15"></line>
-                        </svg>
-                        <span>Upload ke Drive</span>
-                    </button>
                 </div>
 
                 {{-- QUICK SEARCH INPUT --}}
@@ -325,7 +307,7 @@
                         }
                         }
 
-                        $pTotalPaid = \Modules\Asrama\Models\AsramaKeuangan::where('penghuni_id', $p->id)
+                        $pTotalPaid = \App\Models\AsramaKeuangan::where('penghuni_id', $p->id)
                         ->whereYear('tanggal', $tahun)
                         ->sum('nominal');
 
@@ -505,43 +487,6 @@
         return val.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
     }
 
-    function uploadMatriksToDrive(btn) {
-        const originalHtml = btn.innerHTML;
-        btn.disabled = true;
-        btn.innerHTML = '⏳ Uploading...';
-
-        fetch("{{ route('asrama.keuangan.matriks.upload.drive') }}", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({
-                    tahun: "{{ $tahun }}"
-                })
-            })
-            .then(res => res.json())
-            .then(data => {
-                btn.disabled = false;
-                btn.innerHTML = originalHtml;
-
-                if (data.status) {
-                    if (data.file_url && confirm('✅ ' + data.message + '\n\nApakah Anda ingin membuka file tersebut di Google Drive sekarang?')) {
-                        window.open(data.file_url, '_blank');
-                    } else if (!data.file_url) {
-                        alert('✅ ' + data.message);
-                    }
-                } else {
-                    alert('⚠️ ' + (data.message || 'Gagal mengunggah file ke Google Drive.'));
-                }
-            })
-            .catch(err => {
-                btn.disabled = false;
-                btn.innerHTML = originalHtml;
-                alert('⚠️ Terjadi kesalahan jaringan saat mengunggah ke Google Drive: ' + err.message);
-            });
-    }
-
     function formatCurrencyInput(elem) {
         let rawVal = elem.value.replace(/\D/g, '');
         elem.value = formatNumberWithDots(rawVal);
@@ -629,27 +574,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', function() {
-        // Header Topbar Menu Event Listeners (Data Asrama & Keuangan)
-        const topbarMenuBtns = document.querySelectorAll('.topbar-menu-btn');
-        topbarMenuBtns.forEach(function(btn) {
-            btn.addEventListener('click', function(e) {
-                topbarMenuBtns.forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-            });
-        });
-
-        // Sub-nav buttons Event Listeners
-        const subNavBtns = document.querySelectorAll('.sub-nav-btn');
-        subNavBtns.forEach(function(btn) {
-            btn.addEventListener('click', function() {
-                subNavBtns.forEach(b => {
-                    b.classList.remove('btn-primary');
-                    b.classList.add('btn-secondary');
-                });
-                this.classList.remove('btn-secondary');
-                this.classList.add('btn-primary');
-            });
-        });
+        // Matriks ready
     });
 </script>
 @endpush

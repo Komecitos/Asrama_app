@@ -1,58 +1,106 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🏢 AsramaApp - Sistem Informasi & Manajemen Asrama (Desktop Application)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplikasi desktop mandiri berbasis **NativePHP (Electron)** dan **Laravel 12** untuk pengelolaan dan administrasi asrama mahasiswa/penghuni, pembukuan kas keuangan, kontrol matriks iuran bulanan, serta rekapitulasi pelaporan secara offline.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🌟 Fitur Utama
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+1. **📊 Dashboard Eksekutif:**
+   - Ringkasan statistik *real-time*: jumlah penghuni aktif, ketersediaan kamar, saldo kas asrama, dan total pengeluaran.
+   - Tabel transaksi kas terbaru dan monitoring status kapasitas kamar.
+   - Tombol pintasan (*quick actions*) untuk akses kilat ke modul-modul asrama.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+2. **🛏️ Manajemen Data Penghuni & Kamar:**
+   - Pendataan kamar lengkap dengan status ketersediaan (*Tersedia, Penuh, Gudang, Perbaikan*) dan fasilitas.
+   - Pendaftaran & biodata penghuni asrama dengan integrasi nomor HP, kampus, tanggal masuk, dan catatan.
+   - **Dropdown Terstruktur 5 Kecamatan & 50 Kampung Kabupaten Mahakam Ulu:**
+     - **Kecamatan Long Bagun** (11 Kampung)
+     - **Kecamatan Long Hubung** (11 Kampung)
+     - **Kecamatan Laham** (5 Kampung)
+     - **Kecamatan Long Apari** (10 Kampung)
+     - **Kecamatan Long Pahangai** (13 Kampung)
+     - *Luar Daerah / Lainnya*
+   - Fitur penghuni keluar (*checkout*) dan aktivasi ulang (*reactivate*) riwayat penghuni.
+   - Tombol proteksi aksi (*toggle ON/OFF* kolom tombol aksi untuk keamanan data).
 
-## Learning Laravel
+3. **💰 Riwayat Transaksi Keuangan Kas:**
+   - Pencatatan transaksi kas masuk (*Pemasukan*) dan kas keluar (*Pengeluaran*).
+   - **Kategori Dinamis Otomatis:** Kategori menyesuaikan secara cerdas berdasarkan tipe transaksi (Iuran Bulanan, Listrik & Air, WiFi, Sampah, Kebersihan, Perbaikan, Donasi, dll).
+   - Sinkronisasi otomatis alokasi iuran bulanan penghuni ke dalam matriks pembayaran.
+   - Filter pencarian instan dan penyaringan tipe transaksi.
+   - **Export Laporan Lokal:** Unduh rekapitulasi transaksi kas ke dalam format **Excel (.csv)** dan **PDF**.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+4. **📈 Matriks Iuran Bulanan:**
+   - Tabel matriks visual 12 bulan untuk memantau status kelunasan iuran seluruh penghuni secara akurat.
+   - Penyesuaian tarif bulanan default (*customizable*).
+   - Indikator otomatis status lunas / nominal tunggakan per penghuni.
+   - Monitoring biaya operasional fasilitas bersama (WiFi & Sampah).
+   - **Export Matriks PDF & Excel (.csv)** siap cetak.
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+5. **🎨 Desain & Pengalaman Pengguna (UX):**
+   - Tampilan *Modern Dark Theme* yang elegan dan ramah di mata.
+   - **Sticky Global Header:** Navigasi selalu melekat di bagian atas saat halaman digulir.
+   - Notifikasi Toast interaktif dan modal konfirmasi aksi.
+   - Performa instan berbasis database lokal SQLite (*WAL mode & Normal sync*).
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+---
 
-## Agentic Development
+## 🛠️ Tech Stack
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+- **Framework:** Laravel 12 (PHP 8.3)
+- **Desktop Runtime:** NativePHP for Electron (Node.js 20+)
+- **Database:** SQLite (Super ringan, mandiri, tanpa perlu setup server MySQL terpisah)
+- **Reporting:** DomPDF & Native CSV Exporter
+- **Frontend / Styling:** Vanilla CSS3 Variables, Blade Templating
 
+---
+
+## 🚀 Cara Menjalankan Aplikasi
+
+### 1. Prasyarat
+- PHP >= 8.2
+- Composer
+- Node.js >= 18
+
+### 2. Instalasi & Persiapan
 ```bash
-composer require laravel/boost --dev
+# Clone repository
+git clone https://github.com/Komecitos/Asrama_app.git
+cd Asrama_app
 
-php artisan boost:install
+# Install PHP dependencies
+composer install
+
+# Install Node dependencies
+npm install
+
+# Setup file environment
+cp .env.example .env
+php artisan key:generate
+
+# Migrasi Database SQLite
+php artisan migrate
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+### 3. Menjalankan Mode Desktop (Development)
+```bash
+php artisan native:serve
+```
+*Aplikasi desktop akan otomatis terbuka dalam jendela Electron.*
 
-## Contributing
+### 4. Mem-build Menjadi File Installer `.exe`
+```bash
+php artisan native:build
+```
+*File installer executable (.exe) akan dihasilkan di dalam folder `dist/`.*
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+---
 
-## Code of Conduct
+## 👨‍💻 Developer & Lisensi
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+- **Developer:** Irga Prayoga
+- **Tahun Rilis:** 2026
+- **Repository:** [github.com/Komecitos/Asrama_app](https://github.com/Komecitos/Asrama_app)
+- **Lisensi:** Open-source software under the [MIT license](LICENSE).
 
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).

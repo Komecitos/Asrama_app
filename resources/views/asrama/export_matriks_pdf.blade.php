@@ -215,7 +215,7 @@
                 }
                 }
 
-                $pTotalPaid = \Modules\Asrama\Models\AsramaKeuangan::where('penghuni_id', $p->id)
+                $pTotalPaid = \App\Models\AsramaKeuangan::where('penghuni_id', $p->id)
                 ->whereYear('tanggal', $tahun)
                 ->sum('nominal');
 

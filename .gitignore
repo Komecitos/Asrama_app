@@ -26,3 +26,8 @@ Homestead.json
 Homestead.yaml
 Thumbs.db
 /scratch/
+/temp_php/
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+/dist/
