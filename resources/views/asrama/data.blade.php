@@ -13,67 +13,76 @@
         <h2 style="font-size: 1.4rem; font-weight: 800; color: #f8fafc; margin: 0 0 0.25rem 0;">Data Penghuni & Kamar</h2>
         <p style="font-size: 0.85rem; color: #94a3b8; margin: 0;">Pengelolaan kamar dan data induk penghuni asrama.</p>
     </div>
+</div>
 
-    <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
-        {{-- TOGGLE SHOW/HIDE AKSI COLUMN BUTTON --}}
-        <div style="display: flex; align-items: center; background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255, 255, 255, 0.12); padding: 0.35rem 0.85rem; border-radius: 30px; gap: 0.6rem;">
-            <span style="font-size: 0.85rem; font-weight: 700; color: #cbd5e1; display: inline-flex; align-items: center; gap: 0.35rem;">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #94a3b8;">
-                    <circle cx="12" cy="12" r="3"></circle>
-                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+<div class="asrama-wrapper">
+    {{-- STATS GRID --}}
+    <div class="asrama-stats-grid">
+        <div class="asrama-stat-card">
+            <div class="stat-card-icon" style="background: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.35); color: #818cf8; width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 0.5rem;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 7v13"></path>
+                    <path d="M21 7v13"></path>
+                    <path d="M3 13h18"></path>
+                    <path d="M3 7h18"></path>
                 </svg>
-                Tombol Aksi:
-            </span>
-            <button type="button" id="btn-toggle-aksi" onclick="toggleAksiColumn()" style="display: flex; align-items: center; gap: 0.4rem; padding: 0.35rem 0.85rem; border-radius: 20px; font-weight: 800; font-size: 0.8rem; border: none; cursor: pointer; transition: all 0.2s ease;">
-                <span id="aksi-status-dot" style="width: 8px; height: 8px; border-radius: 50%; display: inline-block;"></span>
-                <span id="aksi-status-text">OFF</span>
-            </button>
+            </div>
+            <p class="task-meta">Total Kamar</p>
+            <h3 style="color: var(--text-primary); margin: 0.25rem 0 0 0; font-size: 1.7rem; font-weight: 800;">{{ $summary['total_kamar'] }} <span style="font-size: 0.85rem; color: #94a3b8; font-weight: 500;">Kamar</span></h3>
+        </div>
+        <div class="asrama-stat-card">
+            <div class="stat-card-icon" style="background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.35); color: #38bdf8; width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 0.5rem;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+            </div>
+            <p class="task-meta">Kamar Ada Slot / Kosong</p>
+            <h3 style="color: #38bdf8; margin: 0.25rem 0 0 0; font-size: 1.7rem; font-weight: 800;">{{ $summary['kamar_tersedia'] }} <span style="font-size: 0.85rem; color: #94a3b8; font-weight: 500;">Unit Tersedia</span></h3>
+        </div>
+        <div class="asrama-stat-card">
+            <div class="stat-card-icon" style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.35); color: #fbbf24; width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 0.5rem;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                </svg>
+            </div>
+            <p class="task-meta">Total Penghuni Aktif</p>
+            <h3 style="color: #fbbf24; margin: 0.25rem 0 0 0; font-size: 1.7rem; font-weight: 800;">{{ $summary['total_penghuni'] }} <span style="font-size: 0.85rem; color: #94a3b8; font-weight: 500;">Orang</span></h3>
         </div>
     </div>
 
-    <div class="asrama-wrapper">
-        {{-- STATS GRID --}}
-        <div class="asrama-stats-grid">
-            <div class="asrama-stat-card">
-                <div class="stat-card-icon" style="background: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.35); color: #818cf8; width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 0.5rem;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M3 7v13"></path><path d="M21 7v13"></path><path d="M3 13h18"></path><path d="M3 7h18"></path>
-                    </svg>
-                </div>
-                <p class="task-meta">Total Kamar</p>
-                <h3 style="color: var(--text-primary); margin: 0.25rem 0 0 0; font-size: 1.7rem; font-weight: 800;">{{ $summary['total_kamar'] }} <span style="font-size: 0.85rem; color: #94a3b8; font-weight: 500;">Kamar</span></h3>
+    {{-- PENGHUNI SECTION --}}
+    <div class="widget-card" style="margin-bottom: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.75rem;">
+            <div>
+                <h3 class="widget-title" style="margin: 0;">Data Penghuni Asrama</h3>
             </div>
-            <div class="asrama-stat-card">
-                <div class="stat-card-icon" style="background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.35); color: #38bdf8; width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 0.5rem;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
-                    </svg>
+            <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
+                {{-- TOGGLE SHOW/HIDE AKSI COLUMN BUTTON --}}
+                <div style="display: flex; align-items: center; background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255, 255, 255, 0.12); padding: 0.25rem 0.75rem; border-radius: 30px; gap: 0.5rem;">
+                    <span style="font-size: 0.78rem; font-weight: 600; color: #94a3b8; display: inline-flex; align-items: center; gap: 0.3rem;">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #94a3b8;">
+                            <circle cx="12" cy="12" r="3"></circle>
+                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                        </svg>
+                        Aksi:
+                    </span>
+                    <button type="button" id="btn-toggle-aksi" onclick="toggleAksiColumn()" style="display: flex; align-items: center; gap: 0.35rem; padding: 0.2rem 0.65rem; border-radius: 20px; font-weight: 800; font-size: 0.75rem; border: none; cursor: pointer; transition: all 0.2s ease;">
+                        <span id="aksi-status-dot" style="width: 7px; height: 7px; border-radius: 50%; display: inline-block;"></span>
+                        <span id="aksi-status-text">OFF</span>
+                    </button>
                 </div>
-                <p class="task-meta">Kamar Ada Slot / Kosong</p>
-                <h3 style="color: #38bdf8; margin: 0.25rem 0 0 0; font-size: 1.7rem; font-weight: 800;">{{ $summary['kamar_tersedia'] }} <span style="font-size: 0.85rem; color: #94a3b8; font-weight: 500;">Unit Tersedia</span></h3>
-            </div>
-            <div class="asrama-stat-card">
-                <div class="stat-card-icon" style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.35); color: #fbbf24; width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 0.5rem;">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle>
-                    </svg>
-                </div>
-                <p class="task-meta">Total Penghuni Aktif</p>
-                <h3 style="color: #fbbf24; margin: 0.25rem 0 0 0; font-size: 1.7rem; font-weight: 800;">{{ $summary['total_penghuni'] }} <span style="font-size: 0.85rem; color: #94a3b8; font-weight: 500;">Orang</span></h3>
-            </div>
-        </div>
 
-        {{-- PENGHUNI SECTION --}}
-        <div class="widget-card" style="margin-bottom: 2rem;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
-                <div>
-                    <h3 class="widget-title" style="margin: 0;">Data Penghuni Asrama</h3>
-                </div>
                 <button type="button" onclick="openPenghuniModal()" class="btn btn-primary btn-sm" style="display: inline-flex; align-items: center; gap: 0.35rem;">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
                     <span>Tambah Penghuni</span>
                 </button>
             </div>
+        </div>
 
             @php
             $penghuniAktifList = $penghunis->where('status_penghuni', 'Aktif');
@@ -171,7 +180,10 @@
                     <h3 class="widget-title" style="margin: 0;">Daftar Kamar Asrama</h3>
                 </div>
                 <button type="button" onclick="openKamarModal()" class="btn btn-primary btn-sm" style="display: inline-flex; align-items: center; gap: 0.35rem;">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
                     <span>Tambah Kamar</span>
                 </button>
             </div>
