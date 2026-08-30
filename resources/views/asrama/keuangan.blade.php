@@ -28,16 +28,34 @@
     {{-- STATS KEUANGAN GRID --}}
     <div class="asrama-stats-grid">
         <div class="asrama-stat-card">
+            <div class="stat-card-icon" style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.35); color: #34d399; width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 0.5rem;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                    <polyline points="17 6 23 6 23 12"></polyline>
+                </svg>
+            </div>
             <p class="task-meta">Total Pemasukan</p>
-            <h3 style="color: #6ee7b7; margin: 0.25rem 0 0 0; font-size: 1.6rem;">Rp {{ number_format($summary['total_pemasukan'], 0, ',', '.') }}</h3>
+            <h3 style="color: #6ee7b7; margin: 0.25rem 0 0 0; font-size: 1.6rem; font-weight: 800;">Rp {{ number_format($summary['total_pemasukan'], 0, ',', '.') }}</h3>
         </div>
         <div class="asrama-stat-card">
+            <div class="stat-card-icon" style="background: rgba(244, 63, 94, 0.15); border: 1px solid rgba(244, 63, 94, 0.35); color: #fb7185; width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 0.5rem;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline>
+                    <polyline points="17 18 23 18 23 12"></polyline>
+                </svg>
+            </div>
             <p class="task-meta">Total Pengeluaran</p>
-            <h3 style="color: #f87171; margin: 0.25rem 0 0 0; font-size: 1.6rem;">Rp {{ number_format($summary['total_pengeluaran'], 0, ',', '.') }}</h3>
+            <h3 style="color: #f87171; margin: 0.25rem 0 0 0; font-size: 1.6rem; font-weight: 800;">Rp {{ number_format($summary['total_pengeluaran'], 0, ',', '.') }}</h3>
         </div>
         <div class="asrama-stat-card">
+            <div class="stat-card-icon" style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.35); color: #fbbf24; width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 0.5rem;">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+                    <line x1="2" y1="10" x2="22" y2="10"></line>
+                </svg>
+            </div>
             <p class="task-meta">Saldo Kas Saat Ini</p>
-            <h3 style="color: {{ $summary['saldo_kas'] >= 0 ? '#fde047' : '#f87171' }}; margin: 0.25rem 0 0 0; font-size: 1.6rem;">
+            <h3 style="color: {{ $summary['saldo_kas'] >= 0 ? '#fde047' : '#f87171' }}; margin: 0.25rem 0 0 0; font-size: 1.6rem; font-weight: 800;">
                 Rp {{ number_format($summary['saldo_kas'], 0, ',', '.') }}
             </h3>
         </div>
@@ -50,7 +68,7 @@
                 <h3 class="widget-title" style="margin: 0;">Riwayat Transaksi Keuangan</h3>
             </div>
             <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
-                <input type="text" id="search-keuangan" onkeyup="filterKeuanganTable()" placeholder="🔍 Cari transaksi..." class="form-control" style="width: 220px; font-size: 0.85rem; padding: 0.35rem 0.75rem;">
+                <input type="text" id="search-keuangan" onkeyup="filterKeuanganTable()" placeholder="Cari transaksi..." class="form-control" style="width: 220px; font-size: 0.85rem; padding: 0.35rem 0.75rem;">
                 <select id="filter-tipe" onchange="filterKeuanganTable()" class="form-control" style="width: 135px; font-size: 0.85rem; padding: 0.35rem 0.75rem; cursor: pointer;">
                     <option value="">Semua Tipe</option>
                     <option value="pemasukan">Pemasukan</option>
@@ -95,24 +113,39 @@
                     </tr>
                 </thead>
                 <tbody>
+                    @php
+                    $avatarColors = ['teal', 'blue', 'purple', 'amber', 'rose', 'emerald'];
+                    @endphp
                     @foreach($keuangans as $k)
                     <tr class="keuangan-row" data-tipe="{{ $k->tipe }}">
                         <td class="task-title" style="font-size: 0.85rem;">{{ \Carbon\Carbon::parse($k->tanggal)->format('d M Y') }}</td>
                         <td>
                             @if($k->tipe === 'pemasukan')
-                            <span class="badge badge-success">Pemasukan</span>
+                            <span class="badge badge-tipe-pemasukan">Masuk</span>
                             @else
-                            <span class="badge badge-danger">Pengeluaran</span>
+                            <span class="badge badge-tipe-pengeluaran">Keluar</span>
                             @endif
                         </td>
-                        <td><span class="badge badge-info">{{ $k->kategori }}</span></td>
+                        <td><span class="badge-chip">{{ $k->kategori }}</span></td>
                         <td style="font-weight: 700; color: {{ $k->tipe === 'pemasukan' ? '#6ee7b7' : '#f87171' }};">
                             {{ $k->tipe === 'pemasukan' ? '+' : '-' }} Rp {{ number_format($k->nominal, 0, ',', '.') }}
                         </td>
-                        <td class="task-meta">
-                            {{ $k->penghuni ? $k->penghuni->nama : '-' }}
+                        <td>
+                            @if($k->penghuni)
+                            @php
+                            $words = explode(' ', trim($k->penghuni->nama));
+                            $initials = strtoupper(substr($words[0], 0, 1) . (isset($words[1]) ? substr($words[1], 0, 1) : ''));
+                            $cClass = 'resident-avatar-' . $avatarColors[$k->penghuni->id % count($avatarColors)];
+                            @endphp
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <div class="resident-avatar {{ $cClass }}" style="width: 26px; height: 26px; font-size: 0.68rem;">{{ $initials }}</div>
+                                <span style="font-weight: 600; color: #f8fafc;">{{ $k->penghuni->nama }}</span>
+                            </div>
+                            @else
+                            <span class="task-meta">-</span>
+                            @endif
                         </td>
-                        <td style="font-size: 0.78rem; color: #94a3b8; opacity: 0.75; line-height: 1.35; max-width: 220px; word-break: break-word;">
+                        <td style="font-size: 0.78rem; color: #94a3b8; line-height: 1.35; max-width: 220px; word-break: break-word;">
                             {{ $k->keterangan ?: '-' }}
                         </td>
                         <td>
@@ -138,8 +171,12 @@
 {{-- MODAL KONFIRMASI HAPUS TRANSAKSI --}}
 <div id="modal-delete-keuangan" class="modal modal-sm" aria-hidden="true" onclick="event.stopPropagation()" style="display: none; border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 16px; padding: 1.75rem; background: #1e293b; color: #f8fafc; z-index: 10001;">
     <div style="text-align: center; margin-bottom: 1.25rem;">
-        <div style="width: 56px; height: 56px; border-radius: 50%; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #ef4444; font-size: 1.75rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem auto;">
-            ⚠️
+        <div style="width: 52px; height: 52px; border-radius: 50%; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #ef4444; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem auto;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                <line x1="12" y1="9" x2="12" y2="13"></line>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+            </svg>
         </div>
         <h3 style="color: #f8fafc; font-size: 1.15rem; font-weight: 700; margin: 0 0 0.5rem 0;">Konfirmasi Hapus Transaksi</h3>
         <p style="color: #94a3b8; font-size: 0.88rem; line-height: 1.5; margin: 0;" id="delete-modal-text">

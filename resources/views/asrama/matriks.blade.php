@@ -148,26 +148,50 @@
     {{-- STATS GRID MATRIKS --}}
     <div class="matriks-stats-grid">
         <div class="matriks-stat-card">
+            <div class="stat-card-icon" style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.35); color: #34d399; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 0.5rem;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                    <polyline points="17 6 23 6 23 12"></polyline>
+                </svg>
+            </div>
             <p class="task-meta" style="margin: 0;">Total Terbayar Tahun {{ $tahun }}</p>
             <h3 style="color: #6ee7b7; margin: 0.35rem 0 0 0; font-size: 1.4rem; font-weight: 700;">
                 Rp {{ number_format($statsMatriks['total_terbayar'], 0, ',', '.') }}
             </h3>
         </div>
         <div class="matriks-stat-card">
+            <div class="stat-card-icon" style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.35); color: #fbbf24; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 0.5rem;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+            </div>
             <p class="task-meta" style="margin: 0;">Lunas Bulan Ini ({{ \Carbon\Carbon::now()->format('F') }})</p>
             <h3 style="color: #fde047; margin: 0.35rem 0 0 0; font-size: 1.4rem; font-weight: 700;">
                 {{ $statsMatriks['lunas_bulan_ini'] }} / {{ $statsMatriks['total_aktif'] }} Penghuni
             </h3>
         </div>
         <div class="matriks-stat-card">
+            <div class="stat-card-icon" style="background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.35); color: #38bdf8; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 0.5rem;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="5" width="20" height="14" rx="2"></rect>
+                    <line x1="2" y1="10" x2="22" y2="10"></line>
+                </svg>
+            </div>
             <p class="task-meta" style="margin: 0;">Tarif Standar / Bulan</p>
-            <h3 style="color: #6ee7b7; margin: 0.35rem 0 0 0; font-size: 1.4rem; font-weight: 700;">
+            <h3 style="color: #38bdf8; margin: 0.35rem 0 0 0; font-size: 1.4rem; font-weight: 700;">
                 Rp {{ number_format($tarifDefault, 0, ',', '.') }}
             </h3>
         </div>
         <div class="matriks-stat-card">
+            <div class="stat-card-icon" style="background: rgba(168, 85, 247, 0.15); border: 1px solid rgba(168, 85, 247, 0.35); color: #c084fc; width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 0.5rem;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                </svg>
+            </div>
             <p class="task-meta" style="margin: 0;">Penghuni Aktif</p>
-            <h3 style="color: #93c5fd; margin: 0.35rem 0 0 0; font-size: 1.4rem; font-weight: 700;">
+            <h3 style="color: #c084fc; margin: 0.35rem 0 0 0; font-size: 1.4rem; font-weight: 700;">
                 {{ $statsMatriks['total_aktif'] }} Orang
             </h3>
         </div>

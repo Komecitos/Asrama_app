@@ -114,10 +114,40 @@
             <span>AsramaApp</span>
         </a>
         <nav class="portal-nav">
-            <a href="{{ route('dashboard') }}" class="portal-nav-btn {{ Request::is('/') ? 'active' : '' }}">Dashboard</a>
-            <a href="{{ route('asrama.data') }}" class="portal-nav-btn {{ Request::is('asrama/data*') ? 'active' : '' }}">Data Penghuni & Kamar</a>
-            <a href="{{ route('asrama.keuangan') }}" class="portal-nav-btn {{ Request::is('asrama/keuangan') ? 'active' : '' }}">Transaksi Kas</a>
-            <a href="{{ route('asrama.keuangan.matriks') }}" class="portal-nav-btn {{ Request::is('asrama/keuangan/matriks*') ? 'active' : '' }}">Matriks Iuran</a>
+            <a href="{{ route('dashboard') }}" class="portal-nav-btn {{ Request::is('/') ? 'active' : '' }}">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="3" width="7" height="7"></rect>
+                    <rect x="14" y="14" width="7" height="7"></rect>
+                    <rect x="3" y="14" width="7" height="7"></rect>
+                </svg>
+                <span>Dashboard</span>
+            </a>
+            <a href="{{ route('asrama.data') }}" class="portal-nav-btn {{ Request::is('asrama/data*') ? 'active' : '' }}">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="9" cy="7" r="4"></circle>
+                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+                <span>Data Penghuni & Kamar</span>
+            </a>
+            <a href="{{ route('asrama.keuangan') }}" class="portal-nav-btn {{ Request::is('asrama/keuangan') ? 'active' : '' }}">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                    <line x1="1" y1="10" x2="23" y2="10"></line>
+                </svg>
+                <span>Transaksi Kas</span>
+            </a>
+            <a href="{{ route('asrama.keuangan.matriks') }}" class="portal-nav-btn {{ Request::is('asrama/keuangan/matriks*') ? 'active' : '' }}">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                </svg>
+                <span>Matriks Iuran</span>
+            </a>
         </nav>
     </header>
 

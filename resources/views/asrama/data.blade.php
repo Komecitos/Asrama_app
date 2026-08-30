@@ -35,16 +35,31 @@
         {{-- STATS GRID --}}
         <div class="asrama-stats-grid">
             <div class="asrama-stat-card">
+                <div class="stat-card-icon" style="background: rgba(99, 102, 241, 0.15); border: 1px solid rgba(99, 102, 241, 0.35); color: #818cf8; width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 0.5rem;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 7v13"></path><path d="M21 7v13"></path><path d="M3 13h18"></path><path d="M3 7h18"></path>
+                    </svg>
+                </div>
                 <p class="task-meta">Total Kamar</p>
-                <h3 style="color: var(--text-primary); margin: 0.25rem 0 0 0; font-size: 1.8rem;">{{ $summary['total_kamar'] }} Kamar</h3>
+                <h3 style="color: var(--text-primary); margin: 0.25rem 0 0 0; font-size: 1.7rem; font-weight: 800;">{{ $summary['total_kamar'] }} <span style="font-size: 0.85rem; color: #94a3b8; font-weight: 500;">Kamar</span></h3>
             </div>
             <div class="asrama-stat-card">
+                <div class="stat-card-icon" style="background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.35); color: #38bdf8; width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 0.5rem;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                </div>
                 <p class="task-meta">Kamar Ada Slot / Kosong</p>
-                <h3 style="color: #38bdf8; margin: 0.25rem 0 0 0; font-size: 1.8rem;">{{ $summary['kamar_tersedia'] }} Unit</h3>
+                <h3 style="color: #38bdf8; margin: 0.25rem 0 0 0; font-size: 1.7rem; font-weight: 800;">{{ $summary['kamar_tersedia'] }} <span style="font-size: 0.85rem; color: #94a3b8; font-weight: 500;">Unit Tersedia</span></h3>
             </div>
             <div class="asrama-stat-card">
+                <div class="stat-card-icon" style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.35); color: #fbbf24; width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 0.5rem;">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle>
+                    </svg>
+                </div>
                 <p class="task-meta">Total Penghuni Aktif</p>
-                <h3 style="color: #fde047; margin: 0.25rem 0 0 0; font-size: 1.8rem;">{{ $summary['total_penghuni'] }} Orang</h3>
+                <h3 style="color: #fbbf24; margin: 0.25rem 0 0 0; font-size: 1.7rem; font-weight: 800;">{{ $summary['total_penghuni'] }} <span style="font-size: 0.85rem; color: #94a3b8; font-weight: 500;">Orang</span></h3>
             </div>
         </div>
 
@@ -54,11 +69,15 @@
                 <div>
                     <h3 class="widget-title" style="margin: 0;">Data Penghuni Asrama</h3>
                 </div>
-                <button type="button" onclick="openPenghuniModal()" class="btn btn-primary btn-sm">+ Tambah Penghuni</button>
+                <button type="button" onclick="openPenghuniModal()" class="btn btn-primary btn-sm" style="display: inline-flex; align-items: center; gap: 0.35rem;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    <span>Tambah Penghuni</span>
+                </button>
             </div>
 
             @php
             $penghuniAktifList = $penghunis->where('status_penghuni', 'Aktif');
+            $avatarColors = ['teal', 'blue', 'purple', 'amber', 'rose', 'emerald'];
             @endphp
 
             @if($penghuniAktifList->isEmpty())
@@ -80,23 +99,38 @@
                     </thead>
                     <tbody>
                         @foreach($penghuniAktifList as $penghuni)
+                        @php
+                        $words = explode(' ', trim($penghuni->nama));
+                        $initials = strtoupper(substr($words[0], 0, 1) . (isset($words[1]) ? substr($words[1], 0, 1) : ''));
+                        $cClass = 'resident-avatar-' . $avatarColors[$penghuni->id % count($avatarColors)];
+                        @endphp
                         <tr>
-                            <td class="task-title" style="font-weight: 600;">{{ $penghuni->nama }}</td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                    <div class="resident-avatar {{ $cClass }}">{{ $initials }}</div>
+                                    <div>
+                                        <div style="font-weight: 600; color: #f8fafc;">{{ $penghuni->nama }}</div>
+                                        @if($penghuni->catatan)
+                                        <div style="font-size: 0.72rem; color: #94a3b8; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $penghuni->catatan }}</div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </td>
                             <td class="task-meta">{{ $penghuni->nomor_hp ?: '-' }}</td>
-                            <td>{{ $penghuni->kampus ?: '-' }}</td>
+                            <td><span class="badge-chip">{{ $penghuni->kampus ?: '-' }}</span></td>
                             <td class="task-meta">{{ $penghuni->asal_kampung ?: '-' }}</td>
                             <td>
                                 @if($penghuni->kamar)
-                                <span class="badge badge-info">{{ $penghuni->kamar->nomor_kamar }}</span>
+                                <span class="badge badge-info" style="font-weight: 700;">Kamar {{ $penghuni->kamar->nomor_kamar }}</span>
                                 @else
-                                <span class="task-meta">Belum Ada Kamar</span>
+                                <span class="task-meta" style="font-style: italic;">Belum Ada</span>
                                 @endif
                             </td>
                             <td>
                                 @if($penghuni->status_penghuni === 'Aktif')
-                                <span class="badge badge-success">Aktif</span>
+                                <span class="badge badge-penghuni-aktif">Aktif</span>
                                 @else
-                                <span class="badge badge-secondary">Keluar</span>
+                                <span class="badge badge-penghuni-keluar">Keluar</span>
                                 @endif
                             </td>
 
@@ -136,7 +170,10 @@
                 <div>
                     <h3 class="widget-title" style="margin: 0;">Daftar Kamar Asrama</h3>
                 </div>
-                <button type="button" onclick="openKamarModal()" class="btn btn-primary btn-sm">+ Tambah Kamar</button>
+                <button type="button" onclick="openKamarModal()" class="btn btn-primary btn-sm" style="display: inline-flex; align-items: center; gap: 0.35rem;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    <span>Tambah Kamar</span>
+                </button>
             </div>
 
             @if($kamars->isEmpty())
@@ -160,20 +197,20 @@
                         $activeCount = $kamar->penghunis->where('status_penghuni', 'Aktif')->count();
                         @endphp
                         <tr>
-                            <td class="task-title" style="font-weight: 700;">{{ $kamar->nomor_kamar }}</td>
-                            <td>Lantai {{ $kamar->lantai }}</td>
+                            <td class="task-title" style="font-weight: 700; color: #f8fafc;">Kamar {{ $kamar->nomor_kamar }}</td>
+                            <td><span class="badge-chip">Lantai {{ $kamar->lantai }}</span></td>
                             <td>
-                                <strong>{{ $activeCount }}</strong> Orang
+                                <span style="color: #38bdf8; font-weight: 700;">{{ $activeCount }}</span> / <span style="color: #94a3b8;">{{ $kamar->kapasitas }} Bed</span>
                             </td>
                             <td>
                                 @if($kamar->status === 'Tersedia')
-                                <span class="badge badge-success">Tersedia</span>
+                                <span class="badge badge-kamar-tersedia">Tersedia</span>
                                 @elseif($kamar->status === 'Penuh')
-                                <span class="badge badge-warning">Penuh</span>
+                                <span class="badge badge-kamar-penuh">Penuh</span>
                                 @elseif($kamar->status === 'Gudang')
-                                <span class="badge badge-secondary" style="background: #64748b; color: #fff;">Gudang</span>
+                                <span class="badge badge-kamar-gudang">Gudang</span>
                                 @else
-                                <span class="badge badge-danger">Perbaikan</span>
+                                <span class="badge badge-kamar-perbaikan">Perbaikan</span>
                                 @endif
                             </td>
                             <td class="task-meta">{{ $kamar->fasilitas ?: '-' }}</td>
