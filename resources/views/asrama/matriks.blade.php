@@ -6,24 +6,24 @@
     .matriks-stats-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1rem;
-        margin-bottom: 1.5rem;
+        gap: 0.85rem;
+        margin-bottom: 1.25rem;
     }
 
     .matriks-stat-card {
         background: var(--bg-card-2, rgba(30, 41, 59, 0.6));
         border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
-        border-radius: var(--radius-lg, 12px);
-        padding: 1.15rem 1.25rem;
+        border-radius: 8px;
+        padding: 0.85rem 1.1rem;
         backdrop-filter: blur(8px);
     }
 
     .matriks-table-wrapper {
         overflow-x: auto;
-        border-radius: var(--radius-lg, 12px);
-        border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.08));
-        background: #0f172a;
-        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+        border-radius: 8px;
+        border: 1px solid var(--border-default, rgba(148, 163, 184, 0.18));
+        background: var(--bg-card, rgba(15, 23, 42, 0.96));
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
     }
 
     .matriks-table {
@@ -36,14 +36,14 @@
     .matriks-table th,
     .matriks-table td {
         padding: 0.65rem 0.6rem;
-        border: 1px solid rgba(255, 255, 255, 0.07);
+        border: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.07));
         text-align: center;
         vertical-align: middle;
     }
 
     .matriks-table th {
-        background: #1e293b;
-        color: #f8fafc;
+        background: var(--bg-card-2, rgba(30, 41, 59, 0.98));
+        color: var(--text-primary);
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.5px;
@@ -51,9 +51,9 @@
     }
 
     .matriks-table th.col-current-month {
-        background: #334155;
+        background: rgba(245, 158, 11, 0.18);
         border-bottom: 2px solid #f59e0b;
-        color: #fde047;
+        color: #fbbf24;
     }
 
     .matriks-table th.col-nama,
@@ -62,18 +62,19 @@
         font-weight: 600;
         position: sticky;
         left: 0;
-        background: #1e293b;
+        background: var(--bg-card-2, rgba(30, 41, 59, 0.98));
         z-index: 2;
         min-width: 190px;
-        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.3);
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
     }
 
     .matriks-table td.col-nama {
-        background: #0f172a;
+        background: var(--bg-card, rgba(15, 23, 42, 0.96));
+        color: var(--text-primary);
     }
 
     .cell-paid {
-        background: #15803d !important;
+        background: #10b981 !important;
         color: #ffffff !important;
         font-weight: 600;
         cursor: pointer;
@@ -81,32 +82,32 @@
     }
 
     .cell-paid:hover {
-        filter: brightness(1.2);
+        filter: brightness(1.15);
         transform: scale(1.02);
     }
 
     .cell-empty {
-        background: #0f172a;
-        color: #64748b;
+        background: var(--bg-card, rgba(15, 23, 42, 0.96));
+        color: var(--text-muted);
         cursor: pointer;
         transition: background 0.15s ease;
     }
 
     .cell-empty:hover {
-        background: #1e293b;
-        color: #cbd5e1;
+        background: var(--bg-card-hover, rgba(30, 41, 59, 0.8));
+        color: var(--text-primary);
     }
 
     .cell-not-joined {
-        background: #1e293b !important;
-        color: #94a3b8 !important;
+        background: var(--bg-card-2, rgba(30, 41, 59, 0.6)) !important;
+        color: var(--text-faint) !important;
         font-style: italic;
         font-size: 0.72rem;
     }
 
     .row-divider {
-        background: #334155 !important;
-        color: #cbd5e1;
+        background: var(--bg-card-2, rgba(30, 41, 59, 0.9)) !important;
+        color: var(--text-muted);
         font-weight: 700;
         font-style: italic;
         text-align: left !important;
@@ -115,9 +116,9 @@
     }
 
     .preset-btn {
-        background: rgba(255, 255, 255, 0.06);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        color: #f8fafc;
+        background: var(--bg-card-hover, rgba(255, 255, 255, 0.06));
+        border: 1px solid var(--border-default, rgba(255, 255, 255, 0.15));
+        color: var(--text-primary);
         border-radius: 6px;
         padding: 0.35rem 0.65rem;
         font-size: 0.8rem;
@@ -129,6 +130,67 @@
         background: var(--accent-primary, #6366f1);
         border-color: var(--accent-primary, #6366f1);
         color: #fff;
+    }
+
+    /* Light Theme Overrides for Matriks */
+    [data-theme="light"] .matriks-table-wrapper {
+        background: #ffffff;
+        border-color: #cbd5e1;
+        box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.06);
+    }
+
+    [data-theme="light"] .matriks-table th {
+        background: #f1f5f9;
+        color: #1e293b;
+        border-color: #cbd5e1;
+    }
+
+    [data-theme="light"] .matriks-table td {
+        border-color: #e2e8f0;
+    }
+
+    [data-theme="light"] .matriks-table th.col-current-month {
+        background: #fef3c7;
+        color: #b45309;
+        border-bottom: 2px solid #d97706;
+    }
+
+    [data-theme="light"] .matriks-table th.col-nama {
+        background: #f1f5f9;
+        color: #0f172a;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+    }
+
+    [data-theme="light"] .matriks-table td.col-nama {
+        background: #ffffff;
+        color: #0f172a;
+        box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
+    }
+
+    [data-theme="light"] .cell-empty {
+        background: #ffffff;
+        color: #94a3b8;
+    }
+
+    [data-theme="light"] .cell-empty:hover {
+        background: #f8fafc;
+        color: #0f172a;
+    }
+
+    [data-theme="light"] .cell-not-joined {
+        background: #f1f5f9 !important;
+        color: #94a3b8 !important;
+    }
+
+    [data-theme="light"] .row-divider {
+        background: #e2e8f0 !important;
+        color: #334155;
+    }
+
+    [data-theme="light"] .preset-btn {
+        background: #f1f5f9;
+        border-color: #cbd5e1;
+        color: #334155;
     }
 </style>
 @endpush
