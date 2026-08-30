@@ -136,7 +136,7 @@
 </div>
 
 {{-- MODAL KONFIRMASI HAPUS TRANSAKSI --}}
-<div id="modal-delete-keuangan" class="modal modal-sm" aria-hidden="true" style="display: none; border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 16px; padding: 1.75rem; background: #1e293b; color: #f8fafc; z-index: 10001;">
+<div id="modal-delete-keuangan" class="modal modal-sm" aria-hidden="true" onclick="event.stopPropagation()" style="display: none; border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 16px; padding: 1.75rem; background: #1e293b; color: #f8fafc; z-index: 10001;">
     <div style="text-align: center; margin-bottom: 1.25rem;">
         <div style="width: 56px; height: 56px; border-radius: 50%; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #ef4444; font-size: 1.75rem; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem auto;">
             ⚠️
@@ -162,7 +162,7 @@
 <div id="modal-delete-keuangan-overlay" class="modal-overlay" onclick="closeDeleteModal()"></div>
 
 {{-- MODAL CATAT / EDIT TRANSAKSI KEUANGAN --}}
-<div id="modal-keuangan" class="modal modal-create" aria-hidden="true">
+<div id="modal-keuangan" class="modal modal-create" aria-hidden="true" onclick="event.stopPropagation()">
     <div class="modal-content">
         <div class="modal-header">
             <h3 id="modal-keuangan-title">Catat Transaksi Keuangan</h3>

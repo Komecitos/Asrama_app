@@ -277,7 +277,7 @@
 </div>
 
 {{-- MODAL TAMBAH/EDIT KAMAR --}}
-<div id="modal-kamar" class="modal modal-create" aria-hidden="true">
+<div id="modal-kamar" class="modal modal-create" aria-hidden="true" onclick="event.stopPropagation()">
     <div class="modal-header">
         <h3 id="modal-kamar-title">Tambah Kamar Baru</h3>
         <button onclick="closeKamarModal()" class="modal-close">&times;</button>
@@ -322,7 +322,7 @@
 <div id="modal-kamar-overlay" class="modal-overlay" onclick="closeKamarModal()"></div>
 
 {{-- MODAL TAMBAH/EDIT PENGHUNI --}}
-<div id="modal-penghuni" class="modal modal-create" aria-hidden="true">
+<div id="modal-penghuni" class="modal modal-create" aria-hidden="true" onclick="event.stopPropagation()">
     <div class="modal-header">
         <h3 id="modal-penghuni-title">Tambah Penghuni Baru</h3>
         <button onclick="closePenghuniModal()" class="modal-close">&times;</button>
@@ -441,7 +441,7 @@
 <div id="modal-penghuni-overlay" class="modal-overlay" onclick="closePenghuniModal()"></div>
 
 {{-- MODAL PROSES KELUAR PENGHUNI --}}
-<div id="modal-keluar-penghuni" class="modal modal-create" aria-hidden="true">
+<div id="modal-keluar-penghuni" class="modal modal-create" aria-hidden="true" onclick="event.stopPropagation()">
     <div class="modal-header">
         <h3 style="display: flex; align-items: center; gap: 0.5rem;">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color: #f59e0b;">
@@ -482,7 +482,7 @@
 <div id="modal-keluar-penghuni-overlay" class="modal-overlay" onclick="closeKeluarPenghuniModal()"></div>
 
 {{-- MODAL HAPUS PENGHUNI --}}
-<div id="modal-hapus-penghuni" class="modal modal-create" aria-hidden="true">
+<div id="modal-hapus-penghuni" class="modal modal-create" aria-hidden="true" onclick="event.stopPropagation()">
     <div class="modal-header">
         <h3 style="display: flex; align-items: center; gap: 0.5rem; color: #ef4444;">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color: #ef4444;">

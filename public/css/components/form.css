@@ -52,6 +52,19 @@ select.form-control {
     padding-right: 2rem;
 }
 
+select.form-control option {
+    background-color: #0f172a;
+    color: #f8fafc;
+    padding: 6px 10px;
+}
+
+select.form-control optgroup {
+    background-color: #090d16;
+    color: #38bdf8;
+    font-weight: 700;
+    padding: 6px 4px;
+}
+
 .form-grid-2 {
     display: grid;
     grid-template-columns: 1fr 1fr;

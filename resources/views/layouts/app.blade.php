@@ -137,7 +137,7 @@
 
     {{-- MODAL DOKUMENTASI --}}
     <div id="modal-docs-overlay" class="modal-overlay" onclick="closeDocsModal()"></div>
-    <div id="modal-docs" class="modal modal-create" aria-hidden="true">
+    <div id="modal-docs" class="modal modal-create" aria-hidden="true" onclick="event.stopPropagation()">
         <div class="modal-header">
             <h3>Tentang AsramaApp</h3>
             <button onclick="closeDocsModal()" class="modal-close">&times;</button>

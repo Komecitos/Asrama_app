@@ -424,7 +424,7 @@
 </div>
 
 {{-- MODAL UPDATE MATRIKS CELL --}}
-<div id="modal-matriks-cell" class="modal modal-create" aria-hidden="true">
+<div id="modal-matriks-cell" class="modal modal-create" aria-hidden="true" onclick="event.stopPropagation()">
     <div class="modal-header">
         <h3 id="cell-modal-title">Update Status Pembayaran</h3>
         <button onclick="closeCellModal()" class="modal-close">&times;</button>
