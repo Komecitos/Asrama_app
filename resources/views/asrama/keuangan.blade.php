@@ -8,54 +8,38 @@
 
 @section('content')
 
-<div class="page-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; margin-bottom: 1.5rem;">
-    <div>
-        <h2 style="font-size: 1.4rem; font-weight: 800; color: #f8fafc; margin: 0 0 0.25rem 0;">Transaksi Kas Asrama</h2>
-        <p style="font-size: 0.85rem; color: #94a3b8; margin: 0;">Pencatatan kas masuk, kas keluar, dan rekapitulasi keuangan asrama.</p>
-    </div>
-    <div>
-        <button type="button" onclick="openKeuanganModal()" class="btn btn-primary" style="font-weight: 700; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.55rem 1.1rem; border-radius: 10px; font-size: 0.9rem;">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="12" y1="5" x2="12" y2="19"></line>
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-            </svg>
-            <span>+ Catat Transaksi</span>
-        </button>
-    </div>
-</div>
-
 <div class="asrama-wrapper">
     {{-- STATS KEUANGAN GRID --}}
     <div class="asrama-stats-grid">
         <div class="asrama-stat-card">
-            <div class="stat-card-icon" style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.35); color: #34d399; width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 0.5rem;">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <div class="stat-card-icon" style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.35); color: #34d399; width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 0.4rem;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
                     <polyline points="17 6 23 6 23 12"></polyline>
                 </svg>
             </div>
             <p class="task-meta">Total Pemasukan</p>
-            <h3 style="color: #6ee7b7; margin: 0.25rem 0 0 0; font-size: 1.6rem; font-weight: 800;">Rp {{ number_format($summary['total_pemasukan'], 0, ',', '.') }}</h3>
+            <h3 style="color: #6ee7b7; margin: 0.2rem 0 0 0; font-size: 1.45rem; font-weight: 800;">Rp {{ number_format($summary['total_pemasukan'], 0, ',', '.') }}</h3>
         </div>
         <div class="asrama-stat-card">
-            <div class="stat-card-icon" style="background: rgba(244, 63, 94, 0.15); border: 1px solid rgba(244, 63, 94, 0.35); color: #fb7185; width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 0.5rem;">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <div class="stat-card-icon" style="background: rgba(244, 63, 94, 0.15); border: 1px solid rgba(244, 63, 94, 0.35); color: #fb7185; width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 0.4rem;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"></polyline>
                     <polyline points="17 18 23 18 23 12"></polyline>
                 </svg>
             </div>
             <p class="task-meta">Total Pengeluaran</p>
-            <h3 style="color: #f87171; margin: 0.25rem 0 0 0; font-size: 1.6rem; font-weight: 800;">Rp {{ number_format($summary['total_pengeluaran'], 0, ',', '.') }}</h3>
+            <h3 style="color: #f87171; margin: 0.2rem 0 0 0; font-size: 1.45rem; font-weight: 800;">Rp {{ number_format($summary['total_pengeluaran'], 0, ',', '.') }}</h3>
         </div>
         <div class="asrama-stat-card">
-            <div class="stat-card-icon" style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.35); color: #fbbf24; width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; margin-bottom: 0.5rem;">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <div class="stat-card-icon" style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.35); color: #fbbf24; width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 0.4rem;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <rect x="2" y="5" width="20" height="14" rx="2"></rect>
                     <line x1="2" y1="10" x2="22" y2="10"></line>
                 </svg>
             </div>
             <p class="task-meta">Saldo Kas Saat Ini</p>
-            <h3 style="color: {{ $summary['saldo_kas'] >= 0 ? '#fde047' : '#f87171' }}; margin: 0.25rem 0 0 0; font-size: 1.6rem; font-weight: 800;">
+            <h3 style="color: {{ $summary['saldo_kas'] >= 0 ? '#fde047' : '#f87171' }}; margin: 0.2rem 0 0 0; font-size: 1.45rem; font-weight: 800;">
                 Rp {{ number_format($summary['saldo_kas'], 0, ',', '.') }}
             </h3>
         </div>
@@ -68,8 +52,15 @@
                 <h3 class="widget-title" style="margin: 0;">Riwayat Transaksi Keuangan</h3>
             </div>
             <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
-                <input type="text" id="search-keuangan" onkeyup="filterKeuanganTable()" placeholder="Cari transaksi..." class="form-control" style="width: 220px; font-size: 0.85rem; padding: 0.35rem 0.75rem;">
-                <select id="filter-tipe" onchange="filterKeuanganTable()" class="form-control" style="width: 135px; font-size: 0.85rem; padding: 0.35rem 0.75rem; cursor: pointer;">
+                <button type="button" onclick="openKeuanganModal()" class="btn btn-primary btn-sm" style="font-weight: 700; display: inline-flex; align-items: center; gap: 0.35rem;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    <span>Catat Transaksi</span>
+                </button>
+                <input type="text" id="search-keuangan" onkeyup="filterKeuanganTable()" placeholder="Cari transaksi..." class="form-control" style="width: 200px; font-size: 0.85rem; padding: 0.35rem 0.75rem;">
+                <select id="filter-tipe" onchange="filterKeuanganTable()" class="form-control" style="width: 130px; font-size: 0.85rem; padding: 0.35rem 0.75rem; cursor: pointer;">
                     <option value="">Semua Tipe</option>
                     <option value="pemasukan">Pemasukan</option>
                     <option value="pengeluaran">Pengeluaran</option>
