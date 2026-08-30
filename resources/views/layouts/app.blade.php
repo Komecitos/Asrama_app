@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AsramaApp - Sistem Manajemen Asrama</title>
-    <link rel="icon" type="image/png" href="{{ asset('assets/images/logo_MyHub.png') }}">
+    <link rel="icon" type="image/jpeg" href="{{ asset('assets/images/logo asrama.jpeg') }}">
 
     {{-- Theme --}}
     <link rel="stylesheet" href="{{ asset('css/theme/color.css') }}">
@@ -110,7 +110,7 @@
     {{-- Global Header --}}
     <header class="global-header">
         <a href="{{ route('dashboard') }}" class="app-name">
-            <img src="{{ asset('assets/images/logo_MyHub.png') }}" alt="AsramaApp Logo" style="height: 32px; width: auto; object-fit: contain; border-radius: 6px;">
+            <img src="{{ asset('assets/images/logo asrama.jpeg') }}" alt="AsramaApp Logo" style="height: 32px; width: auto; object-fit: contain; border-radius: 6px;">
             <span>AsramaApp</span>
         </a>
         <nav class="portal-nav">
@@ -177,7 +177,7 @@
 
         <div style="max-height: 65vh; overflow-y: auto;">
             <div style="text-align: center; margin: 10px 0 20px;">
-                <img src="{{ asset('assets/images/logo_MyHub.png') }}" alt="AsramaApp Logo" style="height: 64px; width: auto; object-fit: contain; margin-bottom: 8px; border-radius: 12px;">
+                <img src="{{ asset('assets/images/logo asrama.jpeg') }}" alt="AsramaApp Logo" style="height: 64px; width: auto; object-fit: contain; margin-bottom: 8px; border-radius: 12px;">
                 <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--text-primary); margin: 0;">AsramaApp Desktop</h2>
                 <div style="margin-top: 4px; display: inline-flex; align-items: center; gap: 0.4rem;">
                     <span style="background: rgba(14, 165, 233, 0.15); border: 1px solid rgba(14, 165, 233, 0.4); color: #38bdf8; font-size: 0.75rem; padding: 2px 8px; border-radius: 6px; font-weight: 700;">Versi {{ config('nativephp.version', '1.0.0') }}</span>
