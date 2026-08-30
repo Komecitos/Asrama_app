@@ -100,699 +100,699 @@
                     </tr>
                 </thead>
                 <tbody>
-                            @foreach($penghuniAktifList as $penghuni)
-                            @php
-                            $words = explode(' ', trim($penghuni->nama));
-                            $initials = strtoupper(substr($words[0], 0, 1) . (isset($words[1]) ? substr($words[1], 0, 1) : ''));
-                            $cClass = 'resident-avatar-' . $avatarColors[$penghuni->id % count($avatarColors)];
-                            @endphp
-                            <tr>
-                                <td>
-                                    <div style="display: flex; align-items: center; gap: 0.75rem;">
-                                        <div class="resident-avatar {{ $cClass }}">{{ $initials }}</div>
-                                        <div>
-                                            <div style="font-weight: 600; color: #f8fafc;">{{ $penghuni->nama }}</div>
-                                            @if($penghuni->catatan)
-                                            <div style="font-size: 0.72rem; color: #94a3b8; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $penghuni->catatan }}</div>
-                                            @endif
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="task-meta">{{ $penghuni->nomor_hp ?: '-' }}</td>
-                                <td><span class="badge-chip">{{ $penghuni->kampus ?: '-' }}</span></td>
-                                <td class="task-meta">{{ $penghuni->asal_kampung ?: '-' }}</td>
-                                <td>
-                                    @if($penghuni->kamar)
-                                    <span class="badge badge-info" style="font-weight: 700;">Kamar {{ $penghuni->kamar->nomor_kamar }}</span>
-                                    @else
-                                    <span class="task-meta" style="font-style: italic;">Belum Ada</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    @if($penghuni->status_penghuni === 'Aktif')
-                                    <span class="badge badge-penghuni-aktif">Aktif</span>
-                                    @else
-                                    <span class="badge badge-penghuni-keluar">Keluar</span>
-                                    @endif
-                                </td>
-
-                                <td class="task-meta">{{ $penghuni->tanggal_masuk ? \Carbon\Carbon::parse($penghuni->tanggal_masuk)->format('d M Y') : '-' }}</td>
-                                <td class="col-aksi-cell">
-                                    <div style="display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap;">
-                                        {{-- EDIT BUTTON --}}
-                                        <button type="button" onclick="openEditPenghuniModal({{ $penghuni->id }}, '{{ addslashes($penghuni->nama) }}', '{{ addslashes($penghuni->nomor_hp ?: '') }}', '{{ addslashes($penghuni->kampus ?: '') }}', '{{ addslashes($penghuni->asal_kampung ?: '') }}', '{{ $penghuni->kamar_id ?: '' }}', '{{ $penghuni->tanggal_masuk ?: '' }}', '{{ addslashes($penghuni->catatan ?: '') }}')" class="btn btn-secondary btn-sm" title="Edit data penghuni">Edit</button>
-
-                                        {{-- KELUAR BUTTON (FOR ACTIVE RESIDENTS) --}}
-                                        @if($penghuni->status_penghuni === 'Aktif')
-                                        <button type="button" onclick="openKeluarPenghuniModal({{ $penghuni->id }}, '{{ addslashes($penghuni->nama) }}')" class="btn btn-warning btn-sm" style="background: #eab308; color: #000; border: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.35rem;" title="Tandai penghuni keluar asrama">
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                                                <polyline points="16 17 21 12 16 7"></polyline>
-                                                <line x1="21" y1="12" x2="9" y2="12"></line>
-                                            </svg>
-                                            <span>Keluar</span>
-                                        </button>
-                                        @endif
-
-                                        {{-- DELETE BUTTON --}}
-                                        <button type="button" onclick="openHapusPenghuniModal({{ $penghuni->id }}, '{{ addslashes($penghuni->nama) }}')" class="btn btn-danger btn-sm" title="Hapus penghuni">Hapus</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-                @endif
-            </div>
-
-            {{-- KAMAR SECTION --}}
-            <div class="widget-card" style="margin-bottom: 2rem;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+                    @foreach($penghuniAktifList as $penghuni)
+                    @php
+                    $words = explode(' ', trim($penghuni->nama));
+                    $initials = strtoupper(substr($words[0], 0, 1) . (isset($words[1]) ? substr($words[1], 0, 1) : ''));
+                    $cClass = 'resident-avatar-' . $avatarColors[$penghuni->id % count($avatarColors)];
+                    @endphp
+                    <tr>
+                        <td>
+                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                    <div class="resident-avatar {{ $cClass }}">{{ $initials }}</div>
                     <div>
-                        <h3 class="widget-title" style="margin: 0;">Daftar Kamar Asrama</h3>
+                        <div style="font-weight: 600; color: #f8fafc;">{{ $penghuni->nama }}</div>
+                        @if($penghuni->catatan)
+                        <div style="font-size: 0.72rem; color: #94a3b8; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $penghuni->catatan }}</div>
+                        @endif
                     </div>
-                    <button type="button" onclick="openKamarModal()" class="btn btn-primary btn-sm" style="display: inline-flex; align-items: center; gap: 0.35rem;">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="12" y1="5" x2="12" y2="19"></line>
-                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                </div>
+            </td>
+            <td class="task-meta">{{ $penghuni->nomor_hp ?: '-' }}</td>
+            <td><span class="badge-chip">{{ $penghuni->kampus ?: '-' }}</span></td>
+            <td class="task-meta">{{ $penghuni->asal_kampung ?: '-' }}</td>
+            <td>
+                @if($penghuni->kamar)
+                <span class="badge badge-info" style="font-weight: 700;">Kamar {{ $penghuni->kamar->nomor_kamar }}</span>
+                @else
+                <span class="task-meta" style="font-style: italic;">Belum Ada</span>
+                @endif
+            </td>
+            <td>
+                @if($penghuni->status_penghuni === 'Aktif')
+                <span class="badge badge-penghuni-aktif">Aktif</span>
+                @else
+                <span class="badge badge-penghuni-keluar">Keluar</span>
+                @endif
+            </td>
+
+            <td class="task-meta">{{ $penghuni->tanggal_masuk ? \Carbon\Carbon::parse($penghuni->tanggal_masuk)->format('d M Y') : '-' }}</td>
+            <td class="col-aksi-cell">
+                <div style="display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap;">
+                    {{-- EDIT BUTTON --}}
+                    <button type="button" onclick="openEditPenghuniModal({{ $penghuni->id }}, '{{ addslashes($penghuni->nama) }}', '{{ addslashes($penghuni->nomor_hp ?: '') }}', '{{ addslashes($penghuni->kampus ?: '') }}', '{{ addslashes($penghuni->asal_kampung ?: '') }}', '{{ $penghuni->kamar_id ?: '' }}', '{{ $penghuni->tanggal_masuk ?: '' }}', '{{ addslashes($penghuni->catatan ?: '') }}')" class="btn btn-secondary btn-sm" title="Edit data penghuni">Edit</button>
+
+                    {{-- KELUAR BUTTON (FOR ACTIVE RESIDENTS) --}}
+                    @if($penghuni->status_penghuni === 'Aktif')
+                    <button type="button" onclick="openKeluarPenghuniModal({{ $penghuni->id }}, '{{ addslashes($penghuni->nama) }}')" class="btn btn-warning btn-sm" style="background: #eab308; color: #000; border: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.35rem;" title="Tandai penghuni keluar asrama">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                            <polyline points="16 17 21 12 16 7"></polyline>
+                            <line x1="21" y1="12" x2="9" y2="12"></line>
                         </svg>
-                        <span>Tambah Kamar</span>
+                        <span>Keluar</span>
                     </button>
-                </div>
+                    @endif
 
-                @if($kamars->isEmpty())
-                <p class="empty-state">Belum ada data kamar. Klik <strong>+ Tambah Kamar</strong> untuk membuat kamar baru.</p>
-                @else
-                <div class="table-wrapper">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Nomor Kamar</th>
-                                <th>Lantai</th>
-                                <th>Penghuni Aktif</th>
-                                <th>Status</th>
-                                <th>Fasilitas</th>
-                                <th class="col-aksi-header">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($kamars as $kamar)
-                            @php
-                            $activeCount = $kamar->penghunis->where('status_penghuni', 'Aktif')->count();
-                            @endphp
-                            <tr>
-                                <td class="task-title" style="font-weight: 700; color: #f8fafc;">Kamar {{ $kamar->nomor_kamar }}</td>
-                                <td><span class="badge-chip">Lantai {{ $kamar->lantai }}</span></td>
-                                <td>
-                                    <span style="color: #38bdf8; font-weight: 700;">{{ $activeCount }}</span> / <span style="color: #94a3b8;">{{ $kamar->kapasitas }} Bed</span>
-                                </td>
-                                <td>
-                                    @if($kamar->status === 'Tersedia')
-                                    <span class="badge badge-kamar-tersedia">Tersedia</span>
-                                    @elseif($kamar->status === 'Penuh')
-                                    <span class="badge badge-kamar-penuh">Penuh</span>
-                                    @elseif($kamar->status === 'Gudang')
-                                    <span class="badge badge-kamar-gudang">Gudang</span>
-                                    @else
-                                    <span class="badge badge-kamar-perbaikan">Perbaikan</span>
-                                    @endif
-                                </td>
-                                <td class="task-meta">{{ $kamar->fasilitas ?: '-' }}</td>
-                                <td class="col-aksi-cell">
-                                    <div style="display: flex; gap: 0.4rem;">
-                                        <button type="button" onclick="openEditKamarModal({{ $kamar->id }}, '{{ addslashes($kamar->nomor_kamar) }}', {{ $kamar->lantai }}, '{{ $kamar->status }}', '{{ addslashes($kamar->fasilitas ?: '') }}', '{{ addslashes($kamar->catatan ?: '') }}')" class="btn btn-secondary btn-sm">Edit</button>
-                                        <form action="{{ route('asrama.kamar.destroy', $kamar->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Hapus kamar {{ $kamar->nomor_kamar }}?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                    {{-- DELETE BUTTON --}}
+                    <button type="button" onclick="openHapusPenghuniModal({{ $penghuni->id }}, '{{ addslashes($penghuni->nama) }}')" class="btn btn-danger btn-sm" title="Hapus penghuni">Hapus</button>
                 </div>
-                @endif
-            </div>
+            </td>
+        </tr>
+        @endforeach
+        </tbody>
+        </table>
+    </div>
+    @endif
+</div>
 
-            {{-- LOG AKTIVITAS / PENGHUNI KELUAR SECTION --}}
-            <div class="widget-card">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-                    <div>
-                        <h3 class="widget-title" style="margin: 0;">Log Aktivitas & Penghuni Keluar</h3>
-                    </div>
-                </div>
+{{-- KAMAR SECTION --}}
+<div class="widget-card" style="margin-bottom: 2rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+        <div>
+            <h3 class="widget-title" style="margin: 0;">Daftar Kamar Asrama</h3>
+        </div>
+        <button type="button" onclick="openKamarModal()" class="btn btn-primary btn-sm" style="display: inline-flex; align-items: center; gap: 0.35rem;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            <span>Tambah Kamar</span>
+        </button>
+    </div>
 
+    @if($kamars->isEmpty())
+    <p class="empty-state">Belum ada data kamar. Klik <strong>+ Tambah Kamar</strong> untuk membuat kamar baru.</p>
+    @else
+    <div class="table-wrapper">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Nomor Kamar</th>
+                    <th>Lantai</th>
+                    <th>Penghuni Aktif</th>
+                    <th>Status</th>
+                    <th>Fasilitas</th>
+                    <th class="col-aksi-header">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($kamars as $kamar)
                 @php
-                $penghuniKeluarList = $penghunis->where('status_penghuni', 'Keluar')->sortByDesc('tanggal_keluar');
+                $activeCount = $kamar->penghunis->where('status_penghuni', 'Aktif')->count();
                 @endphp
+                <tr>
+                    <td class="task-title" style="font-weight: 700; color: #f8fafc;">Kamar {{ $kamar->nomor_kamar }}</td>
+                    <td><span class="badge-chip">Lantai {{ $kamar->lantai }}</span></td>
+                    <td>
+                        <span style="color: #38bdf8; font-weight: 700;">{{ $activeCount }}</span> / <span style="color: #94a3b8;">{{ $kamar->kapasitas }} Bed</span>
+                    </td>
+                    <td>
+                        @if($kamar->status === 'Tersedia')
+                        <span class="badge badge-kamar-tersedia">Tersedia</span>
+                        @elseif($kamar->status === 'Penuh')
+                        <span class="badge badge-kamar-penuh">Penuh</span>
+                        @elseif($kamar->status === 'Gudang')
+                        <span class="badge badge-kamar-gudang">Gudang</span>
+                        @else
+                        <span class="badge badge-kamar-perbaikan">Perbaikan</span>
+                        @endif
+                    </td>
+                    <td class="task-meta">{{ $kamar->fasilitas ?: '-' }}</td>
+                    <td class="col-aksi-cell">
+                        <div style="display: flex; gap: 0.4rem;">
+                            <button type="button" onclick="openEditKamarModal({{ $kamar->id }}, '{{ addslashes($kamar->nomor_kamar) }}', {{ $kamar->lantai }}, '{{ $kamar->status }}', '{{ addslashes($kamar->fasilitas ?: '') }}', '{{ addslashes($kamar->catatan ?: '') }}')" class="btn btn-secondary btn-sm">Edit</button>
+                            <form action="{{ route('asrama.kamar.destroy', $kamar->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Hapus kamar {{ $kamar->nomor_kamar }}?');">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+    @endif
+</div>
 
-                @if($penghuniKeluarList->isEmpty())
-                <p class="empty-state">Belum ada riwayat log penghuni keluar.</p>
-                @else
-                <div class="table-wrapper">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>Tanggal Keluar</th>
-                                <th>Nama Penghuni</th>
-                                <th>No. Telepon / HP</th>
-                                <th>Kampus</th>
-                                <th>Asal Kampung</th>
-                                <th>Kamar Terakhir</th>
-                                <th>Catatan Aktivitas Log</th>
-                                <th class="col-aksi-header">Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($penghuniKeluarList as $pk)
-                            <tr>
-                                <td style="font-weight: 700; color: #cbd5e1;">
-                                    {{ $pk->tanggal_keluar ? \Carbon\Carbon::parse($pk->tanggal_keluar)->format('d M Y') : '-' }}
-                                </td>
-                                <td class="task-title" style="font-weight: 600; color: #cbd5e1;">{{ $pk->nama }}</td>
-                                <td class="task-meta">{{ $pk->nomor_hp ?: '-' }}</td>
-                                <td>{{ $pk->kampus ?: '-' }}</td>
-                                <td class="task-meta">{{ $pk->asal_kampung ?: '-' }}</td>
-                                <td>
-                                    @if($pk->kamar)
-                                    <span class="badge badge-info">{{ $pk->kamar->nomor_kamar }}</span>
-                                    @else
-                                    <span class="task-meta">-</span>
-                                    @endif
-                                </td>
-                                <td>
-                                    <span class="badge badge-warning" style="background: rgba(245, 158, 11, 0.18); color: #fde047; border: 1px solid rgba(245, 158, 11, 0.35); font-weight: 600;">Resmi Keluar Asrama</span>
-                                </td>
-                                <td class="col-aksi-cell">
-                                    <div style="display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap;">
-                                        {{-- REACTIVATE BUTTON --}}
-                                        <form action="{{ route('asrama.penghuni.reactivate', $pk->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Aktifkan kembali {{ addslashes($pk->nama) }} sebagai penghuni aktif?');">
-                                            @csrf
-                                            @method('PATCH')
-                                            <button type="submit" class="btn btn-success btn-sm" style="background: #10b981; color: #fff; border: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.3rem;" title="Aktifkan kembali penghuni">
-                                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                                    <polyline points="23 4 23 10 17 10"></polyline>
-                                                    <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
-                                                </svg>
-                                                <span>Aktifkan</span>
-                                            </button>
-                                        </form>
-
-                                        {{-- EDIT BUTTON --}}
-                                        <button type="button" onclick="openEditPenghuniModal({{ $pk->id }}, '{{ addslashes($pk->nama) }}', '{{ addslashes($pk->nomor_hp ?: '') }}', '{{ addslashes($pk->kampus ?: '') }}', '{{ addslashes($pk->asal_kampung ?: '') }}', '{{ $pk->kamar_id ?: '' }}', '{{ $pk->tanggal_masuk ?: '' }}', '{{ addslashes($pk->catatan ?: '') }}')" class="btn btn-secondary btn-sm" title="Edit data penghuni">Edit</button>
-
-                                        {{-- DELETE BUTTON --}}
-                                        <button type="button" onclick="openHapusPenghuniModal({{ $pk->id }}, '{{ addslashes($pk->nama) }}')" class="btn btn-danger btn-sm" title="Hapus log & data penghuni">Hapus</button>
-                                    </div>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-                @endif
-            </div>
+{{-- LOG AKTIVITAS / PENGHUNI KELUAR SECTION --}}
+<div class="widget-card">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <div>
+            <h3 class="widget-title" style="margin: 0;">Log Aktivitas & Penghuni Keluar</h3>
         </div>
     </div>
 
-    {{-- MODAL TAMBAH/EDIT KAMAR --}}
-    <div id="modal-kamar" class="modal modal-create" aria-hidden="true" onclick="event.stopPropagation()">
-        <div class="modal-header">
-            <h3 id="modal-kamar-title">Tambah Kamar Baru</h3>
-            <button onclick="closeKamarModal()" class="modal-close">&times;</button>
+    @php
+    $penghuniKeluarList = $penghunis->where('status_penghuni', 'Keluar')->sortByDesc('tanggal_keluar');
+    @endphp
+
+    @if($penghuniKeluarList->isEmpty())
+    <p class="empty-state">Belum ada riwayat log penghuni keluar.</p>
+    @else
+    <div class="table-wrapper">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Tanggal Keluar</th>
+                    <th>Nama Penghuni</th>
+                    <th>No. Telepon / HP</th>
+                    <th>Kampus</th>
+                    <th>Asal Kampung</th>
+                    <th>Kamar Terakhir</th>
+                    <th>Catatan Aktivitas Log</th>
+                    <th class="col-aksi-header">Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($penghuniKeluarList as $pk)
+                <tr>
+                    <td style="font-weight: 700; color: #cbd5e1;">
+                        {{ $pk->tanggal_keluar ? \Carbon\Carbon::parse($pk->tanggal_keluar)->format('d M Y') : '-' }}
+                    </td>
+                    <td class="task-title" style="font-weight: 600; color: #cbd5e1;">{{ $pk->nama }}</td>
+                    <td class="task-meta">{{ $pk->nomor_hp ?: '-' }}</td>
+                    <td>{{ $pk->kampus ?: '-' }}</td>
+                    <td class="task-meta">{{ $pk->asal_kampung ?: '-' }}</td>
+                    <td>
+                        @if($pk->kamar)
+                        <span class="badge badge-info">{{ $pk->kamar->nomor_kamar }}</span>
+                        @else
+                        <span class="task-meta">-</span>
+                        @endif
+                    </td>
+                    <td>
+                        <span class="badge badge-warning" style="background: rgba(245, 158, 11, 0.18); color: #fde047; border: 1px solid rgba(245, 158, 11, 0.35); font-weight: 600;">Resmi Keluar Asrama</span>
+                    </td>
+                    <td class="col-aksi-cell">
+                        <div style="display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap;">
+                            {{-- REACTIVATE BUTTON --}}
+                            <form action="{{ route('asrama.penghuni.reactivate', $pk->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Aktifkan kembali {{ addslashes($pk->nama) }} sebagai penghuni aktif?');">
+                                @csrf
+                                @method('PATCH')
+                                <button type="submit" class="btn btn-success btn-sm" style="background: #10b981; color: #fff; border: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.3rem;" title="Aktifkan kembali penghuni">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="23 4 23 10 17 10"></polyline>
+                                        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                                    </svg>
+                                    <span>Aktifkan</span>
+                                </button>
+                            </form>
+
+                            {{-- EDIT BUTTON --}}
+                            <button type="button" onclick="openEditPenghuniModal({{ $pk->id }}, '{{ addslashes($pk->nama) }}', '{{ addslashes($pk->nomor_hp ?: '') }}', '{{ addslashes($pk->kampus ?: '') }}', '{{ addslashes($pk->asal_kampung ?: '') }}', '{{ $pk->kamar_id ?: '' }}', '{{ $pk->tanggal_masuk ?: '' }}', '{{ addslashes($pk->catatan ?: '') }}')" class="btn btn-secondary btn-sm" title="Edit data penghuni">Edit</button>
+
+                            {{-- DELETE BUTTON --}}
+                            <button type="button" onclick="openHapusPenghuniModal({{ $pk->id }}, '{{ addslashes($pk->nama) }}')" class="btn btn-danger btn-sm" title="Hapus log & data penghuni">Hapus</button>
+                        </div>
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+    @endif
+</div>
+</div>
+</div>
+
+{{-- MODAL TAMBAH/EDIT KAMAR --}}
+<div id="modal-kamar" class="modal modal-create" aria-hidden="true" onclick="event.stopPropagation()">
+    <div class="modal-header">
+        <h3 id="modal-kamar-title">Tambah Kamar Baru</h3>
+        <button onclick="closeKamarModal()" class="modal-close">&times;</button>
+    </div>
+    <form id="form-kamar" action="{{ route('asrama.kamar.store') }}" method="POST" autocomplete="off">
+        @csrf
+        <div id="method-kamar-field"></div>
+        <div class="form-group">
+            <label class="form-label">Nomor Kamar <span class="required">*</span></label>
+            <input type="text" id="kamar-nomor" name="nomor_kamar" class="form-control" placeholder="cth: Kamar 101, A-02" required>
         </div>
-        <form id="form-kamar" action="{{ route('asrama.kamar.store') }}" method="POST" autocomplete="off">
-            @csrf
-            <div id="method-kamar-field"></div>
+        <div class="form-group">
+            <label class="form-label">Pilih Lantai <span class="required">*</span></label>
+            <select id="kamar-lantai" name="lantai" class="form-control" required>
+                <option value="1">Lantai 1</option>
+                <option value="2">Lantai 2</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Status Kamar <span class="required">*</span></label>
+            <select id="kamar-status" name="status" class="form-control" required>
+                <option value="Tersedia">Tersedia</option>
+                <option value="Penuh">Penuh</option>
+                <option value="Perbaikan">Perbaikan</option>
+                <option value="Gudang">Gudang</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Fasilitas Kamar</label>
+            <input type="text" id="kamar-fasilitas" name="fasilitas" class="form-control" placeholder="cth: AC, Kasur, Lemari, WiFi">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Catatan Tambahan</label>
+            <textarea id="kamar-catatan" name="catatan" class="form-control" rows="2"></textarea>
+        </div>
+        <div class="form-actions">
+            <button type="button" onclick="closeKamarModal()" class="btn btn-secondary">Batal</button>
+            <button type="submit" class="btn btn-primary">Simpan Kamar</button>
+        </div>
+    </form>
+</div>
+<div id="modal-kamar-overlay" class="modal-overlay" onclick="closeKamarModal()"></div>
+
+{{-- MODAL TAMBAH/EDIT PENGHUNI --}}
+<div id="modal-penghuni" class="modal modal-create" aria-hidden="true" onclick="event.stopPropagation()">
+    <div class="modal-header">
+        <h3 id="modal-penghuni-title">Tambah Penghuni Baru</h3>
+        <button onclick="closePenghuniModal()" class="modal-close">&times;</button>
+    </div>
+    <form id="form-penghuni" action="{{ route('asrama.penghuni.store') }}" method="POST" autocomplete="off">
+        @csrf
+        <div id="method-penghuni-field"></div>
+        <div class="form-group">
+            <label class="form-label">Nama Lengkap Penghuni <span class="required">*</span></label>
+            <input type="text" id="penghuni-nama" name="nama" class="form-control" placeholder="cth: Ahmad Subagyo" required>
+        </div>
+        <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
             <div class="form-group">
-                <label class="form-label">Nomor Kamar <span class="required">*</span></label>
-                <input type="text" id="kamar-nomor" name="nomor_kamar" class="form-control" placeholder="cth: Kamar 101, A-02" required>
+                <label class="form-label">Nomor Telepon / HP</label>
+                <input type="text" id="penghuni-hp" name="nomor_hp" class="form-control" placeholder="08123456789">
             </div>
             <div class="form-group">
-                <label class="form-label">Pilih Lantai <span class="required">*</span></label>
-                <select id="kamar-lantai" name="lantai" class="form-control" required>
-                    <option value="1">Lantai 1</option>
-                    <option value="2">Lantai 2</option>
+                <label class="form-label">Pilih Kamar</label>
+                <select id="penghuni-kamar" name="kamar_id" class="form-control">
+                    <option value="">-- Tanpa Kamar --</option>
+                    @foreach($kamars as $k)
+                    <option value="{{ $k->id }}">{{ $k->nomor_kamar }} (Lantai {{ $k->lantai }})</option>
+                    @endforeach
                 </select>
             </div>
+        </div>
+        <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
             <div class="form-group">
-                <label class="form-label">Status Kamar <span class="required">*</span></label>
-                <select id="kamar-status" name="status" class="form-control" required>
-                    <option value="Tersedia">Tersedia</option>
-                    <option value="Penuh">Penuh</option>
-                    <option value="Perbaikan">Perbaikan</option>
-                    <option value="Gudang">Gudang</option>
+                <label class="form-label">Kampus</label>
+                <input type="text" id="penghuni-kampus" name="kampus" class="form-control" placeholder="cth: Universitas Indonesia">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Asal Kampung / Daerah</label>
+                <select id="penghuni-asal-kampung" name="asal_kampung" class="form-control" style="cursor: pointer;">
+                    <option value="">-- Pilih Asal Kampung / Daerah --</option>
+                    <optgroup label="📍 Kecamatan Long Bagun (11 Kampung)">
+                        <option value="Batoq Kelo">Batoq Kelo</option>
+                        <option value="Batu Majang">Batu Majang</option>
+                        <option value="Long Bagun Ilir">Long Bagun Ilir</option>
+                        <option value="Long Bagun Ulu">Long Bagun Ulu</option>
+                        <option value="Long Hurai">Long Hurai</option>
+                        <option value="Long Melaham">Long Melaham</option>
+                        <option value="Long Merah">Long Merah</option>
+                        <option value="Memahak Ilir">Memahak Ilir</option>
+                        <option value="Memahak Ulu">Memahak Ulu</option>
+                        <option value="Rukun Damai">Rukun Damai</option>
+                        <option value="Ujoh Bilang">Ujoh Bilang</option>
+                    </optgroup>
+                    <optgroup label="📍 Kecamatan Long Hubung (11 Kampung)">
+                        <option value="Datah Bilang Baru">Datah Bilang Baru</option>
+                        <option value="Datah Bilang Ilir">Datah Bilang Ilir</option>
+                        <option value="Datah Bilang Ulu">Datah Bilang Ulu</option>
+                        <option value="Long Hubung">Long Hubung</option>
+                        <option value="Long Hubung Ulu">Long Hubung Ulu</option>
+                        <option value="Lutan">Lutan</option>
+                        <option value="Matalibaq">Matalibaq</option>
+                        <option value="Memahak Teboq">Memahak Teboq</option>
+                        <option value="Sirau">Sirau</option>
+                        <option value="Tri Pariq Makmur">Tri Pariq Makmur</option>
+                        <option value="Wana Pariq">Wana Pariq</option>
+                    </optgroup>
+                    <optgroup label="📍 Kecamatan Laham (5 Kampung)">
+                        <option value="Danum Paroy">Danum Paroy</option>
+                        <option value="Laham">Laham</option>
+                        <option value="Long Gelawang">Long Gelawang</option>
+                        <option value="Muara Ratah">Muara Ratah</option>
+                        <option value="Nyaribungan">Nyaribungan</option>
+                    </optgroup>
+                    <optgroup label="📍 Kecamatan Long Apari (10 Kampung)">
+                        <option value="Cihan">Cihan</option>
+                        <option value="Long Apari">Long Apari</option>
+                        <option value="Long Kerioq">Long Kerioq</option>
+                        <option value="Long Pananeh I">Long Pananeh I</option>
+                        <option value="Long Pananeh II">Long Pananeh II</option>
+                        <option value="Long Pananeh III">Long Pananeh III</option>
+                        <option value="Long Penaneh">Long Penaneh</option>
+                        <option value="Naha Buan">Naha Buan</option>
+                        <option value="Naha Silat">Naha Silat</option>
+                        <option value="Tiong Bu'u">Tiong Bu'u</option>
+                    </optgroup>
+                    <optgroup label="📍 Kecamatan Long Pahangai (13 Kampung)">
+                        <option value="Datah Naha">Datah Naha</option>
+                        <option value="Delang Kerohong">Delang Kerohong</option>
+                        <option value="Lirung Ubing">Lirung Ubing</option>
+                        <option value="Liu Mulang">Liu Mulang</option>
+                        <option value="Long Daliq">Long Daliq</option>
+                        <option value="Long Isun">Long Isun</option>
+                        <option value="Long Lunuk">Long Lunuk</option>
+                        <option value="Long Lunuk Baru">Long Lunuk Baru</option>
+                        <option value="Long Pahangai I">Long Pahangai I</option>
+                        <option value="Long Pahangai II">Long Pahangai II</option>
+                        <option value="Long Pakaq">Long Pakaq</option>
+                        <option value="Long Pakaq Baru">Long Pakaq Baru</option>
+                        <option value="Naha Aruq">Naha Aruq</option>
+                    </optgroup>
+                    <optgroup label="🌐 Lainnya">
+                        <option value="Luar Daerah / Lainnya">Luar Daerah / Lainnya</option>
+                    </optgroup>
                 </select>
             </div>
-            <div class="form-group">
-                <label class="form-label">Fasilitas Kamar</label>
-                <input type="text" id="kamar-fasilitas" name="fasilitas" class="form-control" placeholder="cth: AC, Kasur, Lemari, WiFi">
-            </div>
-            <div class="form-group">
-                <label class="form-label">Catatan Tambahan</label>
-                <textarea id="kamar-catatan" name="catatan" class="form-control" rows="2"></textarea>
-            </div>
-            <div class="form-actions">
-                <button type="button" onclick="closeKamarModal()" class="btn btn-secondary">Batal</button>
-                <button type="submit" class="btn btn-primary">Simpan Kamar</button>
-            </div>
-        </form>
-    </div>
-    <div id="modal-kamar-overlay" class="modal-overlay" onclick="closeKamarModal()"></div>
-
-    {{-- MODAL TAMBAH/EDIT PENGHUNI --}}
-    <div id="modal-penghuni" class="modal modal-create" aria-hidden="true" onclick="event.stopPropagation()">
-        <div class="modal-header">
-            <h3 id="modal-penghuni-title">Tambah Penghuni Baru</h3>
-            <button onclick="closePenghuniModal()" class="modal-close">&times;</button>
         </div>
-        <form id="form-penghuni" action="{{ route('asrama.penghuni.store') }}" method="POST" autocomplete="off">
-            @csrf
-            <div id="method-penghuni-field"></div>
-            <div class="form-group">
-                <label class="form-label">Nama Lengkap Penghuni <span class="required">*</span></label>
-                <input type="text" id="penghuni-nama" name="nama" class="form-control" placeholder="cth: Ahmad Subagyo" required>
-            </div>
-            <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                <div class="form-group">
-                    <label class="form-label">Nomor Telepon / HP</label>
-                    <input type="text" id="penghuni-hp" name="nomor_hp" class="form-control" placeholder="08123456789">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Pilih Kamar</label>
-                    <select id="penghuni-kamar" name="kamar_id" class="form-control">
-                        <option value="">-- Tanpa Kamar --</option>
-                        @foreach($kamars as $k)
-                        <option value="{{ $k->id }}">{{ $k->nomor_kamar }} (Lantai {{ $k->lantai }})</option>
-                        @endforeach
-                    </select>
-                </div>
-            </div>
-            <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                <div class="form-group">
-                    <label class="form-label">Kampus</label>
-                    <input type="text" id="penghuni-kampus" name="kampus" class="form-control" placeholder="cth: Universitas Indonesia">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">Asal Kampung / Daerah</label>
-                    <select id="penghuni-asal-kampung" name="asal_kampung" class="form-control" style="cursor: pointer;">
-                        <option value="">-- Pilih Asal Kampung / Daerah --</option>
-                        <optgroup label="📍 Kecamatan Long Bagun (11 Kampung)">
-                            <option value="Batoq Kelo">Batoq Kelo</option>
-                            <option value="Batu Majang">Batu Majang</option>
-                            <option value="Long Bagun Ilir">Long Bagun Ilir</option>
-                            <option value="Long Bagun Ulu">Long Bagun Ulu</option>
-                            <option value="Long Hurai">Long Hurai</option>
-                            <option value="Long Melaham">Long Melaham</option>
-                            <option value="Long Merah">Long Merah</option>
-                            <option value="Memahak Ilir">Memahak Ilir</option>
-                            <option value="Memahak Ulu">Memahak Ulu</option>
-                            <option value="Rukun Damai">Rukun Damai</option>
-                            <option value="Ujoh Bilang">Ujoh Bilang</option>
-                        </optgroup>
-                        <optgroup label="📍 Kecamatan Long Hubung (11 Kampung)">
-                            <option value="Datah Bilang Baru">Datah Bilang Baru</option>
-                            <option value="Datah Bilang Ilir">Datah Bilang Ilir</option>
-                            <option value="Datah Bilang Ulu">Datah Bilang Ulu</option>
-                            <option value="Long Hubung">Long Hubung</option>
-                            <option value="Long Hubung Ulu">Long Hubung Ulu</option>
-                            <option value="Lutan">Lutan</option>
-                            <option value="Matalibaq">Matalibaq</option>
-                            <option value="Memahak Teboq">Memahak Teboq</option>
-                            <option value="Sirau">Sirau</option>
-                            <option value="Tri Pariq Makmur">Tri Pariq Makmur</option>
-                            <option value="Wana Pariq">Wana Pariq</option>
-                        </optgroup>
-                        <optgroup label="📍 Kecamatan Laham (5 Kampung)">
-                            <option value="Danum Paroy">Danum Paroy</option>
-                            <option value="Laham">Laham</option>
-                            <option value="Long Gelawang">Long Gelawang</option>
-                            <option value="Muara Ratah">Muara Ratah</option>
-                            <option value="Nyaribungan">Nyaribungan</option>
-                        </optgroup>
-                        <optgroup label="📍 Kecamatan Long Apari (10 Kampung)">
-                            <option value="Cihan">Cihan</option>
-                            <option value="Long Apari">Long Apari</option>
-                            <option value="Long Kerioq">Long Kerioq</option>
-                            <option value="Long Pananeh I">Long Pananeh I</option>
-                            <option value="Long Pananeh II">Long Pananeh II</option>
-                            <option value="Long Pananeh III">Long Pananeh III</option>
-                            <option value="Long Penaneh">Long Penaneh</option>
-                            <option value="Naha Buan">Naha Buan</option>
-                            <option value="Naha Silat">Naha Silat</option>
-                            <option value="Tiong Bu'u">Tiong Bu'u</option>
-                        </optgroup>
-                        <optgroup label="📍 Kecamatan Long Pahangai (13 Kampung)">
-                            <option value="Datah Naha">Datah Naha</option>
-                            <option value="Delang Kerohong">Delang Kerohong</option>
-                            <option value="Lirung Ubing">Lirung Ubing</option>
-                            <option value="Liu Mulang">Liu Mulang</option>
-                            <option value="Long Daliq">Long Daliq</option>
-                            <option value="Long Isun">Long Isun</option>
-                            <option value="Long Lunuk">Long Lunuk</option>
-                            <option value="Long Lunuk Baru">Long Lunuk Baru</option>
-                            <option value="Long Pahangai I">Long Pahangai I</option>
-                            <option value="Long Pahangai II">Long Pahangai II</option>
-                            <option value="Long Pakaq">Long Pakaq</option>
-                            <option value="Long Pakaq Baru">Long Pakaq Baru</option>
-                            <option value="Naha Aruq">Naha Aruq</option>
-                        </optgroup>
-                        <optgroup label="🌐 Lainnya">
-                            <option value="Luar Daerah / Lainnya">Luar Daerah / Lainnya</option>
-                        </optgroup>
-                    </select>
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="form-label">Tanggal Masuk (Opsional)</label>
-                <input type="date" id="penghuni-tgl-masuk" name="tanggal_masuk" class="form-control">
-            </div>
-            <div class="form-group">
-                <label class="form-label">Catatan</label>
-                <textarea id="penghuni-catatan" name="catatan" class="form-control" rows="2"></textarea>
-            </div>
-            <div class="form-actions">
-                <button type="button" onclick="closePenghuniModal()" class="btn btn-secondary">Batal</button>
-                <button type="submit" class="btn btn-primary">Simpan Penghuni</button>
-            </div>
-        </form>
-    </div>
-    <div id="modal-penghuni-overlay" class="modal-overlay" onclick="closePenghuniModal()"></div>
+        <div class="form-group">
+            <label class="form-label">Tanggal Masuk (Opsional)</label>
+            <input type="date" id="penghuni-tgl-masuk" name="tanggal_masuk" class="form-control">
+        </div>
+        <div class="form-group">
+            <label class="form-label">Catatan</label>
+            <textarea id="penghuni-catatan" name="catatan" class="form-control" rows="2"></textarea>
+        </div>
+        <div class="form-actions">
+            <button type="button" onclick="closePenghuniModal()" class="btn btn-secondary">Batal</button>
+            <button type="submit" class="btn btn-primary">Simpan Penghuni</button>
+        </div>
+    </form>
+</div>
+<div id="modal-penghuni-overlay" class="modal-overlay" onclick="closePenghuniModal()"></div>
 
-    {{-- MODAL PROSES KELUAR PENGHUNI --}}
-    <div id="modal-keluar-penghuni" class="modal modal-create" aria-hidden="true" onclick="event.stopPropagation()">
-        <div class="modal-header">
-            <h3 style="display: flex; align-items: center; gap: 0.5rem;">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color: #f59e0b;">
+{{-- MODAL PROSES KELUAR PENGHUNI --}}
+<div id="modal-keluar-penghuni" class="modal modal-create" aria-hidden="true" onclick="event.stopPropagation()">
+    <div class="modal-header">
+        <h3 style="display: flex; align-items: center; gap: 0.5rem;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color: #f59e0b;">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+            <span>Konfirmasi Penghuni Keluar</span>
+        </h3>
+        <button onclick="closeKeluarPenghuniModal()" class="modal-close">&times;</button>
+    </div>
+    <form id="form-keluar-penghuni" action="" method="POST" autocomplete="off">
+        @csrf
+        @method('PATCH')
+        <div style="padding: 0.75rem 0;">
+            <p class="task-meta" style="margin-bottom: 1.25rem; color: var(--text-primary); font-size: 0.95rem; line-height: 1.5;">
+                Tandai penghuni <strong id="keluar-penghuni-nama" style="color: #fde047; font-size: 1.05rem;">-</strong> sebagai <strong>Keluar / Non-Aktif</strong>.<br>
+                <span style="font-size: 0.85rem; color: #94a3b8; margin-top: 0.35rem; display: block;">Tempat tidur/slot kamar yang ditempati akan otomatis dibebaskan.</span>
+            </p>
+            <div class="form-group">
+                <label class="form-label">Tanggal Keluar <span class="required">*</span></label>
+                <input type="date" name="tanggal_keluar" class="form-control" value="{{ date('Y-m-d') }}" required>
+            </div>
+        </div>
+        <div class="form-actions" style="margin-top: 1.25rem;">
+            <button type="button" onclick="closeKeluarPenghuniModal()" class="btn btn-secondary">Batal</button>
+            <button type="submit" class="btn btn-warning" style="background: #eab308; color: #000; font-weight: 700; display: inline-flex; align-items: center; gap: 0.4rem;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
                     <polyline points="16 17 21 12 16 7"></polyline>
                     <line x1="21" y1="12" x2="9" y2="12"></line>
                 </svg>
-                <span>Konfirmasi Penghuni Keluar</span>
-            </h3>
-            <button onclick="closeKeluarPenghuniModal()" class="modal-close">&times;</button>
+                <span>Konfirmasi Keluar</span>
+            </button>
         </div>
-        <form id="form-keluar-penghuni" action="" method="POST" autocomplete="off">
-            @csrf
-            @method('PATCH')
-            <div style="padding: 0.75rem 0;">
-                <p class="task-meta" style="margin-bottom: 1.25rem; color: var(--text-primary); font-size: 0.95rem; line-height: 1.5;">
-                    Tandai penghuni <strong id="keluar-penghuni-nama" style="color: #fde047; font-size: 1.05rem;">-</strong> sebagai <strong>Keluar / Non-Aktif</strong>.<br>
-                    <span style="font-size: 0.85rem; color: #94a3b8; margin-top: 0.35rem; display: block;">Tempat tidur/slot kamar yang ditempati akan otomatis dibebaskan.</span>
-                </p>
-                <div class="form-group">
-                    <label class="form-label">Tanggal Keluar <span class="required">*</span></label>
-                    <input type="date" name="tanggal_keluar" class="form-control" value="{{ date('Y-m-d') }}" required>
-                </div>
-            </div>
-            <div class="form-actions" style="margin-top: 1.25rem;">
-                <button type="button" onclick="closeKeluarPenghuniModal()" class="btn btn-secondary">Batal</button>
-                <button type="submit" class="btn btn-warning" style="background: #eab308; color: #000; font-weight: 700; display: inline-flex; align-items: center; gap: 0.4rem;">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                        <polyline points="16 17 21 12 16 7"></polyline>
-                        <line x1="21" y1="12" x2="9" y2="12"></line>
-                    </svg>
-                    <span>Konfirmasi Keluar</span>
-                </button>
-            </div>
-        </form>
-    </div>
-    <div id="modal-keluar-penghuni-overlay" class="modal-overlay" onclick="closeKeluarPenghuniModal()"></div>
+    </form>
+</div>
+<div id="modal-keluar-penghuni-overlay" class="modal-overlay" onclick="closeKeluarPenghuniModal()"></div>
 
-    {{-- MODAL HAPUS PENGHUNI --}}
-    <div id="modal-hapus-penghuni" class="modal modal-create" aria-hidden="true" onclick="event.stopPropagation()">
-        <div class="modal-header">
-            <h3 style="display: flex; align-items: center; gap: 0.5rem; color: #ef4444;">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color: #ef4444;">
+{{-- MODAL HAPUS PENGHUNI --}}
+<div id="modal-hapus-penghuni" class="modal modal-create" aria-hidden="true" onclick="event.stopPropagation()">
+    <div class="modal-header">
+        <h3 style="display: flex; align-items: center; gap: 0.5rem; color: #ef4444;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color: #ef4444;">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                <line x1="10" y1="11" x2="10" y2="17"></line>
+                <line x1="14" y1="11" x2="14" y2="17"></line>
+            </svg>
+            <span>Hapus Data Penghuni</span>
+        </h3>
+        <button onclick="closeHapusPenghuniModal()" class="modal-close">&times;</button>
+    </div>
+    <form id="form-hapus-penghuni" action="" method="POST">
+        @csrf
+        @method('DELETE')
+        <div style="padding: 0.75rem 0;">
+            <p class="task-meta" style="margin-bottom: 1rem; color: var(--text-primary); font-size: 0.95rem; line-height: 1.5;">
+                Apakah Anda yakin ingin menghapus data penghuni <strong id="hapus-penghuni-nama" style="color: #ef4444; font-size: 1.05rem;">-</strong>?<br>
+                <span style="font-size: 0.85rem; color: #94a3b8; margin-top: 0.35rem; display: block;">Tindakan ini permanen dan data penghuni yang dihapus tidak dapat dikembalikan.</span>
+            </p>
+        </div>
+        <div class="form-actions" style="margin-top: 1.25rem;">
+            <button type="button" onclick="closeHapusPenghuniModal()" class="btn btn-secondary">Batal</button>
+            <button type="submit" class="btn btn-danger" style="background: #ef4444; color: #fff; font-weight: 700; display: inline-flex; align-items: center; gap: 0.4rem;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                     <polyline points="3 6 5 6 21 6"></polyline>
                     <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                    <line x1="10" y1="11" x2="10" y2="17"></line>
-                    <line x1="14" y1="11" x2="14" y2="17"></line>
                 </svg>
-                <span>Hapus Data Penghuni</span>
-            </h3>
-            <button onclick="closeHapusPenghuniModal()" class="modal-close">&times;</button>
+                <span>Hapus Permanent</span>
+            </button>
         </div>
-        <form id="form-hapus-penghuni" action="" method="POST">
-            @csrf
-            @method('DELETE')
-            <div style="padding: 0.75rem 0;">
-                <p class="task-meta" style="margin-bottom: 1rem; color: var(--text-primary); font-size: 0.95rem; line-height: 1.5;">
-                    Apakah Anda yakin ingin menghapus data penghuni <strong id="hapus-penghuni-nama" style="color: #ef4444; font-size: 1.05rem;">-</strong>?<br>
-                    <span style="font-size: 0.85rem; color: #94a3b8; margin-top: 0.35rem; display: block;">Tindakan ini permanen dan data penghuni yang dihapus tidak dapat dikembalikan.</span>
-                </p>
-            </div>
-            <div class="form-actions" style="margin-top: 1.25rem;">
-                <button type="button" onclick="closeHapusPenghuniModal()" class="btn btn-secondary">Batal</button>
-                <button type="submit" class="btn btn-danger" style="background: #ef4444; color: #fff; font-weight: 700; display: inline-flex; align-items: center; gap: 0.4rem;">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                        <polyline points="3 6 5 6 21 6"></polyline>
-                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                    </svg>
-                    <span>Hapus Permanent</span>
-                </button>
-            </div>
-        </form>
-    </div>
-    <div id="modal-hapus-penghuni-overlay" class="modal-overlay" onclick="closeHapusPenghuniModal()"></div>
+    </form>
+</div>
+<div id="modal-hapus-penghuni-overlay" class="modal-overlay" onclick="closeHapusPenghuniModal()"></div>
 
 
 
-    @endsection
+@endsection
 
-    @push('scripts')
-    <script>
-        function openKamarModal() {
-            document.getElementById('modal-kamar-title').textContent = 'Tambah Kamar Baru';
-            document.getElementById('form-kamar').action = "{{ route('asrama.kamar.store') }}";
-            document.getElementById('method-kamar-field').innerHTML = '';
-            document.getElementById('kamar-nomor').value = '';
-            document.getElementById('kamar-lantai').value = '1';
-            document.getElementById('kamar-status').value = 'Tersedia';
-            document.getElementById('kamar-fasilitas').value = '';
-            document.getElementById('kamar-catatan').value = '';
+@push('scripts')
+<script>
+    function openKamarModal() {
+        document.getElementById('modal-kamar-title').textContent = 'Tambah Kamar Baru';
+        document.getElementById('form-kamar').action = "{{ route('asrama.kamar.store') }}";
+        document.getElementById('method-kamar-field').innerHTML = '';
+        document.getElementById('kamar-nomor').value = '';
+        document.getElementById('kamar-lantai').value = '1';
+        document.getElementById('kamar-status').value = 'Tersedia';
+        document.getElementById('kamar-fasilitas').value = '';
+        document.getElementById('kamar-catatan').value = '';
 
-            const m = document.getElementById('modal-kamar');
-            const o = document.getElementById('modal-kamar-overlay');
-            if (m) {
-                m.classList.add('show');
-                m.style.display = 'block';
-            }
-            if (o) {
-                o.classList.add('show');
-                o.style.display = 'block';
+        const m = document.getElementById('modal-kamar');
+        const o = document.getElementById('modal-kamar-overlay');
+        if (m) {
+            m.classList.add('show');
+            m.style.display = 'block';
+        }
+        if (o) {
+            o.classList.add('show');
+            o.style.display = 'block';
+        }
+    }
+
+    function openEditKamarModal(id, nomor, lantai, status, fasilitas, catatan) {
+        document.getElementById('modal-kamar-title').textContent = 'Edit Kamar ' + nomor;
+        document.getElementById('form-kamar').action = "/asrama/kamar/" + id;
+        document.getElementById('method-kamar-field').innerHTML = '@method("PUT")';
+        document.getElementById('kamar-nomor').value = nomor;
+        document.getElementById('kamar-lantai').value = lantai;
+        document.getElementById('kamar-status').value = status;
+        document.getElementById('kamar-fasilitas').value = fasilitas;
+        document.getElementById('kamar-catatan').value = catatan;
+
+        const m = document.getElementById('modal-kamar');
+        const o = document.getElementById('modal-kamar-overlay');
+        if (m) {
+            m.classList.add('show');
+            m.style.display = 'block';
+        }
+        if (o) {
+            o.classList.add('show');
+            o.style.display = 'block';
+        }
+    }
+
+    function closeKamarModal() {
+        const m = document.getElementById('modal-kamar');
+        const o = document.getElementById('modal-kamar-overlay');
+        if (m) {
+            m.classList.remove('show');
+            m.style.display = 'none';
+        }
+        if (o) {
+            o.classList.remove('show');
+            o.style.display = 'none';
+        }
+    }
+
+    function openPenghuniModal() {
+        document.getElementById('modal-penghuni-title').textContent = 'Tambah Penghuni Baru';
+        document.getElementById('form-penghuni').action = "{{ route('asrama.penghuni.store') }}";
+        document.getElementById('method-penghuni-field').innerHTML = '';
+        document.getElementById('penghuni-nama').value = '';
+        document.getElementById('penghuni-hp').value = '';
+        document.getElementById('penghuni-kampus').value = '';
+        document.getElementById('penghuni-asal-kampung').value = '';
+        document.getElementById('penghuni-kamar').value = '';
+        document.getElementById('penghuni-tgl-masuk').value = '';
+        document.getElementById('penghuni-catatan').value = '';
+
+        const m = document.getElementById('modal-penghuni');
+        const o = document.getElementById('modal-penghuni-overlay');
+        if (m) {
+            m.classList.add('show');
+            m.style.display = 'block';
+        }
+        if (o) {
+            o.classList.add('show');
+            o.style.display = 'block';
+        }
+    }
+
+    function openEditPenghuniModal(id, nama, hp, kampus, asalKampung, kamarId, tglMasuk, catatan) {
+        document.getElementById('modal-penghuni-title').textContent = 'Edit Penghuni ' + nama;
+        document.getElementById('form-penghuni').action = "/asrama/penghuni/" + id;
+        document.getElementById('method-penghuni-field').innerHTML = '@method("PUT")';
+        document.getElementById('penghuni-nama').value = nama;
+        document.getElementById('penghuni-hp').value = hp;
+        const asalSelect = document.getElementById('penghuni-asal-kampung');
+        if (asalSelect) {
+            asalSelect.value = asalKampung;
+            if (asalKampung && (asalSelect.selectedIndex === -1 || asalSelect.value !== asalKampung)) {
+                let opt = document.createElement('option');
+                opt.value = asalKampung;
+                opt.textContent = asalKampung;
+                opt.selected = true;
+                asalSelect.appendChild(opt);
             }
         }
+        document.getElementById('penghuni-kamar').value = kamarId;
+        document.getElementById('penghuni-tgl-masuk').value = tglMasuk;
+        document.getElementById('penghuni-catatan').value = catatan;
 
-        function openEditKamarModal(id, nomor, lantai, status, fasilitas, catatan) {
-            document.getElementById('modal-kamar-title').textContent = 'Edit Kamar ' + nomor;
-            document.getElementById('form-kamar').action = "/asrama/kamar/" + id;
-            document.getElementById('method-kamar-field').innerHTML = '@method("PUT")';
-            document.getElementById('kamar-nomor').value = nomor;
-            document.getElementById('kamar-lantai').value = lantai;
-            document.getElementById('kamar-status').value = status;
-            document.getElementById('kamar-fasilitas').value = fasilitas;
-            document.getElementById('kamar-catatan').value = catatan;
-
-            const m = document.getElementById('modal-kamar');
-            const o = document.getElementById('modal-kamar-overlay');
-            if (m) {
-                m.classList.add('show');
-                m.style.display = 'block';
-            }
-            if (o) {
-                o.classList.add('show');
-                o.style.display = 'block';
-            }
+        const m = document.getElementById('modal-penghuni');
+        const o = document.getElementById('modal-penghuni-overlay');
+        if (m) {
+            m.classList.add('show');
+            m.style.display = 'block';
         }
-
-        function closeKamarModal() {
-            const m = document.getElementById('modal-kamar');
-            const o = document.getElementById('modal-kamar-overlay');
-            if (m) {
-                m.classList.remove('show');
-                m.style.display = 'none';
-            }
-            if (o) {
-                o.classList.remove('show');
-                o.style.display = 'none';
-            }
+        if (o) {
+            o.classList.add('show');
+            o.style.display = 'block';
         }
+    }
 
-        function openPenghuniModal() {
-            document.getElementById('modal-penghuni-title').textContent = 'Tambah Penghuni Baru';
-            document.getElementById('form-penghuni').action = "{{ route('asrama.penghuni.store') }}";
-            document.getElementById('method-penghuni-field').innerHTML = '';
-            document.getElementById('penghuni-nama').value = '';
-            document.getElementById('penghuni-hp').value = '';
-            document.getElementById('penghuni-kampus').value = '';
-            document.getElementById('penghuni-asal-kampung').value = '';
-            document.getElementById('penghuni-kamar').value = '';
-            document.getElementById('penghuni-tgl-masuk').value = '';
-            document.getElementById('penghuni-catatan').value = '';
-
-            const m = document.getElementById('modal-penghuni');
-            const o = document.getElementById('modal-penghuni-overlay');
-            if (m) {
-                m.classList.add('show');
-                m.style.display = 'block';
-            }
-            if (o) {
-                o.classList.add('show');
-                o.style.display = 'block';
-            }
+    function closePenghuniModal() {
+        const m = document.getElementById('modal-penghuni');
+        const o = document.getElementById('modal-penghuni-overlay');
+        if (m) {
+            m.classList.remove('show');
+            m.style.display = 'none';
         }
-
-        function openEditPenghuniModal(id, nama, hp, kampus, asalKampung, kamarId, tglMasuk, catatan) {
-            document.getElementById('modal-penghuni-title').textContent = 'Edit Penghuni ' + nama;
-            document.getElementById('form-penghuni').action = "/asrama/penghuni/" + id;
-            document.getElementById('method-penghuni-field').innerHTML = '@method("PUT")';
-            document.getElementById('penghuni-nama').value = nama;
-            document.getElementById('penghuni-hp').value = hp;
-            const asalSelect = document.getElementById('penghuni-asal-kampung');
-            if (asalSelect) {
-                asalSelect.value = asalKampung;
-                if (asalKampung && (asalSelect.selectedIndex === -1 || asalSelect.value !== asalKampung)) {
-                    let opt = document.createElement('option');
-                    opt.value = asalKampung;
-                    opt.textContent = asalKampung;
-                    opt.selected = true;
-                    asalSelect.appendChild(opt);
-                }
-            }
-            document.getElementById('penghuni-kamar').value = kamarId;
-            document.getElementById('penghuni-tgl-masuk').value = tglMasuk;
-            document.getElementById('penghuni-catatan').value = catatan;
-
-            const m = document.getElementById('modal-penghuni');
-            const o = document.getElementById('modal-penghuni-overlay');
-            if (m) {
-                m.classList.add('show');
-                m.style.display = 'block';
-            }
-            if (o) {
-                o.classList.add('show');
-                o.style.display = 'block';
-            }
+        if (o) {
+            o.classList.remove('show');
+            o.style.display = 'none';
         }
+    }
 
-        function closePenghuniModal() {
-            const m = document.getElementById('modal-penghuni');
-            const o = document.getElementById('modal-penghuni-overlay');
-            if (m) {
-                m.classList.remove('show');
-                m.style.display = 'none';
-            }
-            if (o) {
-                o.classList.remove('show');
-                o.style.display = 'none';
-            }
+    function openKeluarPenghuniModal(id, nama) {
+        document.getElementById('keluar-penghuni-nama').textContent = nama;
+        document.getElementById('form-keluar-penghuni').action = "/asrama/penghuni/" + id + "/keluar";
+
+        const m = document.getElementById('modal-keluar-penghuni');
+        const o = document.getElementById('modal-keluar-penghuni-overlay');
+        if (m) {
+            m.classList.add('show');
+            m.style.display = 'block';
         }
-
-        function openKeluarPenghuniModal(id, nama) {
-            document.getElementById('keluar-penghuni-nama').textContent = nama;
-            document.getElementById('form-keluar-penghuni').action = "/asrama/penghuni/" + id + "/keluar";
-
-            const m = document.getElementById('modal-keluar-penghuni');
-            const o = document.getElementById('modal-keluar-penghuni-overlay');
-            if (m) {
-                m.classList.add('show');
-                m.style.display = 'block';
-            }
-            if (o) {
-                o.classList.add('show');
-                o.style.display = 'block';
-            }
+        if (o) {
+            o.classList.add('show');
+            o.style.display = 'block';
         }
+    }
 
-        function closeKeluarPenghuniModal() {
-            const m = document.getElementById('modal-keluar-penghuni');
-            const o = document.getElementById('modal-keluar-penghuni-overlay');
-            if (m) {
-                m.classList.remove('show');
-                m.style.display = 'none';
-            }
-            if (o) {
-                o.classList.remove('show');
-                o.style.display = 'none';
-            }
+    function closeKeluarPenghuniModal() {
+        const m = document.getElementById('modal-keluar-penghuni');
+        const o = document.getElementById('modal-keluar-penghuni-overlay');
+        if (m) {
+            m.classList.remove('show');
+            m.style.display = 'none';
         }
-
-
-
-        function openHapusPenghuniModal(id, nama) {
-            document.getElementById('hapus-penghuni-nama').textContent = nama;
-            document.getElementById('form-hapus-penghuni').action = "/asrama/penghuni/" + id;
-
-            const m = document.getElementById('modal-hapus-penghuni');
-            const o = document.getElementById('modal-hapus-penghuni-overlay');
-            if (m) {
-                m.classList.add('show');
-                m.style.display = 'block';
-            }
-            if (o) {
-                o.classList.add('show');
-                o.style.display = 'block';
-            }
+        if (o) {
+            o.classList.remove('show');
+            o.style.display = 'none';
         }
+    }
 
-        function closeHapusPenghuniModal() {
-            const m = document.getElementById('modal-hapus-penghuni');
-            const o = document.getElementById('modal-hapus-penghuni-overlay');
-            if (m) {
-                m.classList.remove('show');
-                m.style.display = 'none';
-            }
-            if (o) {
-                o.classList.remove('show');
-                o.style.display = 'none';
-            }
+
+
+    function openHapusPenghuniModal(id, nama) {
+        document.getElementById('hapus-penghuni-nama').textContent = nama;
+        document.getElementById('form-hapus-penghuni').action = "/asrama/penghuni/" + id;
+
+        const m = document.getElementById('modal-hapus-penghuni');
+        const o = document.getElementById('modal-hapus-penghuni-overlay');
+        if (m) {
+            m.classList.add('show');
+            m.style.display = 'block';
         }
+        if (o) {
+            o.classList.add('show');
+            o.style.display = 'block';
+        }
+    }
 
-        function updateAksiToggleUI(isOn) {
-            const btn = document.getElementById('btn-toggle-aksi');
-            const dot = document.getElementById('aksi-status-dot');
-            const text = document.getElementById('aksi-status-text');
-            const headers = document.querySelectorAll('.col-aksi-header');
-            const cells = document.querySelectorAll('.col-aksi-cell');
+    function closeHapusPenghuniModal() {
+        const m = document.getElementById('modal-hapus-penghuni');
+        const o = document.getElementById('modal-hapus-penghuni-overlay');
+        if (m) {
+            m.classList.remove('show');
+            m.style.display = 'none';
+        }
+        if (o) {
+            o.classList.remove('show');
+            o.style.display = 'none';
+        }
+    }
 
-            if (isOn) {
-                if (btn) {
-                    btn.style.background = '#10b981';
-                    btn.style.color = '#ffffff';
-                    btn.style.boxShadow = '0 0 10px rgba(16, 185, 129, 0.4)';
-                }
-                if (dot) dot.style.background = '#6ee7b7';
-                if (text) text.innerText = 'ON (Aktif)';
-                headers.forEach(el => el.style.display = '');
-                cells.forEach(el => el.style.display = '');
-            } else {
-                if (btn) {
-                    btn.style.background = '#334155';
-                    btn.style.color = '#cbd5e1';
-                    btn.style.boxShadow = 'none';
-                }
-                if (dot) dot.style.background = '#ef4444';
-                if (text) text.innerText = 'OFF (Sembunyi)';
-                headers.forEach(el => el.style.display = 'none');
-                cells.forEach(el => el.style.display = 'none');
+    function updateAksiToggleUI(isOn) {
+        const btn = document.getElementById('btn-toggle-aksi');
+        const dot = document.getElementById('aksi-status-dot');
+        const text = document.getElementById('aksi-status-text');
+        const headers = document.querySelectorAll('.col-aksi-header');
+        const cells = document.querySelectorAll('.col-aksi-cell');
+
+        if (isOn) {
+            if (btn) {
+                btn.style.background = '#10b981';
+                btn.style.color = '#ffffff';
+                btn.style.boxShadow = '0 0 10px rgba(16, 185, 129, 0.4)';
             }
+            if (dot) dot.style.background = '#6ee7b7';
+            if (text) text.innerText = 'ON (Aktif)';
+            headers.forEach(el => el.style.display = '');
+            cells.forEach(el => el.style.display = '');
+        } else {
+            if (btn) {
+                btn.style.background = '#334155';
+                btn.style.color = '#cbd5e1';
+                btn.style.boxShadow = 'none';
+            }
+            if (dot) dot.style.background = '#ef4444';
+            if (text) text.innerText = 'OFF (Sembunyi)';
+            headers.forEach(el => el.style.display = 'none');
+            cells.forEach(el => el.style.display = 'none');
         }
+    }
 
-        function toggleAksiColumn() {
-            let current = localStorage.getItem('asrama_aksi_toggle') || 'OFF';
-            let next = (current === 'ON') ? 'OFF' : 'ON';
-            localStorage.setItem('asrama_aksi_toggle', next);
-            updateAksiToggleUI(next === 'ON');
-        }
+    function toggleAksiColumn() {
+        let current = localStorage.getItem('asrama_aksi_toggle') || 'OFF';
+        let next = (current === 'ON') ? 'OFF' : 'ON';
+        localStorage.setItem('asrama_aksi_toggle', next);
+        updateAksiToggleUI(next === 'ON');
+    }
 
-        document.addEventListener('DOMContentLoaded', function() {
-            let saved = localStorage.getItem('asrama_aksi_toggle') || 'OFF';
-            updateAksiToggleUI(saved === 'ON');
-        });
-    </script>
-    @endpush
+    document.addEventListener('DOMContentLoaded', function() {
+        let saved = localStorage.getItem('asrama_aksi_toggle') || 'OFF';
+        updateAksiToggleUI(saved === 'ON');
+    });
+</script>
+@endpush
