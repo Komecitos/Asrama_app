@@ -21,6 +21,7 @@ class NativeAppServiceProvider extends ServiceProvider implements ProvidesPhpIni
                 ->height(800)
                 ->minWidth(800)
                 ->minHeight(600)
+                ->showDevTools(false)
                 ->rememberState();
         } catch (\Throwable $e) {
             // Silently ignore connection exceptions when API server is not ready
