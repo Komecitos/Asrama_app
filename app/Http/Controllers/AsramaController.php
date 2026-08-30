@@ -7,9 +7,22 @@ use App\Models\AsramaKamar;
 use App\Models\AsramaPenghuni;
 use App\Models\AsramaKeuangan;
 use App\Models\AsramaIuran;
+use App\Models\AsramaWifiConfig;
 
 class AsramaController extends Controller
 {
+    private function formatPhoneNumberForWhatsApp($phone)
+    {
+        if (empty($phone)) return null;
+        $cleaned = preg_replace('/\D/', '', $phone);
+        if (str_starts_with($cleaned, '0')) {
+            $cleaned = '62' . substr($cleaned, 1);
+        } elseif (str_starts_with($cleaned, '8')) {
+            $cleaned = '62' . $cleaned;
+        }
+        return $cleaned;
+    }
+
     private function syncKamarStatus($kamarId)
     {
         if (!$kamarId) return;
@@ -227,7 +240,9 @@ class AsramaController extends Controller
             12 => 'Desember'
         ];
 
-        return view('asrama.matriks', compact('tahun', 'tarifDefault', 'availableYears', 'penghuniAktif', 'penghuniKeluar', 'iuranMap', 'bulanNames', 'statsMatriks'));
+        $wifiConfig = AsramaWifiConfig::getCurrentConfig(date('n'), $tahun);
+
+        return view('asrama.matriks', compact('tahun', 'tarifDefault', 'availableYears', 'penghuniAktif', 'penghuniKeluar', 'iuranMap', 'bulanNames', 'statsMatriks', 'wifiConfig'));
     }
 
     public function updateMatriksIuran(Request $request)
@@ -883,5 +898,152 @@ class AsramaController extends Controller
         ];
 
         return view('asrama.export_matriks_pdf', compact('tahun', 'tarifDefault', 'penghuniAktif', 'penghuniKeluar', 'iuranMap', 'bulanNames'));
+    }
+
+    public function saveWifiConfig(Request $request)
+    {
+        $validated = $request->validate([
+            'ssid' => 'required|string|max:255',
+            'password' => 'required|string|max:255',
+            'bulan' => 'required|integer|min:1|max:12',
+            'tahun' => 'required|integer|min:2020',
+            'catatan' => 'nullable|string',
+            'template_lunas' => 'nullable|string',
+            'template_tagihan' => 'nullable|string',
+        ]);
+
+        AsramaWifiConfig::updateOrCreate(
+            ['bulan' => $validated['bulan'], 'tahun' => $validated['tahun']],
+            $validated
+        );
+
+        return redirect()->back()->with('success', 'Pengaturan Akses Password WiFi berhasil diperbarui!');
+    }
+
+    public function getWifiDistributionData(Request $request)
+    {
+        $bulan = (int) $request->input('bulan', date('n'));
+        $tahun = (int) $request->input('tahun', date('Y'));
+        $tarifDefault = (int) $request->input('tarif_default', session('asrama_tarif_default', 100000));
+
+        $config = AsramaWifiConfig::getCurrentConfig($bulan, $tahun);
+
+        $bulanNames = [
+            1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April',
+            5 => 'Mei', 6 => 'Juni', 7 => 'Juli', 8 => 'Agustus',
+            9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember'
+        ];
+        $bulanNama = $bulanNames[$bulan] ?? 'Bulan ' . $bulan;
+        $bulanTahunText = $bulanNama . ' ' . $tahun;
+
+        $penghunis = AsramaPenghuni::with('kamar')->where('status_penghuni', 'Aktif')->orderBy('nama')->get();
+        $iurans = AsramaIuran::where('tahun', $tahun)->where('bulan', $bulan)->whereNotNull('penghuni_id')->get()->keyBy('penghuni_id');
+
+        $lunasList = [];
+        $unpaidList = [];
+        $allLunasPhones = [];
+
+        foreach ($penghunis as $p) {
+            $pJoinCarbon = $p->tanggal_masuk ? \Carbon\Carbon::parse($p->tanggal_masuk) : \Carbon\Carbon::create(2026, 1, 1);
+            $pJoinYear = (int) $pJoinCarbon->format('Y');
+            $pJoinMonth = (int) $pJoinCarbon->format('n');
+            $pJoinDay = (int) $pJoinCarbon->format('j');
+
+            // Check if resident already joined by this month
+            $isApplicable = ($tahun > $pJoinYear) || ($tahun == $pJoinYear && $bulan >= $pJoinMonth);
+            if (!$isApplicable) {
+                continue; // Not yet a resident in this month
+            }
+
+            // Calculate target fee for this month (prorated if first month)
+            $targetFee = $tarifDefault;
+            if ($tahun == $pJoinYear && $bulan == $pJoinMonth && $pJoinDay > 1) {
+                $tDays = $pJoinCarbon->daysInMonth;
+                $sisaH = max(1, $tDays - $pJoinDay);
+                $rawP = ($tarifDefault / $tDays) * $sisaH;
+                $targetFee = (int) (round($rawP / 1000) * 1000);
+            }
+
+            $iuran = $iurans->get($p->id);
+            $paidNominal = $iuran ? $iuran->nominal : 0;
+            $isLunas = $iuran ? (bool) $iuran->status_lunas : false;
+            if (!$isLunas && $paidNominal >= $targetFee && $targetFee > 0) {
+                $isLunas = true;
+            }
+
+            $phoneFormatted = $this->formatPhoneNumberForWhatsApp($p->nomor_hp);
+            $kamarInfo = $p->kamar ? $p->kamar->nomor_kamar : '-';
+
+            if ($isLunas) {
+                // Generate personalized WhatsApp message for Lunas
+                $msg = $config->template_lunas ?: "Halo *[NAMA]*, terima kasih telah melunasi iuran asrama bulan *[BULAN_TAHUN]*.\n\nBerikut akses WiFi asrama bulan ini:\n📡 *SSID:* [SSID]\n🔑 *Password:* [PASSWORD]\n\nHarap tidak membagikan password ini kepada pihak luar. Terima kasih! 🙏";
+                $msg = str_replace('[NAMA]', $p->nama, $msg);
+                $msg = str_replace('[BULAN_TAHUN]', $bulanTahunText, $msg);
+                $msg = str_replace('[SSID]', $config->ssid, $msg);
+                $msg = str_replace('[PASSWORD]', $config->password, $msg);
+
+                $waUrl = $phoneFormatted ? ('https://wa.me/' . $phoneFormatted . '?text=' . urlencode($msg)) : null;
+
+                if ($phoneFormatted) {
+                    $allLunasPhones[] = $phoneFormatted;
+                }
+
+                $lunasList[] = [
+                    'id' => $p->id,
+                    'nama' => $p->nama,
+                    'nomor_hp' => $p->nomor_hp ?: '-',
+                    'phone_clean' => $phoneFormatted,
+                    'kamar' => $kamarInfo,
+                    'nominal_bayar' => $paidNominal,
+                    'wa_url' => $waUrl,
+                    'message' => $msg,
+                ];
+            } else {
+                $sisaTagihan = max(0, $targetFee - $paidNominal);
+
+                // Generate personalized WhatsApp message for Unpaid
+                $msg = $config->template_tagihan ?: "Halo *[NAMA]*, mengingatkan bahwa iuran asrama bulan *[BULAN_TAHUN]* sebesar *Rp [TAGIHAN]* belum tercatat lunas.\n\nSilakan lakukan pembayaran agar akses password WiFi bulan ini dapat segera kami aktifkan dan bagikan. Terima kasih! 🙏";
+                $msg = str_replace('[NAMA]', $p->nama, $msg);
+                $msg = str_replace('[BULAN_TAHUN]', $bulanTahunText, $msg);
+                $msg = str_replace('[TAGIHAN]', number_format($sisaTagihan, 0, ',', '.'), $msg);
+                $msg = str_replace('[SSID]', $config->ssid, $msg);
+
+                $waUrl = $phoneFormatted ? ('https://wa.me/' . $phoneFormatted . '?text=' . urlencode($msg)) : null;
+
+                $unpaidList[] = [
+                    'id' => $p->id,
+                    'nama' => $p->nama,
+                    'nomor_hp' => $p->nomor_hp ?: '-',
+                    'phone_clean' => $phoneFormatted,
+                    'kamar' => $kamarInfo,
+                    'nominal_bayar' => $paidNominal,
+                    'sisa_tagihan' => $sisaTagihan,
+                    'wa_url' => $waUrl,
+                    'message' => $msg,
+                ];
+            }
+        }
+
+        $broadcastText = "📡 *INFO AKSES WIFI ASRAMA - " . strtoupper($bulanTahunText) . "* 📡\n\n" .
+            "Kepada rekan-rekan penghuni asrama yang telah melunasi iuran bulan ini, berikut adalah kredensial WiFi aktif:\n\n" .
+            "🌐 *SSID:* " . $config->ssid . "\n" .
+            "🔑 *Password:* " . $config->password . "\n\n" .
+            "⚠️ *Pemberitahuan:* Password ini hanya diperuntukkan bagi penghuni yang telah tercatat lunas. Mohon untuk tidak membagikan password ini kepada pihak lain.\n\n" .
+            "Terima kasih atas kerja samanya! 🙏";
+
+        return response()->json([
+            'status' => true,
+            'config' => $config,
+            'bulan' => $bulan,
+            'tahun' => $tahun,
+            'bulan_nama' => $bulanNama,
+            'bulan_tahun_text' => $bulanTahunText,
+            'total_lunas' => count($lunasList),
+            'total_unpaid' => count($unpaidList),
+            'lunas_list' => $lunasList,
+            'unpaid_list' => $unpaidList,
+            'all_lunas_phones_string' => implode(',', $allLunasPhones),
+            'broadcast_text' => $broadcastText,
+        ]);
     }
 }

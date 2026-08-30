@@ -35,4 +35,8 @@ Route::prefix('asrama')->name('asrama.')->group(function () {
     Route::post('/keuangan', [AsramaController::class, 'storeKeuangan'])->name('keuangan.store');
     Route::put('/keuangan/{id}', [AsramaController::class, 'updateKeuangan'])->name('keuangan.update');
     Route::delete('/keuangan/{id}', [AsramaController::class, 'destroyKeuangan'])->name('keuangan.destroy');
+
+    // WiFi Distribution & Configuration
+    Route::post('/keuangan/wifi-config', [AsramaController::class, 'saveWifiConfig'])->name('wifi.config.save');
+    Route::get('/keuangan/wifi-distribusi', [AsramaController::class, 'getWifiDistributionData'])->name('wifi.distribusi');
 });
