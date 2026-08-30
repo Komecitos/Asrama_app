@@ -7,6 +7,13 @@
     <title>AsramaApp - Sistem Manajemen Asrama</title>
     <link rel="icon" type="image/jpeg" href="{{ asset('assets/images/logo asrama.jpeg') }}">
 
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('asrama_theme') || 'dark';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        })();
+    </script>
+
     {{-- Theme --}}
     <link rel="stylesheet" href="{{ asset('css/theme/color.css') }}">
     <link rel="stylesheet" href="{{ asset('css/theme/typography.css') }}">
@@ -113,42 +120,64 @@
             <img src="{{ asset('assets/images/logo asrama.jpeg') }}" alt="AsramaApp Logo" style="height: 32px; width: auto; object-fit: contain; border-radius: 6px;">
             <span>AsramaApp</span>
         </a>
-        <nav class="portal-nav">
-            <a href="{{ route('dashboard') }}" class="portal-nav-btn {{ Request::is('/') ? 'active' : '' }}">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3" y="3" width="7" height="7"></rect>
-                    <rect x="14" y="3" width="7" height="7"></rect>
-                    <rect x="14" y="14" width="7" height="7"></rect>
-                    <rect x="3" y="14" width="7" height="7"></rect>
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+            <nav class="portal-nav">
+                <a href="{{ route('dashboard') }}" class="portal-nav-btn {{ Request::is('/') ? 'active' : '' }}">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                    <span>Dashboard</span>
+                </a>
+                <a href="{{ route('asrama.data') }}" class="portal-nav-btn {{ Request::is('asrama/data*') ? 'active' : '' }}">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                    <span>Data Penghuni & Kamar</span>
+                </a>
+                <a href="{{ route('asrama.keuangan') }}" class="portal-nav-btn {{ Request::is('asrama/keuangan') ? 'active' : '' }}">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                        <line x1="1" y1="10" x2="23" y2="10"></line>
+                    </svg>
+                    <span>Transaksi Kas</span>
+                </a>
+                <a href="{{ route('asrama.keuangan.matriks') }}" class="portal-nav-btn {{ Request::is('asrama/keuangan/matriks*') ? 'active' : '' }}">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                    <span>Matriks Iuran</span>
+                </a>
+            </nav>
+
+            {{-- THEME TOGGLE BUTTON --}}
+            <button type="button" id="theme-toggle-btn" class="theme-toggle-btn" onclick="toggleTheme()" title="Ubah Tema (Terang / Gelap)" aria-label="Ubah Tema">
+                <!-- Sun icon (for switching to dark) -->
+                <svg class="theme-sun-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="5"></circle>
+                    <line x1="12" y1="1" x2="12" y2="3"></line>
+                    <line x1="12" y1="21" x2="12" y2="23"></line>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                    <line x1="1" y1="12" x2="3" y2="12"></line>
+                    <line x1="21" y1="12" x2="23" y2="12"></line>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
                 </svg>
-                <span>Dashboard</span>
-            </a>
-            <a href="{{ route('asrama.data') }}" class="portal-nav-btn {{ Request::is('asrama/data*') ? 'active' : '' }}">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="9" cy="7" r="4"></circle>
-                    <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                    <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                <!-- Moon icon (for switching to light) -->
+                <svg class="theme-moon-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
                 </svg>
-                <span>Data Penghuni & Kamar</span>
-            </a>
-            <a href="{{ route('asrama.keuangan') }}" class="portal-nav-btn {{ Request::is('asrama/keuangan') ? 'active' : '' }}">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
-                    <line x1="1" y1="10" x2="23" y2="10"></line>
-                </svg>
-                <span>Transaksi Kas</span>
-            </a>
-            <a href="{{ route('asrama.keuangan.matriks') }}" class="portal-nav-btn {{ Request::is('asrama/keuangan/matriks*') ? 'active' : '' }}">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                    <line x1="16" y1="2" x2="16" y2="6"></line>
-                    <line x1="8" y1="2" x2="8" y2="6"></line>
-                    <line x1="3" y1="10" x2="21" y2="10"></line>
-                </svg>
-                <span>Matriks Iuran</span>
-            </a>
-        </nav>
+            </button>
+        </div>
     </header>
 
     {{-- Main Content --}}
@@ -218,6 +247,19 @@
             <button type="button" onclick="closeDocsModal()" class="btn btn-secondary">Tutup</button>
         </div>
     </div>
+
+    <script>
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('asrama_theme', newTheme);
+            if (typeof showToast === 'function') {
+                showToast(newTheme === 'dark' ? '🌙 Tema Gelap diaktifkan' : '☀️ Tema Terang diaktifkan', 'info');
+            }
+        }
+    </script>
+
     {{-- Page specific scripts --}}
     @stack('scripts')
 

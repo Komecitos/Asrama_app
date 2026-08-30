@@ -21,301 +21,291 @@
                 </svg>
             </div>
             <p class="task-meta">Total Kamar</p>
-            <h3 style="color: var(--text-primary); margin: 0.2rem 0 0 0; font-size: 1.45rem; font-weight: 800;">{{ $summary['total_kamar'] }} <span style="font-size: 0.82rem; color: #94a3b8; font-weight: 500;">Kamar</span></h3>
-        </div>
-        <div class="asrama-stat-card">
-            <div class="stat-card-icon" style="background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.35); color: #38bdf8; width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 0.4rem;">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <polyline points="12 6 12 12 16 14"></polyline>
-                </svg>
+            <div class="asrama-stat-card">
+                <div class="stat-card-icon" style="background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.35); color: #38bdf8; width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 0.4rem;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                </div>
+                <p class="task-meta">Kamar Tersedia</p>
             </div>
-            <p class="task-meta">Kamar Tersedia</p>
-            <h3 style="color: #38bdf8; margin: 0.2rem 0 0 0; font-size: 1.45rem; font-weight: 800;">{{ $summary['kamar_tersedia'] }} <span style="font-size: 0.82rem; color: #94a3b8; font-weight: 500;">Unit Tersedia</span></h3>
-        </div>
-        <div class="asrama-stat-card">
-            <div class="stat-card-icon" style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.35); color: #fbbf24; width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 0.4rem;">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                    <circle cx="9" cy="7" r="4"></circle>
-                </svg>
+            <div class="asrama-stat-card">
+                <div class="stat-card-icon" style="background: rgba(245, 158, 11, 0.15); border: 1px solid rgba(245, 158, 11, 0.35); color: #fbbf24; width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-bottom: 0.4rem;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    </svg>
+                </div>
+                <p class="task-meta">Total Penghuni Aktif</p>
+                <h3 style="color: #fbbf24; margin: 0.2rem 0 0 0; font-size: 1.45rem; font-weight: 800;">{{ $summary['total_penghuni'] }} <span style="font-size: 0.82rem; color: #94a3b8; font-weight: 500;">Orang</span></h3>
             </div>
-            <p class="task-meta">Total Penghuni Aktif</p>
-            <h3 style="color: #fbbf24; margin: 0.2rem 0 0 0; font-size: 1.45rem; font-weight: 800;">{{ $summary['total_penghuni'] }} <span style="font-size: 0.82rem; color: #94a3b8; font-weight: 500;">Orang</span></h3>
         </div>
-    </div>
+        <div class="widget-card" style="margin-bottom: 2rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.75rem;">
+                <div>
+                    <h3 class="widget-title" style="margin: 0;">Data Penghuni Asrama</h3>
+                    {{-- TOGGLE SHOW/HIDE AKSI COLUMN BUTTON --}}
+                    <div style="display: flex; align-items: center; background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255, 255, 255, 0.12); padding: 0.25rem 0.75rem; border-radius: 30px; gap: 0.5rem;">
+                        <span style="font-size: 0.78rem; font-weight: 600; color: #94a3b8; display: inline-flex; align-items: center; gap: 0.3rem;">
+                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #94a3b8;">
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                                Aksi:
+                        </span>
+                        <button type="button" id="btn-toggle-aksi" onclick="toggleAksiColumn()" style="display: flex; align-items: center; gap: 0.35rem; padding: 0.2rem 0.65rem; border-radius: 20px; font-weight: 800; font-size: 0.75rem; border: none; cursor: pointer; transition: all 0.2s ease;">
+                            <span id="aksi-status-dot" style="width: 7px; height: 7px; border-radius: 50%; display: inline-block;"></span>
+                            <span id="aksi-status-text">OFF</span>
+                        </button>
+                    </div>
 
-    {{-- PENGHUNI SECTION --}}
-    <div class="widget-card" style="margin-bottom: 2rem;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.75rem;">
-            <div>
-                <h3 class="widget-title" style="margin: 0;">Data Penghuni Asrama</h3>
-            </div>
-            <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
-                {{-- TOGGLE SHOW/HIDE AKSI COLUMN BUTTON --}}
-                <div style="display: flex; align-items: center; background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255, 255, 255, 0.12); padding: 0.25rem 0.75rem; border-radius: 30px; gap: 0.5rem;">
-                    <span style="font-size: 0.78rem; font-weight: 600; color: #94a3b8; display: inline-flex; align-items: center; gap: 0.3rem;">
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #94a3b8;">
-                            <circle cx="12" cy="12" r="3"></circle>
-                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                    <button type="button" onclick="openPenghuniModal()" class="btn btn-primary btn-sm" style="display: inline-flex; align-items: center; gap: 0.35rem;">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
                         </svg>
-                        Aksi:
-                    </span>
-                    <button type="button" id="btn-toggle-aksi" onclick="toggleAksiColumn()" style="display: flex; align-items: center; gap: 0.35rem; padding: 0.2rem 0.65rem; border-radius: 20px; font-weight: 800; font-size: 0.75rem; border: none; cursor: pointer; transition: all 0.2s ease;">
-                        <span id="aksi-status-dot" style="width: 7px; height: 7px; border-radius: 50%; display: inline-block;"></span>
-                        <span id="aksi-status-text">OFF</span>
+                        <span>Tambah Penghuni</span>
                     </button>
                 </div>
+            </div>
 
-                <button type="button" onclick="openPenghuniModal()" class="btn btn-primary btn-sm" style="display: inline-flex; align-items: center; gap: 0.35rem;">
+            @php
+            $penghuniAktifList = $penghunis->where('status_penghuni', 'Aktif');
+            $avatarColors = ['teal', 'blue', 'purple', 'amber', 'rose', 'emerald'];
+            @endphp
+
+            @if($penghuniAktifList->isEmpty())
+            <p class="empty-state">Belum ada data penghuni aktif. Klik <strong>+ Tambah Penghuni</strong> untuk mencatat penghuni baru.</p>
+            @else
+            <div class="table-wrapper">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Nama Penghuni</th>
+                            <th>No. Telepon / HP</th>
+                            <th>Kampus</th>
+                            <th>Asal Kampung</th>
+                            <th>Kamar</th>
+                            <th>Status</th>
+                            <th>Tgl Masuk</th>
+                            <th class="col-aksi-header">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($penghuniAktifList as $penghuni)
+                        @php
+                        $words = explode(' ', trim($penghuni->nama));
+                        $initials = strtoupper(substr($words[0], 0, 1) . (isset($words[1]) ? substr($words[1], 0, 1) : ''));
+                        $cClass = 'resident-avatar-' . $avatarColors[$penghuni->id % count($avatarColors)];
+                        @endphp
+                        <tr>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                    <div class="resident-avatar {{ $cClass }}">{{ $initials }}</div>
+                                    <div>
+                                        <div style="font-weight: 600; color: #f8fafc;">{{ $penghuni->nama }}</div>
+                                        @if($penghuni->catatan)
+                                        <div style="font-size: 0.72rem; color: #94a3b8; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $penghuni->catatan }}</div>
+                                        @endif
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="task-meta">{{ $penghuni->nomor_hp ?: '-' }}</td>
+                            <td><span class="badge-chip">{{ $penghuni->kampus ?: '-' }}</span></td>
+                            <td class="task-meta">{{ $penghuni->asal_kampung ?: '-' }}</td>
+                            <td>
+                                @if($penghuni->kamar)
+                                <span class="badge badge-info" style="font-weight: 700;">Kamar {{ $penghuni->kamar->nomor_kamar }}</span>
+                                @else
+                                <span class="task-meta" style="font-style: italic;">Belum Ada</span>
+                                @endif
+                            </td>
+                            <td>
+                                @if($penghuni->status_penghuni === 'Aktif')
+                                <span class="badge badge-penghuni-aktif">Aktif</span>
+                                @else
+                                <span class="badge badge-penghuni-keluar">Keluar</span>
+                                @endif
+                            </td>
+
+                            <td class="task-meta">{{ $penghuni->tanggal_masuk ? \Carbon\Carbon::parse($penghuni->tanggal_masuk)->format('d M Y') : '-' }}</td>
+                            <td class="col-aksi-cell">
+                                <div style="display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap;">
+                                    {{-- EDIT BUTTON --}}
+                                    <button type="button" onclick="openEditPenghuniModal({{ $penghuni->id }}, '{{ addslashes($penghuni->nama) }}', '{{ addslashes($penghuni->nomor_hp ?: '') }}', '{{ addslashes($penghuni->kampus ?: '') }}', '{{ addslashes($penghuni->asal_kampung ?: '') }}', '{{ $penghuni->kamar_id ?: '' }}', '{{ $penghuni->tanggal_masuk ?: '' }}', '{{ addslashes($penghuni->catatan ?: '') }}')" class="btn btn-secondary btn-sm" title="Edit data penghuni">Edit</button>
+
+                                    {{-- KELUAR BUTTON (FOR ACTIVE RESIDENTS) --}}
+                                    @if($penghuni->status_penghuni === 'Aktif')
+                                    <button type="button" onclick="openKeluarPenghuniModal({{ $penghuni->id }}, '{{ addslashes($penghuni->nama) }}')" class="btn btn-warning btn-sm" style="background: #eab308; color: #000; border: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.35rem;" title="Tandai penghuni keluar asrama">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                            <polyline points="16 17 21 12 16 7"></polyline>
+                                            <line x1="21" y1="12" x2="9" y2="12"></line>
+                                        </svg>
+                                        <span>Keluar</span>
+                                    </button>
+                                    @endif
+
+                                    {{-- DELETE BUTTON --}}
+                                    <button type="button" onclick="openHapusPenghuniModal({{ $penghuni->id }}, '{{ addslashes($penghuni->nama) }}')" class="btn btn-danger btn-sm" title="Hapus penghuni">Hapus</button>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            @endif
+        </div>
+
+        {{-- KAMAR SECTION --}}
+        <div class="widget-card" style="margin-bottom: 2rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+                <div>
+                    <h3 class="widget-title" style="margin: 0;">Daftar Kamar Asrama</h3>
+                </div>
+                <button type="button" onclick="openKamarModal()" class="btn btn-primary btn-sm" style="display: inline-flex; align-items: center; gap: 0.35rem;">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <line x1="12" y1="5" x2="12" y2="19"></line>
                         <line x1="5" y1="12" x2="19" y2="12"></line>
                     </svg>
-                    <span>Tambah Penghuni</span>
+                    <span>Tambah Kamar</span>
                 </button>
             </div>
-        </div>
 
-        @php
-        $penghuniAktifList = $penghunis->where('status_penghuni', 'Aktif');
-        $avatarColors = ['teal', 'blue', 'purple', 'amber', 'rose', 'emerald'];
-        @endphp
-
-        @if($penghuniAktifList->isEmpty())
-        <p class="empty-state">Belum ada data penghuni aktif. Klik <strong>+ Tambah Penghuni</strong> untuk mencatat penghuni baru.</p>
-        @else
-        <div class="table-wrapper">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Nama Penghuni</th>
-                        <th>No. Telepon / HP</th>
-                        <th>Kampus</th>
-                        <th>Asal Kampung</th>
-                        <th>Kamar</th>
-                        <th>Status</th>
-                        <th>Tgl Masuk</th>
-                        <th class="col-aksi-header">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($penghuniAktifList as $penghuni)
-                    @php
-                    $words = explode(' ', trim($penghuni->nama));
-                    $initials = strtoupper(substr($words[0], 0, 1) . (isset($words[1]) ? substr($words[1], 0, 1) : ''));
-                    $cClass = 'resident-avatar-' . $avatarColors[$penghuni->id % count($avatarColors)];
-                    @endphp
-                    <tr>
-                        <td>
-                            <div style="display: flex; align-items: center; gap: 0.75rem;">
-                                <div class="resident-avatar {{ $cClass }}">{{ $initials }}</div>
-                                <div>
-                                    <div style="font-weight: 600; color: #f8fafc;">{{ $penghuni->nama }}</div>
-                                    @if($penghuni->catatan)
-                                    <div style="font-size: 0.72rem; color: #94a3b8; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $penghuni->catatan }}</div>
-                                    @endif
-                                </div>
-                            </div>
-                        </td>
-                        <td class="task-meta">{{ $penghuni->nomor_hp ?: '-' }}</td>
-                        <td><span class="badge-chip">{{ $penghuni->kampus ?: '-' }}</span></td>
-                        <td class="task-meta">{{ $penghuni->asal_kampung ?: '-' }}</td>
-                        <td>
-                            @if($penghuni->kamar)
-                            <span class="badge badge-info" style="font-weight: 700;">Kamar {{ $penghuni->kamar->nomor_kamar }}</span>
-                            @else
-                            <span class="task-meta" style="font-style: italic;">Belum Ada</span>
-                            @endif
-                        </td>
-                        <td>
-                            @if($penghuni->status_penghuni === 'Aktif')
-                            <span class="badge badge-penghuni-aktif">Aktif</span>
-                            @else
-                            <span class="badge badge-penghuni-keluar">Keluar</span>
-                            @endif
-                        </td>
-
-                        <td class="task-meta">{{ $penghuni->tanggal_masuk ? \Carbon\Carbon::parse($penghuni->tanggal_masuk)->format('d M Y') : '-' }}</td>
-                        <td class="col-aksi-cell">
-                            <div style="display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap;">
-                                {{-- EDIT BUTTON --}}
-                                <button type="button" onclick="openEditPenghuniModal({{ $penghuni->id }}, '{{ addslashes($penghuni->nama) }}', '{{ addslashes($penghuni->nomor_hp ?: '') }}', '{{ addslashes($penghuni->kampus ?: '') }}', '{{ addslashes($penghuni->asal_kampung ?: '') }}', '{{ $penghuni->kamar_id ?: '' }}', '{{ $penghuni->tanggal_masuk ?: '' }}', '{{ addslashes($penghuni->catatan ?: '') }}')" class="btn btn-secondary btn-sm" title="Edit data penghuni">Edit</button>
-
-                                {{-- KELUAR BUTTON (FOR ACTIVE RESIDENTS) --}}
-                                @if($penghuni->status_penghuni === 'Aktif')
-                                <button type="button" onclick="openKeluarPenghuniModal({{ $penghuni->id }}, '{{ addslashes($penghuni->nama) }}')" class="btn btn-warning btn-sm" style="background: #eab308; color: #000; border: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.35rem;" title="Tandai penghuni keluar asrama">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                                        <polyline points="16 17 21 12 16 7"></polyline>
-                                        <line x1="21" y1="12" x2="9" y2="12"></line>
-                                    </svg>
-                                    <span>Keluar</span>
-                                </button>
+            @if($kamars->isEmpty())
+            <p class="empty-state">Belum ada data kamar. Klik <strong>+ Tambah Kamar</strong> untuk membuat kamar baru.</p>
+            @else
+            <div class="table-wrapper">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Nomor Kamar</th>
+                            <th>Lantai</th>
+                            <th>Penghuni Aktif</th>
+                            <th>Status</th>
+                            <th>Fasilitas</th>
+                            <th class="col-aksi-header">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($kamars as $kamar)
+                        @php
+                        $activeCount = $kamar->penghunis->where('status_penghuni', 'Aktif')->count();
+                        @endphp
+                        <tr>
+                            <td class="task-title" style="font-weight: 700; color: #f8fafc;">Kamar {{ $kamar->nomor_kamar }}</td>
+                            <td><span class="badge-chip">Lantai {{ $kamar->lantai }}</span></td>
+                            <td>
+                                <span style="color: #38bdf8; font-weight: 700;">{{ $activeCount }}</span> / <span style="color: #94a3b8;">{{ $kamar->kapasitas }} Bed</span>
+                            </td>
+                            <td>
+                                @if($kamar->status === 'Tersedia')
+                                <span class="badge badge-kamar-tersedia">Tersedia</span>
+                                @elseif($kamar->status === 'Penuh')
+                                <span class="badge badge-kamar-penuh">Penuh</span>
+                                @elseif($kamar->status === 'Gudang')
+                                <span class="badge badge-kamar-gudang">Gudang</span>
+                                @else
+                                <span class="badge badge-kamar-perbaikan">Perbaikan</span>
                                 @endif
-
-                                {{-- DELETE BUTTON --}}
-                                <button type="button" onclick="openHapusPenghuniModal({{ $penghuni->id }}, '{{ addslashes($penghuni->nama) }}')" class="btn btn-danger btn-sm" title="Hapus penghuni">Hapus</button>
-                            </div>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-        @endif
-    </div>
-
-    {{-- KAMAR SECTION --}}
-    <div class="widget-card" style="margin-bottom: 2rem;">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
-            <div>
-                <h3 class="widget-title" style="margin: 0;">Daftar Kamar Asrama</h3>
+                            </td>
+                            <td class="task-meta">{{ $kamar->fasilitas ?: '-' }}</td>
+                            <td class="col-aksi-cell">
+                                <div style="display: flex; gap: 0.4rem;">
+                                    <button type="button" onclick="openEditKamarModal({{ $kamar->id }}, '{{ addslashes($kamar->nomor_kamar) }}', {{ $kamar->lantai }}, '{{ $kamar->status }}', '{{ addslashes($kamar->fasilitas ?: '') }}', '{{ addslashes($kamar->catatan ?: '') }}')" class="btn btn-secondary btn-sm">Edit</button>
+                                    <form action="{{ route('asrama.kamar.destroy', $kamar->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Hapus kamar {{ $kamar->nomor_kamar }}?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
-            <button type="button" onclick="openKamarModal()" class="btn btn-primary btn-sm" style="display: inline-flex; align-items: center; gap: 0.35rem;">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                </svg>
-                <span>Tambah Kamar</span>
-            </button>
+            @endif
         </div>
 
-        @if($kamars->isEmpty())
-        <p class="empty-state">Belum ada data kamar. Klik <strong>+ Tambah Kamar</strong> untuk membuat kamar baru.</p>
-        @else
-        <div class="table-wrapper">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Nomor Kamar</th>
-                        <th>Lantai</th>
-                        <th>Penghuni Aktif</th>
-                        <th>Status</th>
-                        <th>Fasilitas</th>
-                        <th class="col-aksi-header">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($kamars as $kamar)
-                    @php
-                    $activeCount = $kamar->penghunis->where('status_penghuni', 'Aktif')->count();
-                    @endphp
-                    <tr>
-                        <td class="task-title" style="font-weight: 700; color: #f8fafc;">Kamar {{ $kamar->nomor_kamar }}</td>
-                        <td><span class="badge-chip">Lantai {{ $kamar->lantai }}</span></td>
-                        <td>
-                            <span style="color: #38bdf8; font-weight: 700;">{{ $activeCount }}</span> / <span style="color: #94a3b8;">{{ $kamar->kapasitas }} Bed</span>
-                        </td>
-                        <td>
-                            @if($kamar->status === 'Tersedia')
-                            <span class="badge badge-kamar-tersedia">Tersedia</span>
-                            @elseif($kamar->status === 'Penuh')
-                            <span class="badge badge-kamar-penuh">Penuh</span>
-                            @elseif($kamar->status === 'Gudang')
-                            <span class="badge badge-kamar-gudang">Gudang</span>
-                            @else
-                            <span class="badge badge-kamar-perbaikan">Perbaikan</span>
-                            @endif
-                        </td>
-                        <td class="task-meta">{{ $kamar->fasilitas ?: '-' }}</td>
-                        <td class="col-aksi-cell">
-                            <div style="display: flex; gap: 0.4rem;">
-                                <button type="button" onclick="openEditKamarModal({{ $kamar->id }}, '{{ addslashes($kamar->nomor_kamar) }}', {{ $kamar->lantai }}, '{{ $kamar->status }}', '{{ addslashes($kamar->fasilitas ?: '') }}', '{{ addslashes($kamar->catatan ?: '') }}')" class="btn btn-secondary btn-sm">Edit</button>
-                                <form action="{{ route('asrama.kamar.destroy', $kamar->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Hapus kamar {{ $kamar->nomor_kamar }}?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-        @endif
-    </div>
-
-    {{-- LOG AKTIVITAS / PENGHUNI KELUAR SECTION --}}
-    <div class="widget-card">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-            <div>
-                <h3 class="widget-title" style="margin: 0;">Log Aktivitas & Penghuni Keluar</h3>
+        {{-- LOG AKTIVITAS / PENGHUNI KELUAR SECTION --}}
+        <div class="widget-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <div>
+                    <h3 class="widget-title" style="margin: 0;">Log Aktivitas & Penghuni Keluar</h3>
+                </div>
             </div>
+
+            @php
+            $penghuniKeluarList = $penghunis->where('status_penghuni', 'Keluar')->sortByDesc('tanggal_keluar');
+            @endphp
+
+            @if($penghuniKeluarList->isEmpty())
+            <p class="empty-state">Belum ada riwayat log penghuni keluar.</p>
+            @else
+            <div class="table-wrapper">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Tanggal Keluar</th>
+                            <th>Nama Penghuni</th>
+                            <th>No. Telepon / HP</th>
+                            <th>Kampus</th>
+                            <th>Asal Kampung</th>
+                            <th>Kamar Terakhir</th>
+                            <th>Catatan Aktivitas Log</th>
+                            <th class="col-aksi-header">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($penghuniKeluarList as $pk)
+                        <tr>
+                            <td style="font-weight: 700; color: #cbd5e1;">
+                                {{ $pk->tanggal_keluar ? \Carbon\Carbon::parse($pk->tanggal_keluar)->format('d M Y') : '-' }}
+                            </td>
+                            <td class="task-title" style="font-weight: 600; color: #cbd5e1;">{{ $pk->nama }}</td>
+                            <td class="task-meta">{{ $pk->nomor_hp ?: '-' }}</td>
+                            <td>{{ $pk->kampus ?: '-' }}</td>
+                            <td class="task-meta">{{ $pk->asal_kampung ?: '-' }}</td>
+                            <td>
+                                @if($pk->kamar)
+                                <span class="badge badge-info">{{ $pk->kamar->nomor_kamar }}</span>
+                                @else
+                                <span class="task-meta">-</span>
+                                @endif
+                            </td>
+                            <td>
+                                <span class="badge badge-warning" style="background: rgba(245, 158, 11, 0.18); color: #fde047; border: 1px solid rgba(245, 158, 11, 0.35); font-weight: 600;">Resmi Keluar Asrama</span>
+                            </td>
+                            <td class="col-aksi-cell">
+                                <div style="display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap;">
+                                    {{-- REACTIVATE BUTTON --}}
+                                    <form action="{{ route('asrama.penghuni.reactivate', $pk->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Aktifkan kembali {{ addslashes($pk->nama) }} sebagai penghuni aktif?');">
+                                        @csrf
+                                        @method('PATCH')
+                                        <button type="submit" class="btn btn-success btn-sm" style="background: #10b981; color: #fff; border: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.3rem;" title="Aktifkan kembali penghuni">
+                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                                <polyline points="23 4 23 10 17 10"></polyline>
+                                                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                                            </svg>
+                                            <span>Aktifkan</span>
+                                        </button>
+                                    </form>
+
+                                    {{-- EDIT BUTTON --}}
+                                    <button type="button" onclick="openEditPenghuniModal({{ $pk->id }}, '{{ addslashes($pk->nama) }}', '{{ addslashes($pk->nomor_hp ?: '') }}', '{{ addslashes($pk->kampus ?: '') }}', '{{ addslashes($pk->asal_kampung ?: '') }}', '{{ $pk->kamar_id ?: '' }}', '{{ $pk->tanggal_masuk ?: '' }}', '{{ addslashes($pk->catatan ?: '') }}')" class="btn btn-secondary btn-sm" title="Edit data penghuni">Edit</button>
+
+                                    {{-- DELETE BUTTON --}}
+                                    <button type="button" onclick="openHapusPenghuniModal({{ $pk->id }}, '{{ addslashes($pk->nama) }}')" class="btn btn-danger btn-sm" title="Hapus log & data penghuni">Hapus</button>
+                                </div>
+                            </td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+            @endif
         </div>
-
-        @php
-        $penghuniKeluarList = $penghunis->where('status_penghuni', 'Keluar')->sortByDesc('tanggal_keluar');
-        @endphp
-
-        @if($penghuniKeluarList->isEmpty())
-        <p class="empty-state">Belum ada riwayat log penghuni keluar.</p>
-        @else
-        <div class="table-wrapper">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Tanggal Keluar</th>
-                        <th>Nama Penghuni</th>
-                        <th>No. Telepon / HP</th>
-                        <th>Kampus</th>
-                        <th>Asal Kampung</th>
-                        <th>Kamar Terakhir</th>
-                        <th>Catatan Aktivitas Log</th>
-                        <th class="col-aksi-header">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach($penghuniKeluarList as $pk)
-                    <tr>
-                        <td style="font-weight: 700; color: #cbd5e1;">
-                            {{ $pk->tanggal_keluar ? \Carbon\Carbon::parse($pk->tanggal_keluar)->format('d M Y') : '-' }}
-                        </td>
-                        <td class="task-title" style="font-weight: 600; color: #cbd5e1;">{{ $pk->nama }}</td>
-                        <td class="task-meta">{{ $pk->nomor_hp ?: '-' }}</td>
-                        <td>{{ $pk->kampus ?: '-' }}</td>
-                        <td class="task-meta">{{ $pk->asal_kampung ?: '-' }}</td>
-                        <td>
-                            @if($pk->kamar)
-                            <span class="badge badge-info">{{ $pk->kamar->nomor_kamar }}</span>
-                            @else
-                            <span class="task-meta">-</span>
-                            @endif
-                        </td>
-                        <td>
-                            <span class="badge badge-warning" style="background: rgba(245, 158, 11, 0.18); color: #fde047; border: 1px solid rgba(245, 158, 11, 0.35); font-weight: 600;">Resmi Keluar Asrama</span>
-                        </td>
-                        <td class="col-aksi-cell">
-                            <div style="display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap;">
-                                {{-- REACTIVATE BUTTON --}}
-                                <form action="{{ route('asrama.penghuni.reactivate', $pk->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Aktifkan kembali {{ addslashes($pk->nama) }} sebagai penghuni aktif?');">
-                                    @csrf
-                                    @method('PATCH')
-                                    <button type="submit" class="btn btn-success btn-sm" style="background: #10b981; color: #fff; border: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.3rem;" title="Aktifkan kembali penghuni">
-                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                            <polyline points="23 4 23 10 17 10"></polyline>
-                                            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
-                                        </svg>
-                                        <span>Aktifkan</span>
-                                    </button>
-                                </form>
-
-                                {{-- EDIT BUTTON --}}
-                                <button type="button" onclick="openEditPenghuniModal({{ $pk->id }}, '{{ addslashes($pk->nama) }}', '{{ addslashes($pk->nomor_hp ?: '') }}', '{{ addslashes($pk->kampus ?: '') }}', '{{ addslashes($pk->asal_kampung ?: '') }}', '{{ $pk->kamar_id ?: '' }}', '{{ $pk->tanggal_masuk ?: '' }}', '{{ addslashes($pk->catatan ?: '') }}')" class="btn btn-secondary btn-sm" title="Edit data penghuni">Edit</button>
-
-                                {{-- DELETE BUTTON --}}
-                                <button type="button" onclick="openHapusPenghuniModal({{ $pk->id }}, '{{ addslashes($pk->nama) }}')" class="btn btn-danger btn-sm" title="Hapus log & data penghuni">Hapus</button>
-                            </div>
-                        </td>
-                    </tr>
-                    @endforeach
-                </tbody>
-            </table>
-        </div>
-        @endif
     </div>
-</div>
 </div>
 
 {{-- MODAL TAMBAH/EDIT KAMAR --}}

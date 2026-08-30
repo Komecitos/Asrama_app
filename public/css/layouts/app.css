@@ -259,3 +259,201 @@ body {
         gap: var(--space-lg);
     }
 }
+
+/* ===== THEME TOGGLE BUTTON ===== */
+.theme-toggle-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: rgba(30, 41, 59, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: #fbbf24;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    padding: 0;
+    flex-shrink: 0;
+}
+
+.theme-toggle-btn:hover {
+    background: rgba(51, 65, 85, 0.9);
+    border-color: rgba(251, 191, 36, 0.4);
+    transform: rotate(15deg) scale(1.05);
+}
+
+.theme-sun-icon {
+    display: none;
+}
+
+.theme-moon-icon {
+    display: block;
+}
+
+/* ===== LIGHT MODE OVERRIDES ===== */
+[data-theme="light"] body {
+    background: var(--bg-gradient);
+    color: var(--text-primary);
+}
+
+[data-theme="light"] .global-header {
+    background: rgba(255, 255, 255, 0.94);
+    border-bottom: 1px solid rgba(226, 232, 240, 0.9);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="light"] .global-header .app-name {
+    color: #0f172a;
+}
+
+[data-theme="light"] .portal-nav {
+    background: #e2e8f0;
+    border-color: #cbd5e1;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="light"] .portal-nav-btn {
+    color: #475569;
+}
+
+[data-theme="light"] .portal-nav-btn:hover {
+    color: #0f172a;
+    background: rgba(255, 255, 255, 0.6);
+}
+
+[data-theme="light"] .portal-nav-btn.active {
+    background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+    color: #ffffff;
+    box-shadow: 0 3px 10px -1px rgba(79, 70, 229, 0.4);
+}
+
+[data-theme="light"] .theme-toggle-btn {
+    background: #f1f5f9;
+    border-color: #cbd5e1;
+    color: #4f46e5;
+}
+
+[data-theme="light"] .theme-toggle-btn:hover {
+    background: #e2e8f0;
+    border-color: #4f46e5;
+}
+
+[data-theme="light"] .theme-sun-icon {
+    display: block;
+}
+
+[data-theme="light"] .theme-moon-icon {
+    display: none;
+}
+
+[data-theme="light"] .bottom-bar {
+    background: #ffffff;
+    border-top-color: #e2e8f0;
+    color: #64748b;
+}
+
+[data-theme="light"] .bottom-bar-inner span {
+    color: #475569;
+}
+
+[data-theme="light"] .asrama-stat-card,
+[data-theme="light"] .matriks-stat-card {
+    background: #ffffff;
+    border-color: #e2e8f0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="light"] .widget-card {
+    background: #ffffff;
+    border-color: #e2e8f0;
+    box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.06);
+}
+
+[data-theme="light"] .widget-title {
+    color: #0f172a;
+}
+
+[data-theme="light"] .nav-shortcut-card {
+    background: #ffffff;
+    border-color: #e2e8f0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+[data-theme="light"] .nav-shortcut-card:hover {
+    background: #f8fafc;
+    border-color: #38bdf8;
+    box-shadow: 0 8px 16px -4px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme="light"] .nav-shortcut-card .shortcut-content h3 {
+    color: #0f172a;
+}
+
+[data-theme="light"] .table thead {
+    background: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+[data-theme="light"] .table thead th {
+    color: #475569;
+}
+
+[data-theme="light"] .table tbody tr {
+    border-bottom: 1px solid #f1f5f9;
+}
+
+[data-theme="light"] .table tbody tr:hover {
+    background: #f8fafc;
+}
+
+[data-theme="light"] .table tbody td {
+    color: #334155;
+}
+
+[data-theme="light"] .table tbody td .task-title,
+[data-theme="light"] .table tbody td strong {
+    color: #0f172a;
+}
+
+[data-theme="light"] .form-control {
+    background: #ffffff;
+    border-color: #cbd5e1;
+    color: #0f172a;
+}
+
+[data-theme="light"] .form-control:focus {
+    border-color: #6366f1;
+    background: #ffffff;
+}
+
+[data-theme="light"] select.form-control option {
+    background: #ffffff;
+    color: #0f172a;
+}
+
+[data-theme="light"] .modal {
+    background: #ffffff;
+    border-color: #e2e8f0;
+    color: #0f172a;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="light"] .modal-header {
+    border-bottom-color: #e2e8f0;
+}
+
+[data-theme="light"] .modal-header h3 {
+    color: #0f172a;
+}
+
+[data-theme="light"] .btn-secondary {
+    background: #f1f5f9;
+    color: #334155;
+    border-color: #cbd5e1;
+}
+
+[data-theme="light"] .btn-secondary:hover {
+    background: #e2e8f0;
+    color: #0f172a;
+}
