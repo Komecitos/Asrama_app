@@ -53,19 +53,14 @@
             </div>
             <div style="display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;">
                 {{-- TOGGLE SHOW/HIDE AKSI COLUMN BUTTON --}}
-                <div style="display: flex; align-items: center; background: rgba(30, 41, 59, 0.7); border: 1px solid rgba(255, 255, 255, 0.12); padding: 0.25rem 0.75rem; border-radius: 30px; gap: 0.5rem;">
-                    <span style="font-size: 0.78rem; font-weight: 600; color: #94a3b8; display: inline-flex; align-items: center; gap: 0.3rem;">
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: #94a3b8;">
-                            <circle cx="12" cy="12" r="3"></circle>
-                            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-                        </svg>
-                        Aksi:
-                    </span>
-                    <button type="button" id="btn-toggle-aksi" onclick="toggleAksiColumn()" style="display: flex; align-items: center; gap: 0.35rem; padding: 0.2rem 0.65rem; border-radius: 20px; font-weight: 800; font-size: 0.75rem; border: none; cursor: pointer; transition: all 0.2s ease;">
-                        <span id="aksi-status-dot" style="width: 7px; height: 7px; border-radius: 50%; display: inline-block;"></span>
-                        <span id="aksi-status-text">OFF</span>
-                    </button>
-                </div>
+                <button type="button" id="btn-toggle-aksi" onclick="toggleAksiColumn()" class="btn btn-secondary btn-sm" style="display: inline-flex; align-items: center; gap: 0.35rem; font-size: 0.8rem; padding: 0.35rem 0.65rem; border-radius: 6px; cursor: pointer; transition: all 0.2s ease;" title="Tampilkan / Sembunyikan Tombol Aksi">
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                    <span>Aksi:</span>
+                    <span id="aksi-status-text" style="font-weight: 700;">OFF</span>
+                </button>
 
                 <button type="button" onclick="openPenghuniModal()" class="btn btn-primary btn-sm" style="display: inline-flex; align-items: center; gap: 0.35rem;">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -755,29 +750,26 @@
 
     function updateAksiToggleUI(isOn) {
         const btn = document.getElementById('btn-toggle-aksi');
-        const dot = document.getElementById('aksi-status-dot');
         const text = document.getElementById('aksi-status-text');
         const headers = document.querySelectorAll('.col-aksi-header');
         const cells = document.querySelectorAll('.col-aksi-cell');
 
         if (isOn) {
             if (btn) {
-                btn.style.background = '#10b981';
-                btn.style.color = '#ffffff';
-                btn.style.boxShadow = '0 0 10px rgba(16, 185, 129, 0.4)';
+                btn.style.background = 'rgba(16, 185, 129, 0.15)';
+                btn.style.borderColor = '#10b981';
+                btn.style.color = '#10b981';
             }
-            if (dot) dot.style.background = '#6ee7b7';
-            if (text) text.innerText = 'ON (Aktif)';
+            if (text) text.innerText = 'ON';
             headers.forEach(el => el.style.display = '');
             cells.forEach(el => el.style.display = '');
         } else {
             if (btn) {
-                btn.style.background = '#334155';
-                btn.style.color = '#cbd5e1';
-                btn.style.boxShadow = 'none';
+                btn.style.background = '';
+                btn.style.borderColor = '';
+                btn.style.color = '';
             }
-            if (dot) dot.style.background = '#ef4444';
-            if (text) text.innerText = 'OFF (Sembunyi)';
+            if (text) text.innerText = 'OFF';
             headers.forEach(el => el.style.display = 'none');
             cells.forEach(el => el.style.display = 'none');
         }
