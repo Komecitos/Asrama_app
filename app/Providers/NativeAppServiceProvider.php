@@ -8,6 +8,11 @@ use Native\Laravel\Contracts\ProvidesPhpIni;
 
 class NativeAppServiceProvider extends ServiceProvider implements ProvidesPhpIni
 {
+    public function __construct($app = null)
+    {
+        parent::__construct($app ?? app());
+    }
+
     /**
      * Executed once the native application has been booted.
      * Use this method to open windows, register global shortcuts, etc.
