@@ -108,213 +108,213 @@
                     @endphp
                     <tr>
                         <td>
-                <div style="display: flex; align-items: center; gap: 0.75rem;">
-                    <div class="resident-avatar {{ $cClass }}">{{ $initials }}</div>
-                    <div>
-                        <div style="font-weight: 600; color: #f8fafc;">{{ $penghuni->nama }}</div>
-                        @if($penghuni->catatan)
-                        <div style="font-size: 0.72rem; color: #94a3b8; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $penghuni->catatan }}</div>
-                        @endif
-                    </div>
-                </div>
-            </td>
-            <td class="task-meta">{{ $penghuni->nomor_hp ?: '-' }}</td>
-            <td><span class="badge-chip">{{ $penghuni->kampus ?: '-' }}</span></td>
-            <td class="task-meta">{{ $penghuni->asal_kampung ?: '-' }}</td>
-            <td>
-                @if($penghuni->kamar)
-                <span class="badge badge-info" style="font-weight: 700;">Kamar {{ $penghuni->kamar->nomor_kamar }}</span>
-                @else
-                <span class="task-meta" style="font-style: italic;">Belum Ada</span>
-                @endif
-            </td>
-            <td>
-                @if($penghuni->status_penghuni === 'Aktif')
-                <span class="badge badge-penghuni-aktif">Aktif</span>
-                @else
-                <span class="badge badge-penghuni-keluar">Keluar</span>
-                @endif
-            </td>
+                            <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                <div class="resident-avatar {{ $cClass }}">{{ $initials }}</div>
+                                <div>
+                                    <div style="font-weight: 600; color: #f8fafc;">{{ $penghuni->nama }}</div>
+                                    @if($penghuni->catatan)
+                                    <div style="font-size: 0.72rem; color: #94a3b8; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ $penghuni->catatan }}</div>
+                                    @endif
+                                </div>
+                            </div>
+                        </td>
+                        <td class="task-meta">{{ $penghuni->nomor_hp ?: '-' }}</td>
+                        <td><span class="badge-chip">{{ $penghuni->kampus ?: '-' }}</span></td>
+                        <td class="task-meta">{{ $penghuni->asal_kampung ?: '-' }}</td>
+                        <td>
+                            @if($penghuni->kamar)
+                            <span class="badge badge-info" style="font-weight: 700;">Kamar {{ $penghuni->kamar->nomor_kamar }}</span>
+                            @else
+                            <span class="task-meta" style="font-style: italic;">Belum Ada</span>
+                            @endif
+                        </td>
+                        <td>
+                            @if($penghuni->status_penghuni === 'Aktif')
+                            <span class="badge badge-penghuni-aktif">Aktif</span>
+                            @else
+                            <span class="badge badge-penghuni-keluar">Keluar</span>
+                            @endif
+                        </td>
 
-            <td class="task-meta">{{ $penghuni->tanggal_masuk ? \Carbon\Carbon::parse($penghuni->tanggal_masuk)->format('d M Y') : '-' }}</td>
-            <td class="col-aksi-cell">
-                <div style="display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap;">
-                    {{-- EDIT BUTTON --}}
-                    <button type="button" onclick="openEditPenghuniModal({{ $penghuni->id }}, '{{ addslashes($penghuni->nama) }}', '{{ addslashes($penghuni->nomor_hp ?: '') }}', '{{ addslashes($penghuni->kampus ?: '') }}', '{{ addslashes($penghuni->asal_kampung ?: '') }}', '{{ $penghuni->kamar_id ?: '' }}', '{{ $penghuni->tanggal_masuk ?: '' }}', '{{ addslashes($penghuni->catatan ?: '') }}')" class="btn btn-secondary btn-sm" title="Edit data penghuni">Edit</button>
+                        <td class="task-meta">{{ $penghuni->tanggal_masuk ? \Carbon\Carbon::parse($penghuni->tanggal_masuk)->format('d M Y') : '-' }}</td>
+                        <td class="col-aksi-cell">
+                            <div style="display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap;">
+                                {{-- EDIT BUTTON --}}
+                                <button type="button" onclick="openEditPenghuniModal({{ $penghuni->id }}, '{{ addslashes($penghuni->nama) }}', '{{ addslashes($penghuni->nomor_hp ?: '') }}', '{{ addslashes($penghuni->kampus ?: '') }}', '{{ addslashes($penghuni->asal_kampung ?: '') }}', '{{ $penghuni->kamar_id ?: '' }}', '{{ $penghuni->tanggal_masuk ?: '' }}', '{{ addslashes($penghuni->catatan ?: '') }}')" class="btn btn-secondary btn-sm" title="Edit data penghuni">Edit</button>
 
-                    {{-- KELUAR BUTTON (FOR ACTIVE RESIDENTS) --}}
-                    @if($penghuni->status_penghuni === 'Aktif')
-                    <button type="button" onclick="openKeluarPenghuniModal({{ $penghuni->id }}, '{{ addslashes($penghuni->nama) }}')" class="btn btn-warning btn-sm" style="background: #eab308; color: #000; border: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.35rem;" title="Tandai penghuni keluar asrama">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                            <polyline points="16 17 21 12 16 7"></polyline>
-                            <line x1="21" y1="12" x2="9" y2="12"></line>
-                        </svg>
-                        <span>Keluar</span>
-                    </button>
-                    @endif
-
-                    {{-- DELETE BUTTON --}}
-                    <button type="button" onclick="openHapusPenghuniModal({{ $penghuni->id }}, '{{ addslashes($penghuni->nama) }}')" class="btn btn-danger btn-sm" title="Hapus penghuni">Hapus</button>
-                </div>
-            </td>
-        </tr>
-        @endforeach
-        </tbody>
-        </table>
-    </div>
-    @endif
-</div>
-
-{{-- KAMAR SECTION --}}
-<div class="widget-card" style="margin-bottom: 2rem;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
-        <div>
-            <h3 class="widget-title" style="margin: 0;">Daftar Kamar Asrama</h3>
-        </div>
-        <button type="button" onclick="openKamarModal()" class="btn btn-primary btn-sm" style="display: inline-flex; align-items: center; gap: 0.35rem;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="12" y1="5" x2="12" y2="19"></line>
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-            </svg>
-            <span>Tambah Kamar</span>
-        </button>
-    </div>
-
-    @if($kamars->isEmpty())
-    <p class="empty-state">Belum ada data kamar. Klik <strong>+ Tambah Kamar</strong> untuk membuat kamar baru.</p>
-    @else
-    <div class="table-wrapper">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Nomor Kamar</th>
-                    <th>Lantai</th>
-                    <th>Penghuni Aktif</th>
-                    <th>Status</th>
-                    <th>Fasilitas</th>
-                    <th class="col-aksi-header">Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($kamars as $kamar)
-                @php
-                $activeCount = $kamar->penghunis->where('status_penghuni', 'Aktif')->count();
-                @endphp
-                <tr>
-                    <td class="task-title" style="font-weight: 700; color: #f8fafc;">Kamar {{ $kamar->nomor_kamar }}</td>
-                    <td><span class="badge-chip">Lantai {{ $kamar->lantai }}</span></td>
-                    <td>
-                        <span style="color: #38bdf8; font-weight: 700;">{{ $activeCount }}</span> / <span style="color: #94a3b8;">{{ $kamar->kapasitas }} Bed</span>
-                    </td>
-                    <td>
-                        @if($kamar->status === 'Tersedia')
-                        <span class="badge badge-kamar-tersedia">Tersedia</span>
-                        @elseif($kamar->status === 'Penuh')
-                        <span class="badge badge-kamar-penuh">Penuh</span>
-                        @elseif($kamar->status === 'Gudang')
-                        <span class="badge badge-kamar-gudang">Gudang</span>
-                        @else
-                        <span class="badge badge-kamar-perbaikan">Perbaikan</span>
-                        @endif
-                    </td>
-                    <td class="task-meta">{{ $kamar->fasilitas ?: '-' }}</td>
-                    <td class="col-aksi-cell">
-                        <div style="display: flex; gap: 0.4rem;">
-                            <button type="button" onclick="openEditKamarModal({{ $kamar->id }}, '{{ addslashes($kamar->nomor_kamar) }}', {{ $kamar->lantai }}, '{{ $kamar->status }}', '{{ addslashes($kamar->fasilitas ?: '') }}', '{{ addslashes($kamar->catatan ?: '') }}')" class="btn btn-secondary btn-sm">Edit</button>
-                            <form action="{{ route('asrama.kamar.destroy', $kamar->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Hapus kamar {{ $kamar->nomor_kamar }}?');">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
-    @endif
-</div>
-
-{{-- LOG AKTIVITAS / PENGHUNI KELUAR SECTION --}}
-<div class="widget-card">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-        <div>
-            <h3 class="widget-title" style="margin: 0;">Log Aktivitas & Penghuni Keluar</h3>
-        </div>
-    </div>
-
-    @php
-    $penghuniKeluarList = $penghunis->where('status_penghuni', 'Keluar')->sortByDesc('tanggal_keluar');
-    @endphp
-
-    @if($penghuniKeluarList->isEmpty())
-    <p class="empty-state">Belum ada riwayat log penghuni keluar.</p>
-    @else
-    <div class="table-wrapper">
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Tanggal Keluar</th>
-                    <th>Nama Penghuni</th>
-                    <th>No. Telepon / HP</th>
-                    <th>Kampus</th>
-                    <th>Asal Kampung</th>
-                    <th>Kamar Terakhir</th>
-                    <th>Catatan Aktivitas Log</th>
-                    <th class="col-aksi-header">Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($penghuniKeluarList as $pk)
-                <tr>
-                    <td style="font-weight: 700; color: #cbd5e1;">
-                        {{ $pk->tanggal_keluar ? \Carbon\Carbon::parse($pk->tanggal_keluar)->format('d M Y') : '-' }}
-                    </td>
-                    <td class="task-title" style="font-weight: 600; color: #cbd5e1;">{{ $pk->nama }}</td>
-                    <td class="task-meta">{{ $pk->nomor_hp ?: '-' }}</td>
-                    <td>{{ $pk->kampus ?: '-' }}</td>
-                    <td class="task-meta">{{ $pk->asal_kampung ?: '-' }}</td>
-                    <td>
-                        @if($pk->kamar)
-                        <span class="badge badge-info">{{ $pk->kamar->nomor_kamar }}</span>
-                        @else
-                        <span class="task-meta">-</span>
-                        @endif
-                    </td>
-                    <td>
-                        <span class="badge badge-warning" style="background: rgba(245, 158, 11, 0.18); color: #fde047; border: 1px solid rgba(245, 158, 11, 0.35); font-weight: 600;">Resmi Keluar Asrama</span>
-                    </td>
-                    <td class="col-aksi-cell">
-                        <div style="display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap;">
-                            {{-- REACTIVATE BUTTON --}}
-                            <form action="{{ route('asrama.penghuni.reactivate', $pk->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Aktifkan kembali {{ addslashes($pk->nama) }} sebagai penghuni aktif?');">
-                                @csrf
-                                @method('PATCH')
-                                <button type="submit" class="btn btn-success btn-sm" style="background: #10b981; color: #fff; border: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.3rem;" title="Aktifkan kembali penghuni">
-                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                                        <polyline points="23 4 23 10 17 10"></polyline>
-                                        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                                {{-- KELUAR BUTTON (FOR ACTIVE RESIDENTS) --}}
+                                @if($penghuni->status_penghuni === 'Aktif')
+                                <button type="button" onclick="openKeluarPenghuniModal({{ $penghuni->id }}, '{{ addslashes($penghuni->nama) }}')" class="btn btn-warning btn-sm" style="background: #eab308; color: #000; border: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.35rem;" title="Tandai penghuni keluar asrama">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                        <polyline points="16 17 21 12 16 7"></polyline>
+                                        <line x1="21" y1="12" x2="9" y2="12"></line>
                                     </svg>
-                                    <span>Aktifkan</span>
+                                    <span>Keluar</span>
                                 </button>
-                            </form>
+                                @endif
 
-                            {{-- EDIT BUTTON --}}
-                            <button type="button" onclick="openEditPenghuniModal({{ $pk->id }}, '{{ addslashes($pk->nama) }}', '{{ addslashes($pk->nomor_hp ?: '') }}', '{{ addslashes($pk->kampus ?: '') }}', '{{ addslashes($pk->asal_kampung ?: '') }}', '{{ $pk->kamar_id ?: '' }}', '{{ $pk->tanggal_masuk ?: '' }}', '{{ addslashes($pk->catatan ?: '') }}')" class="btn btn-secondary btn-sm" title="Edit data penghuni">Edit</button>
-
-                            {{-- DELETE BUTTON --}}
-                            <button type="button" onclick="openHapusPenghuniModal({{ $pk->id }}, '{{ addslashes($pk->nama) }}')" class="btn btn-danger btn-sm" title="Hapus log & data penghuni">Hapus</button>
-                        </div>
-                    </td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
+                                {{-- DELETE BUTTON --}}
+                                <button type="button" onclick="openHapusPenghuniModal({{ $penghuni->id }}, '{{ addslashes($penghuni->nama) }}')" class="btn btn-danger btn-sm" title="Hapus penghuni">Hapus</button>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+        @endif
     </div>
-    @endif
-</div>
+
+    {{-- KAMAR SECTION --}}
+    <div class="widget-card" style="margin-bottom: 2rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.5rem;">
+            <div>
+                <h3 class="widget-title" style="margin: 0;">Daftar Kamar Asrama</h3>
+            </div>
+            <button type="button" onclick="openKamarModal()" class="btn btn-primary btn-sm" style="display: inline-flex; align-items: center; gap: 0.35rem;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                <span>Tambah Kamar</span>
+            </button>
+        </div>
+
+        @if($kamars->isEmpty())
+        <p class="empty-state">Belum ada data kamar. Klik <strong>+ Tambah Kamar</strong> untuk membuat kamar baru.</p>
+        @else
+        <div class="table-wrapper">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nomor Kamar</th>
+                        <th>Lantai</th>
+                        <th>Penghuni Aktif</th>
+                        <th>Status</th>
+                        <th>Fasilitas</th>
+                        <th class="col-aksi-header">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($kamars as $kamar)
+                    @php
+                    $activeCount = $kamar->penghunis->where('status_penghuni', 'Aktif')->count();
+                    @endphp
+                    <tr>
+                        <td class="task-title" style="font-weight: 700; color: #f8fafc;">Kamar {{ $kamar->nomor_kamar }}</td>
+                        <td><span class="badge-chip">Lantai {{ $kamar->lantai }}</span></td>
+                        <td>
+                            <span style="color: #38bdf8; font-weight: 700;">{{ $activeCount }}</span> / <span style="color: #94a3b8;">{{ $kamar->kapasitas }} Bed</span>
+                        </td>
+                        <td>
+                            @if($kamar->status === 'Tersedia')
+                            <span class="badge badge-kamar-tersedia">Tersedia</span>
+                            @elseif($kamar->status === 'Penuh')
+                            <span class="badge badge-kamar-penuh">Penuh</span>
+                            @elseif($kamar->status === 'Gudang')
+                            <span class="badge badge-kamar-gudang">Gudang</span>
+                            @else
+                            <span class="badge badge-kamar-perbaikan">Perbaikan</span>
+                            @endif
+                        </td>
+                        <td class="task-meta">{{ $kamar->fasilitas ?: '-' }}</td>
+                        <td class="col-aksi-cell">
+                            <div style="display: flex; gap: 0.4rem;">
+                                <button type="button" onclick="openEditKamarModal({{ $kamar->id }}, '{{ addslashes($kamar->nomor_kamar) }}', {{ $kamar->lantai }}, '{{ $kamar->status }}', '{{ addslashes($kamar->fasilitas ?: '') }}', '{{ addslashes($kamar->catatan ?: '') }}')" class="btn btn-secondary btn-sm">Edit</button>
+                                <form action="{{ route('asrama.kamar.destroy', $kamar->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Hapus kamar {{ $kamar->nomor_kamar }}?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+        @endif
+    </div>
+
+    {{-- LOG AKTIVITAS / PENGHUNI KELUAR SECTION --}}
+    <div class="widget-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <div>
+                <h3 class="widget-title" style="margin: 0;">Log Aktivitas & Penghuni Keluar</h3>
+            </div>
+        </div>
+
+        @php
+        $penghuniKeluarList = $penghunis->where('status_penghuni', 'Keluar')->sortByDesc('tanggal_keluar');
+        @endphp
+
+        @if($penghuniKeluarList->isEmpty())
+        <p class="empty-state">Belum ada riwayat log penghuni keluar.</p>
+        @else
+        <div class="table-wrapper">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Tanggal Keluar</th>
+                        <th>Nama Penghuni</th>
+                        <th>No. Telepon / HP</th>
+                        <th>Kampus</th>
+                        <th>Asal Kampung</th>
+                        <th>Kamar Terakhir</th>
+                        <th>Catatan Aktivitas Log</th>
+                        <th class="col-aksi-header">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($penghuniKeluarList as $pk)
+                    <tr>
+                        <td style="font-weight: 700; color: #cbd5e1;">
+                            {{ $pk->tanggal_keluar ? \Carbon\Carbon::parse($pk->tanggal_keluar)->format('d M Y') : '-' }}
+                        </td>
+                        <td class="task-title" style="font-weight: 600; color: #cbd5e1;">{{ $pk->nama }}</td>
+                        <td class="task-meta">{{ $pk->nomor_hp ?: '-' }}</td>
+                        <td>{{ $pk->kampus ?: '-' }}</td>
+                        <td class="task-meta">{{ $pk->asal_kampung ?: '-' }}</td>
+                        <td>
+                            @if($pk->kamar)
+                            <span class="badge badge-info">{{ $pk->kamar->nomor_kamar }}</span>
+                            @else
+                            <span class="task-meta">-</span>
+                            @endif
+                        </td>
+                        <td>
+                            <span class="badge badge-warning" style="background: rgba(245, 158, 11, 0.18); color: #fde047; border: 1px solid rgba(245, 158, 11, 0.35); font-weight: 600;">Resmi Keluar Asrama</span>
+                        </td>
+                        <td class="col-aksi-cell">
+                            <div style="display: flex; gap: 0.35rem; align-items: center; flex-wrap: wrap;">
+                                {{-- REACTIVATE BUTTON --}}
+                                <form action="{{ route('asrama.penghuni.reactivate', $pk->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Aktifkan kembali {{ addslashes($pk->nama) }} sebagai penghuni aktif?');">
+                                    @csrf
+                                    @method('PATCH')
+                                    <button type="submit" class="btn btn-success btn-sm" style="background: #10b981; color: #fff; border: none; font-weight: 600; display: inline-flex; align-items: center; gap: 0.3rem;" title="Aktifkan kembali penghuni">
+                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="23 4 23 10 17 10"></polyline>
+                                            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                                        </svg>
+                                        <span>Aktifkan</span>
+                                    </button>
+                                </form>
+
+                                {{-- EDIT BUTTON --}}
+                                <button type="button" onclick="openEditPenghuniModal({{ $pk->id }}, '{{ addslashes($pk->nama) }}', '{{ addslashes($pk->nomor_hp ?: '') }}', '{{ addslashes($pk->kampus ?: '') }}', '{{ addslashes($pk->asal_kampung ?: '') }}', '{{ $pk->kamar_id ?: '' }}', '{{ $pk->tanggal_masuk ?: '' }}', '{{ addslashes($pk->catatan ?: '') }}')" class="btn btn-secondary btn-sm" title="Edit data penghuni">Edit</button>
+
+                                {{-- DELETE BUTTON --}}
+                                <button type="button" onclick="openHapusPenghuniModal({{ $pk->id }}, '{{ addslashes($pk->nama) }}')" class="btn btn-danger btn-sm" title="Hapus log & data penghuni">Hapus</button>
+                            </div>
+                        </td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+        @endif
+    </div>
 </div>
 </div>
 
