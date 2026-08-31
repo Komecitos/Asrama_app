@@ -95,6 +95,11 @@ return [
         '.git',
         '.git/**',
         '.git/*',
+        'bootstrap/cache/packages.php',
+        'bootstrap/cache/services.php',
+        'bootstrap/cache/config.php',
+        'bootstrap/cache/routes*.php',
+        'bootstrap/cache/events.php',
         '*/tests',
     ],
 
