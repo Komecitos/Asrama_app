@@ -82,9 +82,19 @@ return [
      */
     'cleanup_exclude_files' => [
         'build',
+        'build/**',
         'temp',
+        'temp/**',
         'content',
         'node_modules',
+        'node_modules/**',
+        'node_modules/*',
+        'dist',
+        'dist/**',
+        'dist/*',
+        '.git',
+        '.git/**',
+        '.git/*',
         '*/tests',
     ],
 
