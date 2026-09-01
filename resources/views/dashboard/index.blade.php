@@ -286,7 +286,12 @@
                                 @endif
                             </td>
                             <td>
-                                <span style="color: #38bdf8; font-weight: 700;">{{ $km->penghunis->where('status_penghuni', 'Aktif')->count() }}</span> / <span style="color: #94a3b8;">{{ $km->kapasitas }} Bed</span>
+                                @php $occ = $km->penghunis->where('status_penghuni', 'Aktif')->count(); @endphp
+                                @if($occ > 0)
+                                <span class="badge badge-kamar-penuh" style="font-size: 0.72rem; padding: 1px 6px;">1 / 1 Terisi</span>
+                                @else
+                                <span class="badge badge-kamar-tersedia" style="font-size: 0.72rem; padding: 1px 6px;">0 / 1 Kosong</span>
+                                @endif
                             </td>
                         </tr>
                         @endforeach

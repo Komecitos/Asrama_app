@@ -52,13 +52,6 @@
                 <h3 class="widget-title" style="margin: 0;">Riwayat Transaksi Keuangan</h3>
             </div>
             <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; align-items: center;">
-                <button type="button" onclick="openKeuanganModal()" class="btn btn-primary btn-sm" style="font-weight: 700; display: inline-flex; align-items: center; gap: 0.35rem;">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="12" y1="5" x2="12" y2="19"></line>
-                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                    </svg>
-                    <span>Catat Transaksi</span>
-                </button>
                 <input type="text" id="search-keuangan" onkeyup="filterKeuanganTable()" placeholder="Cari transaksi..." class="form-control" style="width: 200px; font-size: 0.85rem; padding: 0.35rem 0.75rem;">
                 <select id="filter-tipe" onchange="filterKeuanganTable()" class="form-control" style="width: 130px; font-size: 0.85rem; padding: 0.35rem 0.75rem; cursor: pointer;">
                     <option value="">Semua Tipe</option>
@@ -84,6 +77,14 @@
                     </svg>
                     <span>Export PDF</span>
                 </a>
+                <button type="button" onclick="openKeuanganModal()" class="btn btn-primary btn-sm" style="font-weight: 700; display: inline-flex; align-items: center; gap: 0.35rem;" title="Shortcut Keyboard: Alt + T atau Ctrl + N">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    <span>+ Catat Transaksi</span>
+                    <kbd style="font-size: 0.68rem; background: rgba(255,255,255,0.25); padding: 1px 5px; border-radius: 4px; font-family: inherit; margin-left: 0.2rem; font-weight: 600; letter-spacing: 0.5px;">Alt+T</kbd>
+                </button>
             </div>
         </div>
 
@@ -160,7 +161,7 @@
 </div>
 
 {{-- MODAL KONFIRMASI HAPUS TRANSAKSI --}}
-<div id="modal-delete-keuangan" class="modal modal-sm" aria-hidden="true" onclick="event.stopPropagation()" style="display: none; border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 16px; padding: 1.75rem; background: #1e293b; color: #f8fafc; z-index: 10001;">
+<div id="modal-delete-keuangan" class="modal modal-sm" onclick="event.stopPropagation()" style="display: none; border: 1px solid rgba(239, 68, 68, 0.4); border-radius: 16px; padding: 1.75rem; background: #1e293b; color: #f8fafc; z-index: 10001;">
     <div style="text-align: center; margin-bottom: 1.25rem;">
         <div style="width: 52px; height: 52px; border-radius: 50%; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #ef4444; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem auto;">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
@@ -190,7 +191,7 @@
 <div id="modal-delete-keuangan-overlay" class="modal-overlay" onclick="closeDeleteModal()"></div>
 
 {{-- MODAL CATAT / EDIT TRANSAKSI KEUANGAN --}}
-<div id="modal-keuangan" class="modal modal-create" aria-hidden="true" onclick="event.stopPropagation()">
+<div id="modal-keuangan" class="modal modal-create" onclick="event.stopPropagation()">
     <div class="modal-content">
         <div class="modal-header">
             <h3 id="modal-keuangan-title">Catat Transaksi Keuangan</h3>
@@ -511,6 +512,23 @@
 
     document.addEventListener('DOMContentLoaded', function() {
         updateKategoriByTipe('Iuran Bulanan');
+    });
+
+    // Keyboard Shortcuts
+    document.addEventListener('keydown', function(e) {
+        // Alt + T or Alt + N or Ctrl + N -> Tambah Transaksi
+        if ((e.altKey && (e.key === 't' || e.key === 'T' || e.key === 'n' || e.key === 'N')) ||
+            (e.ctrlKey && (e.key === 'n' || e.key === 'N'))) {
+            e.preventDefault();
+            openKeuanganModal();
+            return;
+        }
+
+        // Escape -> Tutup Modal
+        if (e.key === 'Escape') {
+            closeKeuanganModal();
+            closeDeleteModal();
+        }
     });
 </script>
 @endpush

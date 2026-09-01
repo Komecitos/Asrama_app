@@ -14,25 +14,8 @@
         })();
     </script>
 
-    {{-- Theme --}}
-    <link rel="stylesheet" href="{{ asset('css/theme/color.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/theme/typography.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/theme/spacing.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/theme/variable.css') }}">
-
-    {{-- Layout --}}
-    <link rel="stylesheet" href="{{ asset('css/layouts/app.css') }}">
-
-    {{-- Components --}}
-    <link rel="stylesheet" href="{{ asset('css/components/badge_button.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/components/card.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/components/form.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/components/modal.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/components/table.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/components/toast.css') }}">
-
-    {{-- Page specific --}}
-    <link rel="stylesheet" href="{{ asset('css/pages.css') }}">
+    {{-- Bundled Stylesheet for Instant Native Performance --}}
+    <link rel="stylesheet" href="{{ asset('css/bundle.css') }}">
     @stack('styles')
 </head>
 
@@ -198,7 +181,7 @@
 
     {{-- MODAL DOKUMENTASI --}}
     <div id="modal-docs-overlay" class="modal-overlay" onclick="closeDocsModal()"></div>
-    <div id="modal-docs" class="modal modal-create" aria-hidden="true" onclick="event.stopPropagation()">
+    <div id="modal-docs" class="modal modal-create" onclick="event.stopPropagation()">
         <div class="modal-header">
             <h3>Tentang AsramaApp</h3>
             <button onclick="closeDocsModal()" class="modal-close">&times;</button>

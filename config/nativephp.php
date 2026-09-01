@@ -180,4 +180,18 @@ return [
      * Custom PHP binary path.
      */
     'binary_path' => env('NATIVEPHP_PHP_BINARY_PATH', null),
+
+    /**
+     * Pengaturan Build untuk Installer Klasik (Bisa Pilih Folder)
+     */
+    'build_options' => [
+        'win' => [
+            'target' => 'nsis',
+        ],
+        'nsis' => [
+            'oneClick' => false,
+            'allowToChangeInstallationDirectory' => true,
+            'showProgressBar' => true,
+        ],
+    ],
 ];

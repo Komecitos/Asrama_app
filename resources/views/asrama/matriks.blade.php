@@ -521,7 +521,7 @@
 </div>
 
 {{-- MODAL UPDATE MATRIKS CELL --}}
-<div id="modal-matriks-cell" class="modal modal-create" aria-hidden="true" onclick="event.stopPropagation()">
+<div id="modal-matriks-cell" class="modal modal-create" onclick="event.stopPropagation()">
     <div class="modal-header">
         <h3 id="cell-modal-title">Update Status Pembayaran</h3>
         <button onclick="closeCellModal()" class="modal-close">&times;</button>
@@ -576,7 +576,7 @@
 <div id="modal-matriks-overlay" class="modal-overlay" onclick="closeCellModal()"></div>
 
 {{-- MODAL DISTRIBUSI PASSWORD WIFI --}}
-<div id="modal-wifi-distribusi" class="modal modal-lg" aria-hidden="true" onclick="event.stopPropagation()" style="max-width: 780px;">
+<div id="modal-wifi-distribusi" class="modal modal-lg" onclick="event.stopPropagation()" style="max-width: 780px;">
     <div class="modal-header" style="align-items: center;">
         <div style="display: flex; align-items: center; gap: 0.6rem;">
             <div style="width: 38px; height: 38px; border-radius: 10px; background: rgba(14, 165, 233, 0.15); border: 1px solid rgba(14, 165, 233, 0.4); display: flex; align-items: center; justify-content: center; color: #38bdf8;">

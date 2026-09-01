@@ -200,7 +200,16 @@
                         <td class="task-title" style="font-weight: 700; color: #f8fafc;">Kamar {{ $kamar->nomor_kamar }}</td>
                         <td><span class="badge-chip">Lantai {{ $kamar->lantai }}</span></td>
                         <td>
-                            <span style="color: #38bdf8; font-weight: 700;">{{ $activeCount }}</span> / <span style="color: #94a3b8;">{{ $kamar->kapasitas }} Bed</span>
+                            @if($activeCount > 0)
+                            <div style="display: flex; align-items: center; gap: 0.45rem;">
+                                <span class="badge badge-kamar-penuh" style="font-size: 0.75rem; padding: 2px 7px;">1 / 1 Terisi</span>
+                                <span style="font-size: 0.82rem; color: #f8fafc; font-weight: 600;">
+                                    {{ $kamar->penghunis->where('status_penghuni', 'Aktif')->first()->nama ?? '' }}
+                                </span>
+                            </div>
+                            @else
+                            <span class="badge badge-kamar-tersedia" style="font-size: 0.75rem; padding: 2px 7px;">0 / 1 Kosong</span>
+                            @endif
                         </td>
                         <td>
                             @if($kamar->status === 'Tersedia')
@@ -217,11 +226,7 @@
                         <td class="col-aksi-cell">
                             <div style="display: flex; gap: 0.4rem;">
                                 <button type="button" onclick="openEditKamarModal({{ $kamar->id }}, '{{ addslashes($kamar->nomor_kamar) }}', {{ $kamar->lantai }}, '{{ $kamar->status }}', '{{ addslashes($kamar->fasilitas ?: '') }}', '{{ addslashes($kamar->catatan ?: '') }}')" class="btn btn-secondary btn-sm">Edit</button>
-                                <form action="{{ route('asrama.kamar.destroy', $kamar->id) }}" method="POST" style="display:inline;" onsubmit="return confirm('Hapus kamar {{ $kamar->nomor_kamar }}?');">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
-                                </form>
+                                <button type="button" onclick="openHapusKamarModal({{ $kamar->id }}, '{{ addslashes($kamar->nomor_kamar) }}')" class="btn btn-danger btn-sm">Hapus</button>
                             </div>
                         </td>
                     </tr>
@@ -314,7 +319,7 @@
 </div>
 
 {{-- MODAL TAMBAH/EDIT KAMAR --}}
-<div id="modal-kamar" class="modal modal-create" aria-hidden="true" onclick="event.stopPropagation()">
+<div id="modal-kamar" class="modal modal-create" onclick="event.stopPropagation()">
     <div class="modal-header">
         <h3 id="modal-kamar-title">Tambah Kamar Baru</h3>
         <button onclick="closeKamarModal()" class="modal-close">&times;</button>
@@ -359,7 +364,7 @@
 <div id="modal-kamar-overlay" class="modal-overlay" onclick="closeKamarModal()"></div>
 
 {{-- MODAL TAMBAH/EDIT PENGHUNI --}}
-<div id="modal-penghuni" class="modal modal-create" aria-hidden="true" onclick="event.stopPropagation()">
+<div id="modal-penghuni" class="modal modal-create" onclick="event.stopPropagation()">
     <div class="modal-header">
         <h3 id="modal-penghuni-title">Tambah Penghuni Baru</h3>
         <button onclick="closePenghuniModal()" class="modal-close">&times;</button>
@@ -381,7 +386,11 @@
                 <select id="penghuni-kamar" name="kamar_id" class="form-control">
                     <option value="">-- Tanpa Kamar --</option>
                     @foreach($kamars as $k)
-                    <option value="{{ $k->id }}">{{ $k->nomor_kamar }} (Lantai {{ $k->lantai }})</option>
+                    @php
+                    $occCount = $k->penghunis->where('status_penghuni', 'Aktif')->count();
+                    $statusLabel = $occCount >= 1 ? '⚠️ Penuh' : ($k->status === 'Tersedia' ? '✅ Tersedia' : $k->status);
+                    @endphp
+                    <option value="{{ $k->id }}">{{ $k->nomor_kamar }} (Lantai {{ $k->lantai }}) - {{ $statusLabel }}</option>
                     @endforeach
                 </select>
             </div>
@@ -403,8 +412,8 @@
                         <option value="Long Hurai">Long Hurai</option>
                         <option value="Long Melaham">Long Melaham</option>
                         <option value="Long Merah">Long Merah</option>
-                        <option value="Memahak Ilir">Memahak Ilir</option>
-                        <option value="Memahak Ulu">Memahak Ulu</option>
+                        <option value="Mamahak Ilir">Mamahak Ilir</option>
+                        <option value="Mamahak Ulu">Mamahak Ulu</option>
                         <option value="Rukun Damai">Rukun Damai</option>
                         <option value="Ujoh Bilang">Ujoh Bilang</option>
                     </optgroup>
@@ -416,7 +425,7 @@
                         <option value="Long Hubung Ulu">Long Hubung Ulu</option>
                         <option value="Lutan">Lutan</option>
                         <option value="Matalibaq">Matalibaq</option>
-                        <option value="Memahak Teboq">Memahak Teboq</option>
+                        <option value="Mamahak Teboq">Mamahak Teboq</option>
                         <option value="Sirau">Sirau</option>
                         <option value="Tri Pariq Makmur">Tri Pariq Makmur</option>
                         <option value="Wana Pariq">Wana Pariq</option>
@@ -478,7 +487,7 @@
 <div id="modal-penghuni-overlay" class="modal-overlay" onclick="closePenghuniModal()"></div>
 
 {{-- MODAL PROSES KELUAR PENGHUNI --}}
-<div id="modal-keluar-penghuni" class="modal modal-create" aria-hidden="true" onclick="event.stopPropagation()">
+<div id="modal-keluar-penghuni" class="modal modal-create" onclick="event.stopPropagation()">
     <div class="modal-header">
         <h3 style="display: flex; align-items: center; gap: 0.5rem;">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color: #f59e0b;">
@@ -519,7 +528,7 @@
 <div id="modal-keluar-penghuni-overlay" class="modal-overlay" onclick="closeKeluarPenghuniModal()"></div>
 
 {{-- MODAL HAPUS PENGHUNI --}}
-<div id="modal-hapus-penghuni" class="modal modal-create" aria-hidden="true" onclick="event.stopPropagation()">
+<div id="modal-hapus-penghuni" class="modal modal-create" onclick="event.stopPropagation()">
     <div class="modal-header">
         <h3 style="display: flex; align-items: center; gap: 0.5rem; color: #ef4444;">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color: #ef4444;">
@@ -554,6 +563,43 @@
     </form>
 </div>
 <div id="modal-hapus-penghuni-overlay" class="modal-overlay" onclick="closeHapusPenghuniModal()"></div>
+
+{{-- MODAL HAPUS KAMAR --}}
+<div id="modal-hapus-kamar" class="modal modal-create" onclick="event.stopPropagation()">
+    <div class="modal-header">
+        <h3 style="display: flex; align-items: center; gap: 0.5rem; color: #ef4444;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color: #ef4444;">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                <line x1="10" y1="11" x2="10" y2="17"></line>
+                <line x1="14" y1="11" x2="14" y2="17"></line>
+            </svg>
+            <span>Hapus Data Kamar</span>
+        </h3>
+        <button onclick="closeHapusKamarModal()" class="modal-close">&times;</button>
+    </div>
+    <form id="form-hapus-kamar" action="" method="POST">
+        @csrf
+        @method('DELETE')
+        <div style="padding: 0.75rem 0;">
+            <p class="task-meta" style="margin-bottom: 1rem; color: var(--text-primary); font-size: 0.95rem; line-height: 1.5;">
+                Apakah Anda yakin ingin menghapus data <strong id="hapus-kamar-nama" style="color: #ef4444; font-size: 1.05rem;">Kamar -</strong>?<br>
+                <span style="font-size: 0.85rem; color: #94a3b8; margin-top: 0.35rem; display: block;">Tindakan ini permanen dan kamar yang dihapus tidak dapat dikembalikan.</span>
+            </p>
+        </div>
+        <div class="form-actions" style="margin-top: 1.25rem;">
+            <button type="button" onclick="closeHapusKamarModal()" class="btn btn-secondary">Batal</button>
+            <button type="submit" class="btn btn-danger" style="background: #ef4444; color: #fff; font-weight: 700; display: inline-flex; align-items: center; gap: 0.4rem;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="3 6 5 6 21 6"></polyline>
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                </svg>
+                <span>Hapus Kamar</span>
+            </button>
+        </div>
+    </form>
+</div>
+<div id="modal-hapus-kamar-overlay" class="modal-overlay" onclick="closeHapusKamarModal()"></div>
 
 
 
@@ -608,6 +654,35 @@
     function closeKamarModal() {
         const m = document.getElementById('modal-kamar');
         const o = document.getElementById('modal-kamar-overlay');
+        if (m) {
+            m.classList.remove('show');
+            m.style.display = 'none';
+        }
+        if (o) {
+            o.classList.remove('show');
+            o.style.display = 'none';
+        }
+    }
+
+    function openHapusKamarModal(id, nomor) {
+        document.getElementById('hapus-kamar-nama').textContent = 'Kamar ' + nomor;
+        document.getElementById('form-hapus-kamar').action = "/asrama/kamar/" + id;
+
+        const m = document.getElementById('modal-hapus-kamar');
+        const o = document.getElementById('modal-hapus-kamar-overlay');
+        if (m) {
+            m.classList.add('show');
+            m.style.display = 'block';
+        }
+        if (o) {
+            o.classList.add('show');
+            o.style.display = 'block';
+        }
+    }
+
+    function closeHapusKamarModal() {
+        const m = document.getElementById('modal-hapus-kamar');
+        const o = document.getElementById('modal-hapus-kamar-overlay');
         if (m) {
             m.classList.remove('show');
             m.style.display = 'none';

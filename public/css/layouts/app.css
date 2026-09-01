@@ -1,3 +1,19 @@
+/* ===== HIDE SCROLLBAR GLOBALLY (SCROLLABLE BUT INVISIBLE) ===== */
+/* Firefox & IE/Edge Legacy */
+* {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+}
+
+/* Chrome, Safari, Edge, Chromium / Electron (WebKit) */
+*::-webkit-scrollbar,
+::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    background: transparent !important;
+}
+
 /* ===== BODY ===== */
 body {
     display: flex;

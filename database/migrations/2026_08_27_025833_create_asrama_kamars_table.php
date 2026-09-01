@@ -17,7 +17,7 @@ return new class extends Migration
             $table->integer('lantai')->default(1);
             $table->integer('kapasitas')->default(2);
             $table->unsignedBigInteger('harga_per_bulan')->default(500000);
-            $table->enum('status', ['Tersedia', 'Penuh', 'Perbaikan'])->default('Tersedia');
+            $table->string('status', 50)->default('Tersedia');
             $table->text('fasilitas')->nullable();
             $table->text('catatan')->nullable();
             $table->timestamps();

@@ -29,8 +29,8 @@ class AsramaController extends Controller
         $kamar = AsramaKamar::find($kamarId);
         if ($kamar && !in_array($kamar->status, ['Perbaikan', 'Gudang'])) {
             $activeCount = $kamar->penghunis()->where('status_penghuni', 'Aktif')->count();
-            $status = ($activeCount >= $kamar->kapasitas) ? 'Penuh' : 'Tersedia';
-            $kamar->update(['status' => $status]);
+            $status = ($activeCount >= 1) ? 'Penuh' : 'Tersedia';
+            $kamar->update(['status' => $status, 'kapasitas' => 1]);
         }
     }
 
@@ -41,13 +41,21 @@ class AsramaController extends Controller
 
         // Auto-sync room statuses based on active occupant counts
         foreach ($kamars as $k) {
+            $dirty = [];
+            if ($k->kapasitas !== 1) {
+                $dirty['kapasitas'] = 1;
+                $k->kapasitas = 1;
+            }
             if (!in_array($k->status, ['Perbaikan', 'Gudang'])) {
                 $activeCount = $k->penghunis->where('status_penghuni', 'Aktif')->count();
-                $expectedStatus = ($activeCount >= $k->kapasitas) ? 'Penuh' : 'Tersedia';
+                $expectedStatus = ($activeCount >= 1) ? 'Penuh' : 'Tersedia';
                 if ($k->status !== $expectedStatus) {
-                    $k->update(['status' => $expectedStatus]);
+                    $dirty['status'] = $expectedStatus;
                     $k->status = $expectedStatus;
                 }
+            }
+            if (!empty($dirty)) {
+                $k->update($dirty);
             }
         }
 
@@ -371,7 +379,7 @@ class AsramaController extends Controller
             'fasilitas' => 'nullable|string',
             'catatan' => 'nullable|string',
         ]);
-        $validated['kapasitas'] = 100;
+        $validated['kapasitas'] = 1;
         $validated['harga_per_bulan'] = 0;
 
         AsramaKamar::create($validated);
@@ -390,7 +398,7 @@ class AsramaController extends Controller
             'fasilitas' => 'nullable|string',
             'catatan' => 'nullable|string',
         ]);
-        $validated['kapasitas'] = 100;
+        $validated['kapasitas'] = 1;
         $validated['harga_per_bulan'] = 0;
 
         $kamar->update($validated);
